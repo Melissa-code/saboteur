@@ -1,0 +1,10 @@
+colors:
+  vert #04e762
+  ocre #f5b700 
+  rose #dc0073
+  bleu #008bf8
+  vert clair #89fc00 
+
+font: 
+  Tagesschrift Static 400
+

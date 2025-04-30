@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr-FR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tagesschrift&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css" />
+  <link rel="stylesheet" href="./css/style.css">
+  <title>Jeu du Saboteur</title>
+</head>
+
+<body>
+    <div class="title">
+      <img src="./images/nain.svg" alt="nain chercheur de trésor" class="dwarf">
+      <h1>Le jeu du Saboteur</h1>
+      <img src="./images/nain-malicious.svg" alt="nain saboteur" class="dwarf">
+    </div>
+    <!-- Messages -->
+    <div class="messages"></div>
+    <!-- Game board -->
+    <div id="game-board">
+      <canvas id="myCanvas"></canvas>
+    </div>
+
+    <script type="module" src="./js/controller/controller.js"></script>
+</body>
+</html>
