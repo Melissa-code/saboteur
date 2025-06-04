@@ -56,11 +56,7 @@ class View {
       }
     }
   }
-
-  drawCard() {
-
-  }
-
+  
 }
 
 export default View;
