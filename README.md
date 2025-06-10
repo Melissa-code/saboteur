@@ -113,3 +113,7 @@
 ### Tests de rotation
 
 - Vérifier que les cartes peuvent être tournées correctement 
+
+## Factory 
+
+- CardFactory gère la création et la préparation des cartes (centralise la logique)

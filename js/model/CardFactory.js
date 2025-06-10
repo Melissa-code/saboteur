@@ -10,8 +10,8 @@ export class CardFactory {
         if (typeof schema !== 'string' || schema.length !== 4) {
             throw new Error('Le schema doit etre une string comme "1011"');
         }
-        //string -> array 
-        const chars = schema.split('');
+     
+        const chars = schema.split(''); //string -> array 
         const haut = parseInt(chars[0]) ;
         const droite = parseInt(chars[1]) ;
         const bas = parseInt(chars[2]) ;
@@ -71,12 +71,12 @@ export class CardFactory {
             [Actions.CASSER_CHARIOT, 3],
             [Actions.CASSER_LAMPE, 3],
             [Actions.CASSER_PIOCHE, 3],
-            [Actions.REGARDER_CARTE_BUT, 6 ],
-            [Actions.REPARER_CHARIOT_LAMPE, 1 ],
-            [Actions.REPARER_CHARIOT, 2 ],
+            [Actions.REGARDER_CARTE_BUT, 6],
+            [Actions.REPARER_CHARIOT_LAMPE, 1],
+            [Actions.REPARER_CHARIOT, 2],
             [Actions.REPARER_LAMPE_PIOCHE, 1],
-            [Actions.REPARER_LAMPE, 2 ],
-            [Actions.REPARER_PIOCHE_CHARIOT,1 ],
+            [Actions.REPARER_LAMPE, 2],
+            [Actions.REPARER_PIOCHE_CHARIOT,1],
             [Actions.REPARER_PIOCHE, 2],
         ];
 
@@ -91,5 +91,25 @@ export class CardFactory {
         }
 
         return cartesActionList; 
+    }
+
+    /**
+     * return pioche[]
+     * rassemble et melange les cartes chemin et action
+     */
+    static shuffleCartes() {
+        const cartesAction = this.createAllCartesAction();
+        const cartesChemin = this.createAllCartesChemin(); 
+        let pioche = []; 
+        pioche = [...cartesAction, ...cartesChemin]; //fusion
+
+        // Algorithme de Fisher-Yates pour mélanger équitablement la pioche 
+        // fin -> debut et i changé par élément aléatoire
+        for (let i = pioche.length -1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1)); //nb de 0 à i inclus
+            [pioche[i], pioche[j]] = [pioche[j], pioche[i]]; //destructuring assignment (sans la temp)
+        }
+
+        return pioche; 
     }
 }

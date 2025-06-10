@@ -15,11 +15,9 @@ class Game {
     const carte2 = CardFactory.createCarteChemin("0020", "./images/cartes_chemin/0020.svg");
     const carte3 = CardFactory.createCarteChemin("0002", "./images/cartes_chemin/0002.svg");
     const carte4 = CardFactory.createCarteChemin("0002", "./images/cartes_chemin/0002.svg");
-    const pioche = CardFactory.createAllCartesChemin()
-    //console.log(pioche)
-    const pioche2 = CardFactory.createAllCartesAction()
-    console.log(pioche2)
 
+    const pioche = CardFactory.shuffleCartes()
+    console.log(pioche)
     //this.placerCarte(1, 3, carte3);
     //this.placerCarte(5, 3, carte4);
   }
