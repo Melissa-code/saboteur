@@ -1,17 +1,21 @@
-import { Card, CarteChemin } from './Card.js'; 
+import { Card, CarteChemin, CarteAction } from './Card.js'; 
+import Actions from './Actions.js'; 
 
 export class CardFactory {
     
+     /**
+     * return CarteChemin 
+     */
     static createCarteChemin(schema, image) {
         if (typeof schema !== 'string' || schema.length !== 4) {
             throw new Error('Le schema doit etre une string comme "1011"');
         }
         //string -> array 
         const chars = schema.split('');
-        const haut = chars[0] ;
-        const droite = chars[1] ;
-        const bas = chars[2] ;
-        const gauche = chars[3] ;
+        const haut = parseInt(chars[0]) ;
+        const droite = parseInt(chars[1]) ;
+        const bas = parseInt(chars[2]) ;
+        const gauche = parseInt(chars[3]) ;
 
         return new CarteChemin(haut, droite, bas, gauche, image);
     }
@@ -19,7 +23,7 @@ export class CardFactory {
     /**
      * return cartesCheminList[]
      */
-    static createAllCarteChemin() {
+    static createAllCartesChemin() {
         let typesCartesChemin = {
             "2020" : 4, // nb occurences (soit value)
             "2220" : 5,
@@ -41,22 +45,51 @@ export class CardFactory {
         let cartesCheminList = []; 
 
         for (let modeleCarte in typesCartesChemin) {
-            console.log(modeleCarte)
+            //console.log(modeleCarte)
             let occurences = typesCartesChemin[modeleCarte]
-            // directions (haut droite bas gauche)
-            let haut = parseInt(modeleCarte[0]);
-            let droite = parseInt(modeleCarte[1]);
-            let bas = parseInt(modeleCarte[2]);
-            let gauche = parseInt(modeleCarte[3]);
+          
             let image = `./images/cartes_chemin/${modeleCarte}.png`;
 
             // pour chaque occurence on crée la carte
             for (let i = 0; i < occurences; i++) {
-                let carteChemin = new CarteChemin(haut, droite, bas, gauche, image); 
+                let carteChemin = this.createCarteChemin(modeleCarte, image)
                 cartesCheminList.push(carteChemin); 
             }
         }
 
+    
         return cartesCheminList; 
+    }
+
+    /**
+     * return cartesActionList[]
+     */
+    static createAllCartesAction(titreAction, image) {
+        let cartesActionList = [];
+        let typesCartesAction = [
+            [Actions.DETRUIT_CARTE_CHEMIN, 3],
+            [Actions.CASSER_CHARIOT, 3],
+            [Actions.CASSER_LAMPE, 3],
+            [Actions.CASSER_PIOCHE, 3],
+            [Actions.REGARDER_CARTE_BUT, 6 ],
+            [Actions.REPARER_CHARIOT_LAMPE, 1 ],
+            [Actions.REPARER_CHARIOT, 2 ],
+            [Actions.REPARER_LAMPE_PIOCHE, 1],
+            [Actions.REPARER_LAMPE, 2 ],
+            [Actions.REPARER_PIOCHE_CHARIOT,1 ],
+            [Actions.REPARER_PIOCHE, 2],
+        ];
+
+        for (let carteModeleAction of typesCartesAction) {
+            let occurences = carteModeleAction[1];
+            let image = `./images/cartes_action/${carteModeleAction[0]}.png`;
+
+            for (let i = 0; i < occurences; i++) {
+                let carteAction = new CarteAction(carteModeleAction[0], image);
+                cartesActionList.push(carteAction); 
+            }
+        }
+
+        return cartesActionList; 
     }
 }

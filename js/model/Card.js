@@ -40,31 +40,22 @@ export class CarteChemin extends Card {
     // return bool 
     accepte_voisine(carteVoisine, direction)
     {
-        if (direction == Directions["DROITE"]) return this.droite === "2" && carteVoisine.gauche !="0"
-        if (direction == Directions["GAUCHE"]) return this.gauche === "2" && carteVoisine.droite !="0"
-        if (direction == Directions["HAUT"]) return this.haut === "2" && carteVoisine.bas !="0"
-        if (direction == Directions["BAS"]) return this.bas === "2" && carteVoisine.haut !="0"
+        if (direction === Directions.DROITE) return this.droite === 2 && carteVoisine.gauche !== 0;
+        if (direction === Directions.GAUCHE) return this.gauche === 2 && carteVoisine.droite !== 0;
+        if (direction === Directions.HAUT) return this.haut === 2 && carteVoisine.bas !== 0;
+        if (direction === Directions.BAS) return this.bas === 2 && carteVoisine.haut !== 0;
 
     return false; 
     }  
     
 }
 
-// bloque le chemin 
-class CarteImpasse {
-    constructor(haut, droite, bas, gauche) {
-        this.haut = haut;
-        this.droite = droite;
-        this.bas = bas;
-        this.gauche = gauche;
+
+// bloque debloque
+export class CarteAction extends Card {
+    constructor(titreAction, image) {
+        super(image);
+        this.titreAction = titreAction; 
     }
-    
-   
+
 }
-
-class CardAction {
-    action // bloque debloque 
-}
-
-// regarder combinaison d'assemblage de cartes 
-
