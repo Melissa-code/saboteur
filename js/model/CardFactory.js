@@ -48,7 +48,7 @@ export class CardFactory {
             //console.log(modeleCarte)
             let occurences = typesCartesChemin[modeleCarte]
           
-            let image = `./images/cartes_chemin/${modeleCarte}.png`;
+            let image = `./images/cartes_chemin/${modeleCarte}.svg`;
 
             // pour chaque occurence on crée la carte
             for (let i = 0; i < occurences; i++) {
@@ -82,7 +82,7 @@ export class CardFactory {
 
         for (let carteModeleAction of typesCartesAction) {
             let occurences = carteModeleAction[1];
-            let image = `./images/cartes_action/${carteModeleAction[0]}.png`;
+            let image = `./images/cartes_action/${carteModeleAction[0]}.svg`;
 
             for (let i = 0; i < occurences; i++) {
                 let carteAction = new CarteAction(carteModeleAction[0], image);
@@ -106,10 +106,11 @@ export class CardFactory {
         // Algorithme de Fisher-Yates pour mélanger équitablement la pioche 
         // fin -> debut et i changé par élément aléatoire
         for (let i = pioche.length -1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1)); //nb de 0 à i inclus
+            const j = Math.floor(Math.random() * (i + 1)); //nb de 0 à i
             [pioche[i], pioche[j]] = [pioche[j], pioche[i]]; //destructuring assignment (sans la temp)
         }
 
         return pioche; 
     }
+
 }

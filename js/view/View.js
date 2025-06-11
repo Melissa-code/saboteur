@@ -27,21 +27,32 @@ class View {
           this.tileHeight
         );
 
-
         // load image
         const cell = this.game.matrix[y][x];
         if (cell != null) {
-          const image = new Image();
-          image.src = cell.image;
-          image.onload = () => {
-            this.ctx.drawImage(
-              image,
-              x * this.tileWidth,
-              y * this.tileHeight,
-              this.tileWidth,
-              this.tileHeight
+          if (cell.devoile == true) {
+            const image = new Image();
+            image.src = cell.image;
+            image.onload = () => {
+              this.ctx.drawImage(
+                image,
+                x * this.tileWidth,
+                y * this.tileHeight,
+                this.tileWidth,
+                this.tileHeight
+              );
+            };
+          } else {
+            this.ctx.fillStyle = "red";
+            this.ctx.fillRect(
+            // position x y & tileSize (width & height)
+            x * this.tileWidth,
+            y * this.tileHeight,
+            this.tileWidth,
+            this.tileHeight
             );
-          };
+
+          }
         }
 
         // border
@@ -56,7 +67,6 @@ class View {
       }
     }
   }
-  
 }
 
 export default View;

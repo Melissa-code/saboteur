@@ -1,3 +1,4 @@
+import { CardFactory } from './CardFactory.js';
 import Directions from './Directions.js';
 
 export class Card {
@@ -20,12 +21,13 @@ class CarteNain {
 
 export class CarteChemin extends Card {
 
-    constructor(haut, droite, bas, gauche, image) {
+    constructor(haut, droite, bas, gauche, image, devoile) {
         super(image)
         this.haut = haut;
         this.droite = droite;
         this.bas = bas;
         this.gauche = gauche;
+        this.devoile = true;
     }
 
     rotation() {
@@ -47,6 +49,13 @@ export class CarteChemin extends Card {
 
     return false; 
     }  
+
+
+    selectionneCartesButCachees() {
+        const pioche = CardFactory.shuffleCartes();
+
+
+    }
     
 }
 

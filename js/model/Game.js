@@ -12,14 +12,17 @@ class Game {
     const carteDepart = CardFactory.createCarteChemin("2222", "./images/cartes_chemin/2222.svg");
     this.matrix[3][0] = carteDepart;
 
-    const carte2 = CardFactory.createCarteChemin("0020", "./images/cartes_chemin/0020.svg");
-    const carte3 = CardFactory.createCarteChemin("0002", "./images/cartes_chemin/0002.svg");
-    const carte4 = CardFactory.createCarteChemin("0002", "./images/cartes_chemin/0002.svg");
+    this.pioche = CardFactory.shuffleCartes()
+   
+    let cartesBut = this.selectionneTroisCartesChemin() 
+    this.matrix[1][10] = cartesBut[0]
+    cartesBut[0].devoile = false; 
+    this.matrix[3][10] = cartesBut[1]
+    cartesBut[1].devoile = false; 
+    this.matrix[5][10] = cartesBut[2]
+    cartesBut[2].devoile = false; 
 
-    const pioche = CardFactory.shuffleCartes()
-    console.log(pioche)
-    //this.placerCarte(1, 3, carte3);
-    //this.placerCarte(5, 3, carte4);
+    console.table(this.matrix)
   }
 
   initGame() {
@@ -70,6 +73,25 @@ class Game {
 
     return existeVoisinage;
   }
+
+  selectionneTroisCartesChemin() {
+    let cartesBut = []; 
+  
+    for (let i = 0; i < this.pioche.length && cartesBut.length < 3; i++) {
+      if (this.pioche[i] instanceof CarteChemin) {
+        cartesBut.push(this.pioche[i]);
+        this.pioche.splice(i, 1);
+        i--;
+      } 
+    }
+
+    return cartesBut; 
+  }
+
+// faire un tirage au sort pour la carte trésor (add tresor dessus)
+// mémoriser l'état 
+// créer un espace plateau pour les joueurs (afficher les cartes)
+// joueur: ses cartes, son état (bloqué ou non), role (saboteur )
 }
 
 export default Game;
