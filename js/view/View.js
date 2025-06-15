@@ -29,8 +29,9 @@ class View {
 
         // load image
         const cell = this.game.matrix[y][x];
-        if (cell != null) {
-          if (cell.devoile === true) {
+        if (cell !== null) {
+         
+          if (cell.devoile !== true) {
             const image = new Image();
             image.src = cell.image;
             image.onload = () => {
@@ -41,20 +42,19 @@ class View {
                 this.tileWidth,
                 this.tileHeight
               );
-            };
-          } else {
-            this.ctx.fillStyle = "#f5b700";
-            this.ctx.fillRect(
+            }
+          }
+          else {
+          this.ctx.fillStyle = "#f5b700";
+          this.ctx.fillRect(
             // position x y & tileSize (width & height)
             x * this.tileWidth,
             y * this.tileHeight,
             this.tileWidth,
             this.tileHeight
             );
-
           }
         }
-
         // border
         this.ctx.lineWidth = 1;
         this.ctx.strokeStyle = "#000000";

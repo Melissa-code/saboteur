@@ -14,16 +14,15 @@ class Game {
 
     this.pioche = CardFactory.shuffleCartes()
    
-    let cartesBut = this.selectionnerTroisCartesChemin() 
+    let cartesBut = this.selectionnerTroisCartesChemin()
     this.matrix[1][10] = cartesBut[0]
-    cartesBut[0].devoile = false; 
+    cartesBut[0].devoile = false;
     this.matrix[3][10] = cartesBut[1]
-    cartesBut[1].devoile = false; 
+    cartesBut[1].devoile = false;
     this.matrix[5][10] = cartesBut[2]
-    cartesBut[2].devoile = false; 
-
-    console.table(this.matrix)
-    this.tirerAuSortCarteTresor();
+    cartesBut[2].devoile = false;
+  
+    this.tirerAuSortCarteTresor(cartesBut);
   }
 
   initGame() {
@@ -91,17 +90,14 @@ class Game {
   /**
    * @returns obj CarteChemin 
    */
-  tirerAuSortCarteTresor() {
-    const cartesBut = this.selectionnerTroisCartesChemin(); 
-    let indexCarteTresor = 0; 
-
-    for (let i = 0; i < cartesBut.length; i++) {
-      indexCarteTresor = Math.floor(Math.random() * cartesBut.length);
-    }
+  tirerAuSortCarteTresor(cartesBut) {
+    const indexCarteTresor = Math.floor(Math.random() * cartesBut.length);
 
     console.log("N° carteTresor :", indexCarteTresor)//nb
     let carteTresor = cartesBut[indexCarteTresor]; 
     console.log("carte tresor", carteTresor)
+    carteTresor.ajouterTresor();
+
     return carteTresor;  
   }
 

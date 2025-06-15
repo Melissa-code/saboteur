@@ -21,13 +21,14 @@ class CarteNain {
 
 export class CarteChemin extends Card {
 
-    constructor(haut, droite, bas, gauche, image, devoile) {
+    constructor(haut, droite, bas, gauche, image, devoile = true, tresor = null) {
         super(image)
         this.haut = haut;
         this.droite = droite;
         this.bas = bas;
         this.gauche = gauche;
-        this.devoile = true;
+        this.devoile = devoile;
+        this.tresor = tresor;
     }
 
     rotation() {
@@ -47,15 +48,13 @@ export class CarteChemin extends Card {
         if (direction === Directions.HAUT) return this.haut === 2 && carteVoisine.bas !== 0;
         if (direction === Directions.BAS) return this.bas === 2 && carteVoisine.haut !== 0;
 
-    return false; 
+        return false; 
     }  
 
-
-    selectionneCartesButCachees() {
-        const pioche = CardFactory.shuffleCartes();
-
-
+    ajouterTresor() {
+        this.tresor = "./images/treasure.svg";
     }
+    
     
 }
 
