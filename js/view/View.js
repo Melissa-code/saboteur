@@ -30,7 +30,7 @@ class View {
         // load image
         const cell = this.game.matrix[y][x];
         if (cell != null) {
-          if (cell.devoile == true) {
+          if (cell.devoile === true) {
             const image = new Image();
             image.src = cell.image;
             image.onload = () => {
@@ -43,7 +43,7 @@ class View {
               );
             };
           } else {
-            this.ctx.fillStyle = "red";
+            this.ctx.fillStyle = "#f5b700";
             this.ctx.fillRect(
             // position x y & tileSize (width & height)
             x * this.tileWidth,
