@@ -1,4 +1,5 @@
 import { Card, CarteChemin, CarteAction } from './Card.js'; 
+import Actions from './Actions.js'; 
 
 class Player {
     constructor(id, role) {
@@ -32,17 +33,18 @@ class Player {
         }
         this.cartesBloquent.push(carteAction);
 
+        console.log(this.cartesBloquent);
         return true;
     }
 
-    removeCarteBlocante(carteAction) {
+    removeCarteBloquante(carteAction) {
         if (!(carteAction instanceof CarteAction)) {
             return false;
         }
 
         let nbCartesBloquantes = this.cartesBloquent.length;
 
-        for (let i=0; i < this.cartesBloquent.length; i++) {
+        for (let i = 0; i < this.cartesBloquent.length; i++) {
             switch(carteAction.titreAction) {
                 case Actions.REPARER_CHARIOT: 
                     if (this.cartesBloquent[i].titreAction == Actions.CASSER_CHARIOT) {

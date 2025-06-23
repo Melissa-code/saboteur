@@ -29,10 +29,13 @@ class Game {
     this.joueur2 = new Player(2, this.getRandomRole()); 
     console.log("Rôle du joueur 1:", this.joueur1); 
     console.log("Rôle du joueur 2:", this.joueur2); 
-    console.log("carte 1 de la pioche ", this.pioche[0]);//ok
-    const carteTiree = this.pioche[0]
-    const carteDuJoueur1 = this.joueur1.addCarteBloquante(carteTiree);
-    console.log(carteDuJoueur1);
+    console.log("1re carte de la pioche ", this.pioche[0]);//ok
+
+    const carteDuJoueur1 = this.joueur1.addCarteBloquante(this.pioche[0]);
+    console.log("carteDuJoueur1", carteDuJoueur1);
+
+    const carte2DuJoueur1 = this.joueur1.removeCarteBloquante(this.pioche[1]); 
+    console.log("carte2DuJoueur1", carte2DuJoueur1);
   }
 
   initGame() {
