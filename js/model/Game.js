@@ -1,14 +1,15 @@
 import GameStates from "./GameStates.js";
-import { Card, CarteChemin } from "./Card.js";
+import { Card, CarteChemin, CarteAction } from './Card.js'; 
 import { CardFactory } from "./CardFactory.js";
 import Directions from './Directions.js';
+import Player from './Player.js'; 
 
 class Game {
   constructor() {
     this.width = 11;
     this.height = 7;
     this.matrix = this.initGame();
-
+  
     const carteDepart = CardFactory.createCarteChemin("2222", "./images/cartes_chemin/2222.svg");
     this.matrix[3][0] = carteDepart;
 
@@ -21,8 +22,17 @@ class Game {
     cartesBut[1].devoile = false;
     this.matrix[5][10] = cartesBut[2]
     cartesBut[2].devoile = false;
-  
     this.tirerAuSortCarteTresor(cartesBut);
+
+    this.joueurActuel = 0; 
+    this.joueur1 = new Player(1, this.getRandomRole());
+    this.joueur2 = new Player(2, this.getRandomRole()); 
+    console.log("Rôle du joueur 1:", this.joueur1); 
+    console.log("Rôle du joueur 2:", this.joueur2); 
+    console.log("carte 1 de la pioche ", this.pioche[0]);//ok
+    const carteTiree = this.pioche[0]
+    const carteDuJoueur1 = this.joueur1.addCarteBloquante(carteTiree);
+    console.log(carteDuJoueur1);
   }
 
   initGame() {
@@ -37,6 +47,20 @@ class Game {
     }
 
     return newMatrix;
+  }
+
+  getRandomRole() {
+    const roles = ['Saboteur', 'Chercheur d\'or']; 
+    const indexRole = Math.floor(Math.random() * roles.length);
+    const randomRole = roles[indexRole]; 
+
+    return randomRole;  
+  }
+
+  passerAuJoueurSuivant() {
+    // J1=0-> 0+1=1 : Divise 1 par 2 : 1/2=0 reste 1 (next joueur)
+    // revient au 1er joueur après le dernier
+    this.joueurActuelIndex = (this.joueurActuelIndex + 1) % this.joueurs.length;
   }
 
   placerCarte(x, y, carteAPlacer) {
@@ -72,18 +96,27 @@ class Game {
     return existeVoisinage;
   }
 
+  /**
+   * 
+   * @returns array[] d'objets CarteChemin
+   */
   selectionnerTroisCartesChemin() {
     let cartesBut = []; 
   
-    for (let i = 0; i < this.pioche.length && cartesBut.length < 3; i++) {
-      if (this.pioche[i] instanceof CarteChemin) {
-        cartesBut.push(this.pioche[i]);
-        this.pioche.splice(i, 1);
-        i--;
-      } 
+    while (cartesBut.length < 3 && this.pioche.length > 0) {
+      const carte = this.pioche.shift(); 
+
+      if (carte instanceof CarteChemin) {
+        cartesBut.push(carte);
+      } else {
+        this.pioche.push(carte);
+      }
     }
 
-    console.log(cartesBut)
+    if (cartesBut.length < 3) {
+      console.log("Pas assez de cartes chemin dans la pioche !");
+    }
+
     return cartesBut; 
   }
 
@@ -92,19 +125,12 @@ class Game {
    */
   tirerAuSortCarteTresor(cartesBut) {
     const indexCarteTresor = Math.floor(Math.random() * cartesBut.length);
-
-    console.log("N° carteTresor :", indexCarteTresor)//nb
     let carteTresor = cartesBut[indexCarteTresor]; 
-    console.log("carte tresor", carteTresor)
     carteTresor.ajouterTresor();
 
     return carteTresor;  
   }
-
-// faire un tirage au sort pour la carte trésor (add tresor dessus)
-// mémoriser l'état 
-// créer un espace plateau pour les joueurs (afficher les cartes)
-// joueur: ses cartes, son état (bloqué ou non), role (saboteur )
+  
 }
 
 export default Game;

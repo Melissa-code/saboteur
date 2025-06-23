@@ -1,5 +1,6 @@
 import { CardFactory } from './CardFactory.js';
 import Directions from './Directions.js';
+import Actions from './Actions.js';
 
 export class Card {
     constructor(image) {
@@ -64,6 +65,13 @@ export class CarteAction extends Card {
     constructor(titreAction, image) {
         super(image);
         this.titreAction = titreAction; 
+    }
+
+    // bool 
+    estCarteBloquante() {
+        return this.titreAction == Actions.CASSER_CHARIOT 
+            || this.titreAction == Actions.CASSER_LAMPE
+            || this.titreAction == Actions.CASSER_PIOCHE
     }
 
 }

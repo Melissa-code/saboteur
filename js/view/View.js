@@ -6,7 +6,7 @@ class View {
     this.myCanva = document.querySelector("#myCanvas");
     this.ctx = this.myCanva.getContext("2d");
     this.myCanva.width = this.game.width * this.tileWidth;
-    this.myCanva.height = this.game.width * this.tileHeight;
+    this.myCanva.height = this.game.height * this.tileHeight; 
 
     this.refresh();
   }
@@ -31,7 +31,7 @@ class View {
         const cell = this.game.matrix[y][x];
         if (cell !== null) {
          
-          if (cell.devoile !== true) {
+          if (cell.devoile == true) {
             const image = new Image();
             image.src = cell.image;
             image.onload = () => {
@@ -43,15 +43,14 @@ class View {
                 this.tileHeight
               );
             }
-          }
-          else {
-          this.ctx.fillStyle = "#f5b700";
-          this.ctx.fillRect(
-            // position x y & tileSize (width & height)
-            x * this.tileWidth,
-            y * this.tileHeight,
-            this.tileWidth,
-            this.tileHeight
+          } else {
+            this.ctx.fillStyle = "#008bf8";
+            this.ctx.fillRect(
+              // position x y & tileSize (width & height)
+              x * this.tileWidth,
+              y * this.tileHeight,
+              this.tileWidth,
+              this.tileHeight
             );
           }
         }

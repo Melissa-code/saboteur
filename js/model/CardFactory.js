@@ -57,7 +57,6 @@ export class CardFactory {
             }
         }
 
-    
         return cartesCheminList; 
     }
 

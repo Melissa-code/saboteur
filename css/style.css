@@ -34,3 +34,12 @@ h1 {
   justify-content: center;
   margin-top: 1rem;
 }
+
+
+#player-hand {
+  display: flex;
+  justify-content: center;
+  background-color: white;
+  min-height: 100px;
+  margin: 20px;
+}
