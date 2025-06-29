@@ -22,6 +22,13 @@ class View {
     this.refresh();
   }
 
+
+  handleResize() {
+    this.isMobile = window.innerWidth < 600;
+    this.setCanvasSize();
+    this.refresh();
+  }
+
   // Mobile:vertical != Desktop:horizontal
   setCanvasSize() {
     if (this.isMobile) { 
@@ -90,16 +97,11 @@ class View {
   }
 
   displayPlayersCards() {
-    let zoneCardsDepartX, zoneCardsDepartY;
+    const position = this.getCardsZonePosition(); // return x et y
+    const zoneCardsDepartX = position.x;
+    const zoneCardsDepartY = position.y;
 
-    if (this.isMobile) {
-      zoneCardsDepartX = 0;
-      zoneCardsDepartY = this.gameboardHeight + this.tileHeight/2;
-    } else {
-      zoneCardsDepartX = this.gameboardWidth + this.espacementWidth;
-      zoneCardsDepartY = 0;
-    }
-
+    // zone des cartes joueurs
     this.ctx.fillStyle = "#FFFFFF"; 
     this.ctx.fillRect(
       zoneCardsDepartX,          
@@ -111,46 +113,44 @@ class View {
     // joueurs
     this.ctx.fillStyle = "#000000";
     this.ctx.font = "18px Tagesschrift, arial";
-    const textOffsetY = this.isMobile ? zoneCardsDepartY + 25 : 25;
-    this.ctx.fillText("Cartes du Joueur 1", zoneCardsDepartX + this.tileWidth / 1.75, textOffsetY);
-    this.ctx.fillText("Cartes du Joueur 2", zoneCardsDepartX + this.tileWidth / 1.75, textOffsetY + this.tileHeight + this.tileHeight);
-    
+    const textOffsetY = this.isMobile ? zoneCardsDepartY + this.tileWidth / 2 : this.tileWidth / 2;
+    const textStartX = zoneCardsDepartX + this.tileWidth / 1.75;
+    this.ctx.fillText("Cartes du Joueur 1", textStartX, textOffsetY);
+    this.ctx.fillText("Cartes du Joueur 2", textStartX, textOffsetY + this.tileHeight * 2);
+
     const spaceBetweenCards = 10;
 
-    // Cartes du Joueur 1 (5 cartes distribuées)
-    for (let i = 0; i < 5; i++) {
-      const carteX = zoneCardsDepartX + this.tileWidth / 1.75 + i * (this.tileWidth + spaceBetweenCards);
-      const carteY = this.isMobile ? zoneCardsDepartY + this.tileHeight - 20 : this.tileHeight - 20; 
+    const cardStartX = zoneCardsDepartX + this.tileWidth / 1.75;
 
-      this.ctx.fillStyle = "#008bf8";
-      this.ctx.fillRect(carteX, carteY, this.tileWidth, this.tileHeight);
+    // Cartes du Joueur 1
+    const player1CardsY = this.isMobile ? zoneCardsDepartY + this.tileHeight - this.tileWidth / 2 : this.tileHeight - this.tileWidth / 2;
+    this.drawPlayerCards(cardStartX, player1CardsY, spaceBetweenCards);
 
-      this.ctx.strokeStyle = "#000000";
-      this.ctx.lineWidth = 1;
-      this.ctx.strokeRect(carteX, carteY, this.tileWidth, this.tileHeight);
-    }
-
-    // Cartes du Joueur 2
-    for (let i = 0; i < 5; i++) {
-      const carteX = zoneCardsDepartX + this.tileWidth / 1.75 + i * (this.tileWidth + spaceBetweenCards);
-      const carteY = this.isMobile ? zoneCardsDepartY + (this.tileHeight * 2) + 45 : (this.tileHeight * 3) - 20; 
-
-      this.ctx.fillStyle = "#008bf8";
-      this.ctx.fillRect(carteX, carteY, this.tileWidth, this.tileHeight);
-
-      this.ctx.strokeStyle = "#000000";
-      this.ctx.lineWidth = 1;
-      this.ctx.strokeRect(carteX, carteY, this.tileWidth, this.tileHeight);
-    }
+    // Cartes du Joueur 2  
+    const player2CardsY = this.isMobile ? zoneCardsDepartY + (this.tileHeight * 2) + this.tileWidth : (this.tileHeight * 3) - this.tileWidth / 2;
+    this.drawPlayerCards(cardStartX, player2CardsY, spaceBetweenCards);
   }
 
-  handleResize() {
-    this.isMobile = window.innerWidth < 600;
-    this.setCanvasSize();
-    this.refresh();
+  getCardsZonePosition() {
+    return this.isMobile 
+      ? { x: 0, y: this.gameboardHeight + this.tileHeight/2 }
+      : { x: this.gameboardWidth + this.espacementWidth, y: 0 };
+  }
+
+  // Cartes des Joueurs (5 cartes distribuées)
+  drawPlayerCards(startX, cardsY, spaceBetweenCards) {
+    for (let i = 0; i < 5; i++) {
+      const carteX = startX + i * (this.tileWidth + spaceBetweenCards);
+      
+      this.ctx.fillStyle = "#008bf8";
+      this.ctx.fillRect(carteX, cardsY, this.tileWidth, this.tileHeight);
+
+      this.ctx.strokeStyle = "#000000";
+      this.ctx.lineWidth = 1;
+      this.ctx.strokeRect(carteX, cardsY, this.tileWidth, this.tileHeight);
+    }
   }
 
 }
-
 
 export default View;
