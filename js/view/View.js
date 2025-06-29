@@ -15,10 +15,26 @@ class View {
     this.myCanva.width = this.gameboardWidth + this.espacementWidth + this.playerHandWidth;
     this.myCanva.height = this.gameboardHeight + this.playerHandHeight;
 
+    // mobile
+    this.isMobile = window.innerWidth < 600;
+    this.setCanvasSize();
+
     this.refresh();
   }
 
+  // Mobile:vertical != Desktop:horizontal
+  setCanvasSize() {
+    if (this.isMobile) { 
+      this.myCanva.width = Math.max(this.gameboardWidth, this.playerHandWidth);
+      this.myCanva.height = this.gameboardHeight + this.espacementWidth + this.playerHandHeight;
+    } else {
+      this.myCanva.width = this.gameboardWidth + this.espacementWidth + this.playerHandWidth;
+      this.myCanva.height = Math.max(this.gameboardHeight, this.playerHandHeight);
+    }
+  }
+
   refresh() {
+    this.ctx.clearRect(0, 0, this.myCanva.width, this.myCanva.height);
     this.displayGrid();
     this.displayPlayersCards();
   }
@@ -74,28 +90,37 @@ class View {
   }
 
   displayPlayersCards() {
-    const zoneCardsDepartX = this.gameboardWidth + this.espacementWidth;
-    const zoneCardsDepartY = 0;
+    let zoneCardsDepartX, zoneCardsDepartY;
 
-    this.ctx.fillStyle = "FFFFFF";
+    if (this.isMobile) {
+      zoneCardsDepartX = 0;
+      zoneCardsDepartY = this.gameboardHeight + this.tileHeight/2;
+    } else {
+      zoneCardsDepartX = this.gameboardWidth + this.espacementWidth;
+      zoneCardsDepartY = 0;
+    }
+
+    this.ctx.fillStyle = "#FFFFFF"; 
     this.ctx.fillRect(
       zoneCardsDepartX,          
       zoneCardsDepartY,                   
-      this.playerHandWidth,  
-      this.playerHandHeight  
+      this.isMobile ? this.gameboardWidth : this.playerHandWidth,
+      this.playerHandHeight
     );
 
     // joueurs
     this.ctx.fillStyle = "#000000";
     this.ctx.font = "18px Tagesschrift, arial";
-    this.ctx.fillText("Cartes du Joueur 1", zoneCardsDepartX + this.tileWidth /1.75, 35);
-    this.ctx.fillText("Cartes du Joueur 2", zoneCardsDepartX + this.tileWidth /1.75, this.tileHeight * 2 + 35);
-    const spaceBetweenCards = 10; 
+    const textOffsetY = this.isMobile ? zoneCardsDepartY + 25 : 25;
+    this.ctx.fillText("Cartes du Joueur 1", zoneCardsDepartX + this.tileWidth / 1.75, textOffsetY);
+    this.ctx.fillText("Cartes du Joueur 2", zoneCardsDepartX + this.tileWidth / 1.75, textOffsetY + this.tileHeight + this.tileHeight);
+    
+    const spaceBetweenCards = 10;
 
-    // display 5 cartes par joueur
+    // Cartes du Joueur 1 (5 cartes distribuées)
     for (let i = 0; i < 5; i++) {
-      const carteX = zoneCardsDepartX + this.tileWidth /1.75 + i * (this.tileWidth + spaceBetweenCards) ;
-      const carteY = this.tileHeight -20; 
+      const carteX = zoneCardsDepartX + this.tileWidth / 1.75 + i * (this.tileWidth + spaceBetweenCards);
+      const carteY = this.isMobile ? zoneCardsDepartY + this.tileHeight - 20 : this.tileHeight - 20; 
 
       this.ctx.fillStyle = "#008bf8";
       this.ctx.fillRect(carteX, carteY, this.tileWidth, this.tileHeight);
@@ -105,9 +130,10 @@ class View {
       this.ctx.strokeRect(carteX, carteY, this.tileWidth, this.tileHeight);
     }
 
+    // Cartes du Joueur 2
     for (let i = 0; i < 5; i++) {
-      const carteX = zoneCardsDepartX + this.tileWidth /1.75 + i * (this.tileWidth + spaceBetweenCards) ;
-      const carteY = (this.tileHeight * 3) -20; 
+      const carteX = zoneCardsDepartX + this.tileWidth / 1.75 + i * (this.tileWidth + spaceBetweenCards);
+      const carteY = this.isMobile ? zoneCardsDepartY + (this.tileHeight * 2) + 45 : (this.tileHeight * 3) - 20; 
 
       this.ctx.fillStyle = "#008bf8";
       this.ctx.fillRect(carteX, carteY, this.tileWidth, this.tileHeight);
@@ -118,8 +144,13 @@ class View {
     }
   }
 
-}
+  handleResize() {
+    this.isMobile = window.innerWidth < 600;
+    this.setCanvasSize();
+    this.refresh();
+  }
 
+}
 
 
 export default View;
