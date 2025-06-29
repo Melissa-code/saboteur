@@ -33,7 +33,6 @@ class Player {
         }
         this.cartesBloquent.push(carteAction);
 
-        console.log(this.cartesBloquent);
         return true;
     }
 

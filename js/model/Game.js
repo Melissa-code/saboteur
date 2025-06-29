@@ -3,6 +3,7 @@ import { Card, CarteChemin, CarteAction } from './Card.js';
 import { CardFactory } from "./CardFactory.js";
 import Directions from './Directions.js';
 import Player from './Player.js'; 
+import Actions from './Actions.js'; 
 
 class Game {
   constructor() {
@@ -25,17 +26,37 @@ class Game {
     this.tirerAuSortCarteTresor(cartesBut);
 
     this.joueurActuel = 0; 
-    this.joueur1 = new Player(1, this.getRandomRole());
-    this.joueur2 = new Player(2, this.getRandomRole()); 
+
+    ///(titreAction, image)
+    let carteTestBloquante = new CarteAction(Actions.CASSER_CHARIOT , "casser_chariot.svg")
+    let carteTestBloquante2 = new CarteAction(Actions.CASSER_LAMPE , "casser_lampe.svg")
+
+    //let carteRemove = new CarteAction(Actions.REPARER_CHARIOT , "reparer_chariot.svg")
+    //let carteRemove2 = new CarteAction(Actions.REPARER_PIOCHE , "reparer_pioche.svg")
+    let carteRemove = new CarteAction(Actions.REPARER_PIOCHE , "reparer_pioche.svg")
+
+    let roles = this.getRandomRole();
+    this.joueur1 = new Player(1, roles[0]);
+    this.joueur2 = new Player(2, roles[1]); 
     console.log("Rôle du joueur 1:", this.joueur1); 
     console.log("Rôle du joueur 2:", this.joueur2); 
-    console.log("1re carte de la pioche ", this.pioche[0]);//ok
+    
 
-    const carteDuJoueur1 = this.joueur1.addCarteBloquante(this.pioche[0]);
-    console.log("carteDuJoueur1", carteDuJoueur1);
+    this.joueur1.addCarteBloquante(carteTestBloquante);
+    this.joueur1.addCarteBloquante(carteTestBloquante2);
+
+    this.joueur1.removeCarteBloquante(carteRemove)
+    //this.joueur1.removeCarteBloquante(carteRemove2)
+
+    //const carteDuJoueur1 = this.joueur1.addCarteBloquante(carteTestBloquante);
+    console.log("cartes bloquantes : ", this.joueur1.cartesBloquent);
+    console.log("joueur 1:", this.joueur1); 
+    console.log("joueur 2:", this.joueur2); 
 
     const carte2DuJoueur1 = this.joueur1.removeCarteBloquante(this.pioche[1]); 
     console.log("carte2DuJoueur1", carte2DuJoueur1);
+    console.log("joueur 1:", this.joueur1); 
+    console.log("joueur 2:", this.joueur2); 
   }
 
   initGame() {
@@ -54,10 +75,16 @@ class Game {
 
   getRandomRole() {
     const roles = ['Saboteur', 'Chercheur d\'or']; 
+    const randomRoles = [];
     const indexRole = Math.floor(Math.random() * roles.length);
     const randomRole = roles[indexRole]; 
 
-    return randomRole;  
+    randomRoles.push(randomRole)
+    let indexRole2 = (indexRole +1) % 2;
+    const randomRole2 = roles[indexRole2]; 
+    randomRoles.push(randomRole2)
+
+    return randomRoles;
   }
 
   passerAuJoueurSuivant() {
