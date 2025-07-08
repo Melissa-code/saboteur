@@ -38,25 +38,8 @@ class Game {
     let roles = this.getRandomRole();
     this.joueur1 = new Player(1, roles[0]);
     this.joueur2 = new Player(2, roles[1]); 
-    console.log("Rôle du joueur 1:", this.joueur1); 
-    console.log("Rôle du joueur 2:", this.joueur2); 
-    
-
-    this.joueur1.addCarteBloquante(carteTestBloquante);
-    this.joueur1.addCarteBloquante(carteTestBloquante2);
-
-    this.joueur1.removeCarteBloquante(carteRemove)
-    //this.joueur1.removeCarteBloquante(carteRemove2)
-
-    //const carteDuJoueur1 = this.joueur1.addCarteBloquante(carteTestBloquante);
-    console.log("cartes bloquantes : ", this.joueur1.cartesBloquent);
-    console.log("joueur 1:", this.joueur1); 
-    console.log("joueur 2:", this.joueur2); 
-
-    const carte2DuJoueur1 = this.joueur1.removeCarteBloquante(this.pioche[1]); 
-    console.log("carte2DuJoueur1", carte2DuJoueur1);
-    console.log("joueur 1:", this.joueur1); 
-    console.log("joueur 2:", this.joueur2); 
+ 
+    this.distribuerCartesJoueurs()
   }
 
   initGame() {
@@ -159,6 +142,24 @@ class Game {
     carteTresor.ajouterTresor();
 
     return carteTresor;  
+  }
+
+  distribuerCartesJoueurs() {
+  
+    for (let i=0; i < 5; i++) {
+      this.joueur1.addCarte(this.pioche.pop())
+      this.joueur2.addCarte(this.pioche.pop())
+    }
+
+    console.log("cartes J1", this.joueur1.cartes)
+    console.log("cartes J2", this.joueur2.cartes)
+  }
+
+  jouerCarteSurCible(joueur,carte, cible) {
+    
+    let carteJouee = joueur.cartes[3];
+    carteJouee.placerCarte(0, 2, carteJouee)
+
   }
   
 }

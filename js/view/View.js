@@ -124,11 +124,11 @@ class View {
 
     // Cartes du Joueur 1
     const player1CardsY = this.isMobile ? zoneCardsDepartY + this.tileHeight - this.tileWidth / 2 : this.tileHeight - this.tileWidth / 2;
-    this.drawPlayerCards(cardStartX, player1CardsY, spaceBetweenCards);
+    this.drawPlayerCards(this.game.joueur1, cardStartX, player1CardsY, spaceBetweenCards);
 
     // Cartes du Joueur 2  
     const player2CardsY = this.isMobile ? zoneCardsDepartY + (this.tileHeight * 2) + this.tileWidth : (this.tileHeight * 3) - this.tileWidth / 2;
-    this.drawPlayerCards(cardStartX, player2CardsY, spaceBetweenCards);
+    this.drawPlayerCards(this.game.joueur2, cardStartX, player2CardsY, spaceBetweenCards);
   }
 
   getCardsZonePosition() {
@@ -138,16 +138,27 @@ class View {
   }
 
   // Cartes des Joueurs (5 cartes distribuées)
-  drawPlayerCards(startX, cardsY, spaceBetweenCards) {
+  drawPlayerCards(joueur, startX, cardsY, spaceBetweenCards) {
     for (let i = 0; i < 5; i++) {
       const carteX = startX + i * (this.tileWidth + spaceBetweenCards);
-      
-      this.ctx.fillStyle = "#008bf8";
+    
       this.ctx.fillRect(carteX, cardsY, this.tileWidth, this.tileHeight);
 
       this.ctx.strokeStyle = "#000000";
       this.ctx.lineWidth = 1;
-      this.ctx.strokeRect(carteX, cardsY, this.tileWidth, this.tileHeight);
+
+      const image = new Image();
+            image.src = joueur.cartes[i].image;
+            image.onload = () => {
+              this.ctx.drawImage(
+                image,
+                carteX * this.tileWidth,
+                cardsY * this.tileHeight,
+                this.tileWidth,
+                this.tileHeight
+              );
+            }
+      this.ctx.drawImage(image, carteX, cardsY, this.tileWidth, this.tileHeight);
     }
   }
 

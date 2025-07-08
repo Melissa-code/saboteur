@@ -7,7 +7,7 @@ const Actions = {
     REPARER_CHARIOT_LAMPE : "reparer_chariot_lampe" ,
     REPARER_CHARIOT : "reparer_chariot",
     REPARER_LAMPE_PIOCHE : "reparer_lampe_pioche", 
-    REPARER_LAMPE : " reparer_lampe",
+    REPARER_LAMPE : "reparer_lampe",
     REPARER_PIOCHE_CHARIOT : "reparer_pioche_chariot",
     REPARER_PIOCHE : "reparer_pioche"
 }
