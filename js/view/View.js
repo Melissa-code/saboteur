@@ -142,6 +142,7 @@ class View {
     for (let i = 0; i < 5; i++) {
       const carteX = startX + i * (this.tileWidth + spaceBetweenCards);
     
+      this.ctx.fillStyle = "#FFFFFF";
       this.ctx.fillRect(carteX, cardsY, this.tileWidth, this.tileHeight);
 
       this.ctx.strokeStyle = "#000000";
@@ -149,11 +150,11 @@ class View {
 
       const image = new Image();
             image.src = joueur.cartes[i].image;
-            image.onload = () => {
+            image.onload = () =>{
               this.ctx.drawImage(
                 image,
-                carteX * this.tileWidth,
-                cardsY * this.tileHeight,
+                carteX,
+                cardsY,
                 this.tileWidth,
                 this.tileHeight
               );
