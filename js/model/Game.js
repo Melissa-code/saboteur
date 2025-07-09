@@ -4,6 +4,7 @@ import { CardFactory } from "./CardFactory.js";
 import Directions from './Directions.js';
 import Player from './Player.js'; 
 import Actions from './Actions.js'; 
+import Cible from './Cible.js'; 
 
 class Game {
   constructor() {
@@ -27,19 +28,20 @@ class Game {
 
     this.joueurActuel = 0; 
 
-    ///(titreAction, image)
-    let carteTestBloquante = new CarteAction(Actions.CASSER_CHARIOT , "casser_chariot.svg")
-    let carteTestBloquante2 = new CarteAction(Actions.CASSER_LAMPE , "casser_lampe.svg")
-
-    //let carteRemove = new CarteAction(Actions.REPARER_CHARIOT , "reparer_chariot.svg")
-    //let carteRemove2 = new CarteAction(Actions.REPARER_PIOCHE , "reparer_pioche.svg")
-    let carteRemove = new CarteAction(Actions.REPARER_PIOCHE , "reparer_pioche.svg")
-
     let roles = this.getRandomRole();
     this.joueur1 = new Player(1, roles[0]);
     this.joueur2 = new Player(2, roles[1]); 
  
     this.distribuerCartesJoueurs()
+
+    let carte = this.joueur1.cartes[3];
+    let cible = new Cible("matrice", [1, 3]);
+    // let cible = new Cible("joueur", this.joueur2);
+    this.jouerCarteSurCible(this.joueur1, carte, cible)
+
+    let carte2 = this.joueur2.cartes[2];
+    let cible2 = new Cible("matrice", [2, 4]);
+    this.jouerCarteSurCible(this.joueur2, carte2, cible2)
   }
 
   initGame() {
@@ -145,23 +147,50 @@ class Game {
   }
 
   distribuerCartesJoueurs() {
-  
     for (let i=0; i < 5; i++) {
+      // retire et retourne la derniere 
       this.joueur1.addCarte(this.pioche.pop())
       this.joueur2.addCarte(this.pioche.pop())
     }
-
-    console.log("cartes J1", this.joueur1.cartes)
-    console.log("cartes J2", this.joueur2.cartes)
   }
 
-  jouerCarteSurCible(joueur,carte, cible) {
-    
-    let carteJouee = joueur.cartes[3];
-    carteJouee.placerCarte(0, 2, carteJouee)
-
+  jouerCarteSurCible(joueur, carte, cible) {
+    switch(cible.type) {
+      // type: matrice
+      case "matrice": 
+          const [x, y] = cible.reference ;
+          const success = this.placerCarte(x, y, carte); 
+          if (success) {
+            console.log("carte placée: ", "x :" + x, "y :" + y)
+          }
+          else {
+            console.log("impossible de placer la carte : ", "x :" + x, "y :" + y)
+            joueur.addCarte(carte); // ajoute à pioche
+          }
+      break;
+      // type: joueur 
+      case "joueur": 
+          const joueurCible = cible.reference; 
+          if (carte instanceof CarteAction) {
+            // bloquer joueur adv
+            console.log("Carte jouée sur l'aute joueur ", joueurCible.id); 
+          } else {
+            console.log("carte ne  peut pas etre jouée sur joueur ", joueurCible.id)
+          }
+      break;
+      // type: corbeille
+      case "corbeille": 
+      console.log("Carte dans la corbeille ", carte);
+        //
+      break;
+      default:
+        console.log("Cible inconnue");
+      break;
+    }
   }
   
+
+
 }
 
 export default Game;
