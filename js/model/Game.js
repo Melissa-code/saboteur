@@ -34,14 +34,14 @@ class Game {
  
     this.distribuerCartesJoueurs()
 
-    let carte = this.joueur1.cartes[3];
+    let carte = this.joueur1.cartes[4];
     let cible = new Cible("matrice", [1, 3]);
     // let cible = new Cible("joueur", this.joueur2);
     this.jouerCarteSurCible(this.joueur1, carte, cible)
 
     let carte2 = this.joueur2.cartes[2];
     let cible2 = new Cible("matrice", [2, 4]);
-    this.jouerCarteSurCible(this.joueur2, carte2, cible2)
+    //this.jouerCarteSurCible(this.joueur2, carte2, cible2)
   }
 
   initGame() {

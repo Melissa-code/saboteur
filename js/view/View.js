@@ -6,7 +6,7 @@ class View {
     this.tileHeight = tileHeight;
     this.myCanva = document.querySelector("#myCanvas");
     this.ctx = this.myCanva.getContext("2d");
-    this.gameboardWidth = this.game.width * this.tileWidth ;
+    this.gameboardWidth = this.game.width * this.tileWidth;
     this.gameboardHeight = this.game.height * this.tileHeight; 
     this.espacementWidth = 2 * this.tileWidth;
     this.playerHandWidth = 7 * this.tileWidth;
@@ -161,6 +161,43 @@ class View {
             }
       this.ctx.drawImage(image, carteX, cardsY, this.tileWidth, this.tileHeight);
     }
+  }
+
+
+  identifierCible(x,y)
+  {
+    let typeCible = "exterieur"
+    let reference = null;
+    let x1, x2, y1, y2;
+    // type String: matrice - joueur - corbeille (à créer)
+    /*
+      matrice => reference = position i,j dans la matrice
+      joueur => reference = Num joeur, Num carte
+      corbeille => null
+    */
+
+    // zone de matrice : (0,0) - (this.game.width*this.tileWidth,....)
+    x1 = 0; 
+    x2 = this.game.width * this.tileWidth;
+    y1 = 0; 
+    y2 = this.game.height * this.tileHeight;
+
+    if (x > x1 && x < x2 && y > y1 && y < y2) {
+      typeCible = "matrice"; 
+      reference = [x/this.tileWidth, y/this.tileHeight]
+    }
+
+    //if ()
+
+    /* 
+    - utiliser des variables de positionnemnt relatif partout (ex: zone de depart x de espace cartes , zone Player 1, corbeille)
+    - identifier cible à finir (joueur, num carte + corbeille (taille 1 card))
+    - clic event -> identifier cible (log cible de x y)
+    - enum de types cible (ajouter "extérieur")
+    */
+
+
+      return new Cible(typeCible,reference);
   }
 
 }
