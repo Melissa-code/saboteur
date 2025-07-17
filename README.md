@@ -96,6 +96,10 @@
 - Annonce si un joueur a gagné 
 
 --- 
+#### Variables de positionnement relatif
+
+Ce sont des constantes qui définissent les zones et leurs positions sur le canvas de manière structurée. Définition des coordonnées de chaque zone.
+--- 
 
 ## 5. Les tests
 

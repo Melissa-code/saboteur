@@ -9,12 +9,12 @@ class View {
 
     this.gameboardWidth = this.game.width * this.tileWidth;
     this.gameboardHeight = this.game.height * this.tileHeight; 
-    this.espacementWidth = 2 * this.tileWidth;
+    this.espacementWidth = 2 * this.tileWidth; // space width between gameboard & playerHand
     this.playerHandWidth = 7 * this.tileWidth;
     this.playerHandHeight = 4 * this.tileHeight;
-
-    //this.myCanva.width = this.gameboardWidth + this.espacementWidth + this.playerHandWidth;
-    //this.myCanva.height = this.gameboardHeight + this.playerHandHeight;
+    this.playerHandMarginX = this.tileWidth / 2;
+    this.playerHandMarginY = this.tileHeight / 2;
+    this.playerCardSpacing = ((this.playerHandWidth - 2 * this.playerHandMarginX) - 5 * this.tileWidth) / 4;
 
     // mobile
     this.isMobile = window.innerWidth < 600;
@@ -89,29 +89,29 @@ class View {
         x: this.gameboardWidth + this.espacementWidth,
         y: 0,
         width: this.playerHandWidth,
-        height: Math.max(this.gameboardHeight, this.playerHandHeight)
+        height: this.playerHandHeight
       };
       
       // player1Cards
       this.zones.player1Cards = {
-        x: this.zones.playerCards.x + this.tileWidth / 1.75,
-        y: this.tileHeight - this.tileWidth / 2,
-        width: 5 * (this.tileWidth + 10),
-        height: this.tileHeight
+        x: this.zones.playerCards.x ,
+        y: this.zones.playerCards.y,
+        width: this.zones.playerCards.width,
+        height: this.zones.playerCards.height / 2
       };
       
       // player2Cards
       this.zones.player2Cards = {
-        x: this.zones.playerCards.x + this.tileWidth / 1.75,
-        y: (this.tileHeight * 3) - this.tileWidth / 2,
-        width: 5 * (this.tileWidth + 10),
-        height: this.tileHeight
+        x: this.zones.playerCards.x ,
+        y: this.zones.playerCards.y + this.zones.playerCards.height / 2,
+        width: this.zones.playerCards.width,
+        height: this.zones.playerCards.height / 2
       };
       
       // garbage
       this.zones.garbage = {
         x: this.zones.playerCards.x,
-        y: this.zones.player2Cards.y + this.tileHeight * 2,
+        y: this.zones.player2Cards.y * 3,
         width: this.tileWidth,
         height: this.tileHeight
       };
@@ -144,14 +144,12 @@ class View {
   }
 
   displayGrid() {
-    // zone
     const zone = this.zones.gameBoard;
 
     for (let y = 0; y < this.game.height; y++) {
       for (let x = 0; x < this.game.width; x++) {
         const drawX = zone.x + (x * this.tileWidth);
         const drawY = zone.y + (y * this.tileHeight);
-
         this.ctx.fillStyle = "#FFFFFF";
         // position x y & tileSize (width & height)
         this.ctx.fillRect(
@@ -179,8 +177,8 @@ class View {
           } else {
             this.ctx.fillStyle = "#008bf8";
             this.ctx.fillRect(
-              drawX, //x * this.tileWidth,
-              drawY, //y * this.tileHeight,
+              drawX,
+              drawY, 
               this.tileWidth,
               this.tileHeight
             );
@@ -202,26 +200,16 @@ class View {
   displayPlayersCards() {
     const zone = this.zones.playerCards;
 
-    //const position = this.getCardsZonePosition(); // return x et y
-    //const zoneCardsDepartX = position.x;
-    //const zoneCardsDepartY = position.y;
-
     // zone des cartes joueurs
     this.ctx.fillStyle = "#FFFFFF"; 
-    // this.ctx.fillRect(
-    //   zoneCardsDepartX,          
-    //   zoneCardsDepartY,                   
-    //   this.isMobile ? this.gameboardWidth : this.playerHandWidth,
-    //   this.playerHandHeight
-    // );
     this.ctx.fillRect(zone.x, zone.y, zone.width, this.playerHandHeight);
 
     // joueurs
     this.ctx.fillStyle = "#000000";
     this.ctx.font = "18px Tagesschrift, arial";
 
-    const textOffsetY = this.isMobile ? zone.y + this.tileWidth / 2 : this.tileWidth / 2;
-    const textStartX = zone.x + this.tileWidth / 1.75;
+    const textOffsetY = this.isMobile ? zone.y + this.playerHandMarginY : this.playerHandMarginY;
+    const textStartX = zone.x + this.playerHandMarginX;
     this.ctx.fillText("Cartes du Joueur 1", textStartX, textOffsetY);
     this.ctx.fillText("Cartes du Joueur 2", textStartX, textOffsetY + this.tileHeight * 2);
 
@@ -230,11 +218,9 @@ class View {
   }
 
   drawPlayerCards(joueur, zone) {
-    const spaceBetweenCards = 10;
-    
     for (let i = 0; i < 5; i++) {
-      const carteX = zone.x + i * (this.tileWidth + spaceBetweenCards);
-      const carteY = zone.y;
+      const carteX = zone.x + this.playerHandMarginX + i * (this.tileWidth + this.playerCardSpacing);
+      const carteY = zone.y + this.playerHandMarginY + this.playerCardSpacing;
       this.ctx.fillStyle = "#FFFFFF";
       this.ctx.fillRect(carteX, carteY, this.tileWidth, this.tileHeight);
       
@@ -254,53 +240,27 @@ class View {
       : { x: this.gameboardWidth + this.espacementWidth, y: 0 };
   }
 
-  // Cartes des Joueurs (5 cartes distribuées)
-  // drawPlayerCards(joueur, startX, cardsY, spaceBetweenCards) {
-  //   for (let i = 0; i < 5; i++) {
-  //     const carteX = startX + i * (this.tileWidth + spaceBetweenCards);
-    
-  //     this.ctx.fillStyle = "#FFFFFF";
-  //     this.ctx.fillRect(carteX, cardsY, this.tileWidth, this.tileHeight);
-
-  //     this.ctx.strokeStyle = "#000000";
-  //     this.ctx.lineWidth = 1;
-
-  //     const image = new Image();
-  //           image.src = joueur.cartes[i].image;
-  //           image.onload = () =>{
-  //             this.ctx.drawImage(
-  //               image,
-  //               carteX,
-  //               cardsY,
-  //               this.tileWidth,
-  //               this.tileHeight
-  //             );
-  //           }
-  //     this.ctx.drawImage(image, carteX, cardsY, this.tileWidth, this.tileHeight);
-  //   }
-  // }
-
   displayGarbage() {
     const zone = this.zones.garbage;
     
     this.ctx.fillStyle = "#FFFFFF";
     this.ctx.fillRect(zone.x, zone.y, zone.width, zone.height);
-    
-    this.ctx.strokeStyle = "#000000";
-    this.ctx.lineWidth = 2;
-    this.ctx.strokeRect(zone.x, zone.y, zone.width, zone.height);
-    
+
     this.ctx.fillStyle = "#000000";
-    this.ctx.font = "12px Arial";
-    this.ctx.textAlign = "center";
-    this.ctx.fillText("X", zone.x + zone.width/2, zone.y + zone.height/2 + 4);
+    this.ctx.font = "18px Tagesschrift, arial";
+    this.ctx.textAlign = "center"; 
+    this.ctx.fillText("X", zone.x + zone.width/2, zone.y + zone.height/2 + this.playerCardSpacing/2);
+  }
+
+  isPointInZone(x, y, zone) {
+    return x >= zone.x && y >= zone.y && x <= (zone.x + zone.width) && y <= (zone.y + zone.height)
   }
 
   identifierCible(x,y)
   {
     let typeCible = "exterieur"
     let reference = null;
-    let x1, x2, y1, y2;
+    //let x1, x2, y1, y2;
     // type String: matrice - joueur - corbeille (à créer)
     /*
       matrice => reference = position i,j dans la matrice
@@ -309,21 +269,39 @@ class View {
     */
 
     // zone de matrice : (0,0) - (this.game.width*this.tileWidth,....)
-    x1 = 0; 
-    x2 = this.game.width * this.tileWidth;
-    y1 = 0; 
-    y2 = this.game.height * this.tileHeight;
+    // x1 = 0; 
+    // x2 = this.game.width * this.tileWidth;
+    // y1 = 0; 
+    // y2 = this.game.height * this.tileHeight;
 
-    if (x > x1 && x < x2 && y > y1 && y < y2) {
-      typeCible = "matrice"; 
-      reference = [x/this.tileWidth, y/this.tileHeight]
+    // if (x > x1 && x < x2 && y > y1 && y < y2) {
+    //   typeCible = "matrice"; 
+    //   reference = [x/this.tileWidth, y/this.tileHeight]
+    // }
+    const gameBoardZone = this.zones.gameBoard;
+
+    if (this.isPointInZone(x, y, gameBoardZone)) {
+      typeCible = "matrice";
+      const matrixX = Math.floor((x - gameBoardZone.x) / this.tileWidth);
+      const matrixY = Math.floor((y - gameBoardZone.y) / this.tileHeight);
+      reference = [matrixX, matrixY];
+    } else {
+      
     }
+    if (this.isPointInZone(x, y, player1CardsZone)) {
+      typeCible = "joueur";
+      const numCarte = Math.floor((x - player1CardsZone.x) / this.tileWidth);
+    
+      reference = [1, numCarte];
+    } else {
 
-    //if ()
+    }
+    
 
     /* 
     - utiliser des variables de positionnemnt relatif partout (ex: zone de depart x de espace cartes , zone Player 1, corbeille)
     - identifier cible à finir (joueur, num carte + corbeille (taille 1 card))
+    - calcul num carte
     - clic event -> identifier cible (log cible de x y)
     - enum de types cible (ajouter "extérieur")
     */
