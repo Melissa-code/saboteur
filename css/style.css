@@ -16,7 +16,7 @@ body {
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: 1.5rem;
   margin: 2rem 1rem ;
 }
 
@@ -28,7 +28,7 @@ h1 {
 }
 
 .dwarf {
-  width: 2rem;
+  width: 1.5rem;
 }
 
 #game-board {
@@ -46,6 +46,15 @@ h1 {
 /* Mobile */
 
 @media (min-width: 600px) {
+  h1 {
+    font-size: 2rem;
+    margin: 2rem 1rem ;
+  }
+
+  .dwarf {
+    width: 2rem;
+  }
+
   #game-board {
     flex-direction: row; 
     flex-wrap: wrap;

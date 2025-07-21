@@ -14,9 +14,9 @@ class View {
     this.playerHandHeight = 4 * this.tileHeight;
     this.playerHandMarginX = this.tileWidth / 2;
     this.playerHandMarginY = this.tileHeight / 2;
-    this.playerCardSpacing = ((this.playerHandWidth - 2 * this.playerHandMarginX) - 5 * this.tileWidth) / 4;
+    this.playerCardsSpacingX = ((this.playerHandWidth - 2 * this.playerHandMarginX) - 5 * this.tileWidth) / 4; // space between 5 player cards
+    this.cardsRowsSpacingY = this.tileHeight * 2; // space between  player1Cards and player2Cards
 
-    // mobile
     this.isMobile = window.innerWidth < 600;
 
     // zones 
@@ -45,31 +45,31 @@ class View {
       //playerCards
       this.zones.playerCards = {
         x: 0,
-        y: this.gameboardHeight + this.tileHeight/2,
-        width: Math.max(this.gameboardWidth, this.playerHandWidth),
+        y: this.gameboardHeight + this.playerHandMarginY,
+        width: this.playerHandWidth,
         height: this.playerHandHeight
       };
       
       //player1Cards
       this.zones.player1Cards = {
-        x: this.zones.playerCards.x + this.tileWidth / 1.75,
-        y: this.zones.playerCards.y + this.tileHeight - this.tileWidth / 2,
-        width: 5 * (this.tileWidth + 10), // 5 cartes + espacement
+        x: 0,
+        y: this.zones.playerCards.y,
+        width: this.playerHandWidth, 
         height: this.tileHeight
       };
       
       //player2Cards
       this.zones.player2Cards = {
-        x: this.zones.playerCards.x + this.tileWidth / 1.75,
-        y: this.zones.playerCards.y + (this.tileHeight * 2) + this.tileWidth,
-        width: 5 * (this.tileWidth + 10),
+        x: 0,
+        y: this.zones.playerCards.y + this.cardsRowsSpacingY,
+        width: this.playerHandWidth, 
         height: this.tileHeight
       };
       
       // garbage
       this.zones.garbage = {
-        x: this.zones.playerCards.x,
-        y: this.zones.player2Cards.y + this.tileHeight * 1.75,
+        x: 0,
+        y: this.zones.playerCards.y + this.zones.playerCards.height + this.playerHandMarginY,
         width: this.tileWidth,
         height: this.tileHeight
       };
@@ -94,24 +94,24 @@ class View {
       
       // player1Cards
       this.zones.player1Cards = {
-        x: this.zones.playerCards.x ,
-        y: this.zones.playerCards.y,
-        width: this.zones.playerCards.width,
-        height: this.zones.playerCards.height / 2
+        x: this.zones.playerCards.x,
+        y: 0,
+        width: this.playerHandWidth, 
+        height: this.tileHeight
       };
       
       // player2Cards
       this.zones.player2Cards = {
-        x: this.zones.playerCards.x ,
-        y: this.zones.playerCards.y + this.zones.playerCards.height / 2,
-        width: this.zones.playerCards.width,
-        height: this.zones.playerCards.height / 2
+        x: this.zones.playerCards.x,
+        y: this.zones.playerCards.y + this.cardsRowsSpacingY,
+        width: this.playerHandWidth, 
+        height: this.tileHeight
       };
       
       // garbage
       this.zones.garbage = {
         x: this.zones.playerCards.x,
-        y: this.zones.player2Cards.y * 3,
+        y: this.zones.playerCards.y + this.zones.playerCards.height + this.cardsRowsSpacingY,
         width: this.tileWidth,
         height: this.tileHeight
       };
@@ -128,11 +128,11 @@ class View {
   // Mobile:vertical != Desktop:horizontal
   setCanvasSize() {
     if (this.isMobile) { 
-      this.myCanva.width = Math.max(this.gameboardWidth, this.playerHandWidth);
-      this.myCanva.height = this.gameboardHeight + this.espacementWidth * 3 + this.playerHandHeight;
+      this.myCanva.width = this.gameboardWidth;
+      this.myCanva.height = this.gameboardHeight + this.playerHandHeight + this.cardsRowsSpacingY + this.playerHandMarginY;
     } else {
       this.myCanva.width = this.gameboardWidth + this.espacementWidth + this.playerHandWidth;
-      this.myCanva.height = Math.max(this.gameboardHeight, this.playerHandHeight);
+      this.myCanva.height = this.gameboardHeight;
     }
   }
 
@@ -153,8 +153,8 @@ class View {
         this.ctx.fillStyle = "#FFFFFF";
         // position x y & tileSize (width & height)
         this.ctx.fillRect(
-          drawX, //x * this.tileWidth,
-          drawY, //y * this.tileHeight,
+          drawX,
+          drawY, 
           this.tileWidth,
           this.tileHeight
         );
@@ -168,8 +168,8 @@ class View {
             image.onload = () => {
               this.ctx.drawImage(
                 image,
-                drawX, //x * this.tileWidth,
-                drawY, //y * this.tileHeight,
+                drawX, 
+                drawY, 
                 this.tileWidth,
                 this.tileHeight
               );
@@ -211,7 +211,7 @@ class View {
     const textOffsetY = this.isMobile ? zone.y + this.playerHandMarginY : this.playerHandMarginY;
     const textStartX = zone.x + this.playerHandMarginX;
     this.ctx.fillText("Cartes du Joueur 1", textStartX, textOffsetY);
-    this.ctx.fillText("Cartes du Joueur 2", textStartX, textOffsetY + this.tileHeight * 2);
+    this.ctx.fillText("Cartes du Joueur 2", textStartX, textOffsetY + this.cardsRowsSpacingY);
 
     this.drawPlayerCards(this.game.joueur1, this.zones.player1Cards);
     this.drawPlayerCards(this.game.joueur2, this.zones.player2Cards);
@@ -219,8 +219,8 @@ class View {
 
   drawPlayerCards(joueur, zone) {
     for (let i = 0; i < 5; i++) {
-      const carteX = zone.x + this.playerHandMarginX + i * (this.tileWidth + this.playerCardSpacing);
-      const carteY = zone.y + this.playerHandMarginY + this.playerCardSpacing;
+      const carteX = zone.x + this.playerHandMarginX + i * (this.tileWidth + this.playerCardsSpacingX);
+      const carteY = zone.y + this.playerHandMarginY + this.playerCardsSpacingX;
       this.ctx.fillStyle = "#FFFFFF";
       this.ctx.fillRect(carteX, carteY, this.tileWidth, this.tileHeight);
       
@@ -236,7 +236,7 @@ class View {
 
   getCardsZonePosition() {
     return this.isMobile 
-      ? { x: 0, y: this.gameboardHeight + this.tileHeight/2 }
+      ? { x: 0, y: this.gameboardHeight + this.playerHandMarginY }
       : { x: this.gameboardWidth + this.espacementWidth, y: 0 };
   }
 
@@ -249,7 +249,7 @@ class View {
     this.ctx.fillStyle = "#000000";
     this.ctx.font = "18px Tagesschrift, arial";
     this.ctx.textAlign = "center"; 
-    this.ctx.fillText("X", zone.x + zone.width/2, zone.y + zone.height/2 + this.playerCardSpacing/2);
+    this.ctx.fillText("X", zone.x + zone.width / 2, zone.y + zone.height / 2 + this.playerCardsSpacingX / 2);
   }
 
   isPointInZone(x, y, zone) {
