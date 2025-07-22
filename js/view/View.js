@@ -206,7 +206,7 @@ class View {
 
     // joueurs
     this.ctx.fillStyle = "#000000";
-    this.ctx.font = "18px Tagesschrift, arial";
+    this.ctx.font = "20px Tagesschrift, arial";
 
     const textOffsetY = this.isMobile ? zone.y + this.playerHandMarginY : this.playerHandMarginY;
     const textStartX = zone.x + this.playerHandMarginX;
@@ -247,7 +247,7 @@ class View {
     this.ctx.fillRect(zone.x, zone.y, zone.width, zone.height);
 
     this.ctx.fillStyle = "#000000";
-    this.ctx.font = "18px Tagesschrift, arial";
+    this.ctx.font = "20px Tagesschrift, arial";
     this.ctx.textAlign = "center"; 
     this.ctx.fillText("X", zone.x + zone.width / 2, zone.y + zone.height / 2 + this.playerCardsSpacingX / 2);
   }
@@ -268,17 +268,10 @@ class View {
       corbeille => null
     */
 
-    // zone de matrice : (0,0) - (this.game.width*this.tileWidth,....)
-    // x1 = 0; 
-    // x2 = this.game.width * this.tileWidth;
-    // y1 = 0; 
-    // y2 = this.game.height * this.tileHeight;
-
-    // if (x > x1 && x < x2 && y > y1 && y < y2) {
-    //   typeCible = "matrice"; 
-    //   reference = [x/this.tileWidth, y/this.tileHeight]
-    // }
     const gameBoardZone = this.zones.gameBoard;
+    const player1CardsZone = this.zones.player1Cards; 
+    const player2CardsZone = this.zones.player2Cards; 
+    const garbageZone = this.zones.player2Cards; 
 
     if (this.isPointInZone(x, y, gameBoardZone)) {
       typeCible = "matrice";
@@ -288,18 +281,32 @@ class View {
     } else {
       
     }
+
     if (this.isPointInZone(x, y, player1CardsZone)) {
       typeCible = "joueur";
       const numCarte = Math.floor((x - player1CardsZone.x) / this.tileWidth);
     
-      reference = [1, numCarte];
+      reference = [1, numCarte]; // num player + num card
+    } else {
+
+    }
+
+    if (this.isPointInZone(x, y, player2CardsZone)) {
+      typeCible = "joueur";
+      const numCarte = Math.floor((x - player2CardsZone.x) / this.tileWidth);
+    
+      reference = [2, numCarte]; // num player + num card
     } else {
 
     }
     
+    if (this.isPointInZone(x, y, garbageZone)) {
+      typeCible = "corbeille";
+    
+    } else {
 
+    }
     /* 
-    - utiliser des variables de positionnemnt relatif partout (ex: zone de depart x de espace cartes , zone Player 1, corbeille)
     - identifier cible à finir (joueur, num carte + corbeille (taille 1 card))
     - calcul num carte
     - clic event -> identifier cible (log cible de x y)
@@ -307,7 +314,7 @@ class View {
     */
 
 
-      return new Cible(typeCible,reference);
+    return new Cible(typeCible,reference);
   }
 
 }
