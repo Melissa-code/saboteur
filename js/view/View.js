@@ -1,3 +1,5 @@
+import TypesCibles from '../model/TypesCibles.js';
+
 class View {
   // tileWidth:50 & tileHeight:70
   constructor(game, document, tileWidth, tileHeight) {
@@ -256,67 +258,61 @@ class View {
     return x >= zone.x && y >= zone.y && x <= (zone.x + zone.width) && y <= (zone.y + zone.height)
   }
 
+  getNumCarteDansZone(x, zoneX, marge, largeurCarte, espacement, nbCartes) {
+    const decalageX = x - zoneX - marge;
+    const bloc = largeurCarte + espacement;
+
+    const numCarte = Math.floor(decalageX / bloc);
+    const reste = decalageX % bloc;
+
+    if (numCarte < 0 || numCarte >= nbCartes || reste > largeurCarte) {
+      return null; // clic dans l’espace / dehors
+    }
+
+    return numCarte;
+  }
+
   identifierCible(x,y)
   {
-    let typeCible = "exterieur"
+    let typeCible = TypesCibles.EXTERIEUR;
     let reference = null;
-    //let x1, x2, y1, y2;
-    // type String: matrice - joueur - corbeille (à créer)
-    /*
-      matrice => reference = position i,j dans la matrice
-      joueur => reference = Num joeur, Num carte
-      corbeille => null
-    */
-
     const gameBoardZone = this.zones.gameBoard;
     const player1CardsZone = this.zones.player1Cards; 
     const player2CardsZone = this.zones.player2Cards; 
-    const garbageZone = this.zones.player2Cards; 
+    const garbageZone = this.zones.garbage; 
 
     if (this.isPointInZone(x, y, gameBoardZone)) {
-      typeCible = "matrice";
+      typeCible = TypesCibles.MATRICE;
       const matrixX = Math.floor((x - gameBoardZone.x) / this.tileWidth);
       const matrixY = Math.floor((y - gameBoardZone.y) / this.tileHeight);
       reference = [matrixX, matrixY];
-    } else {
-      
-    }
-
-    if (this.isPointInZone(x, y, player1CardsZone)) {
-      typeCible = "joueur";
+    } 
+    else if (this.isPointInZone(x, y, player1CardsZone)) {
+      typeCible = TypesCibles.JOUEUR;
+      // getNumCarteDansZone(x, zone, marge, largeurCarte, espacement, nbCartes)
       const numCarte = Math.floor((x - player1CardsZone.x) / this.tileWidth);
-    
       reference = [1, numCarte]; // num player + num card
-    } else {
-
+    } 
+    else if (this.isPointInZone(x, y, player2CardsZone)) {
+      typeCible = TypesCibles.JOUEUR;
+        const numCarte = Math.floor((x - player2CardsZone.x) / this.tileWidth);
+        reference = [2, numCarte];
+    } 
+    else if (this.isPointInZone(x, y, garbageZone)) {
+        typeCible = TypesCibles.CORBEILLE;
+        reference = null;
     }
 
-    if (this.isPointInZone(x, y, player2CardsZone)) {
-      typeCible = "joueur";
-      const numCarte = Math.floor((x - player2CardsZone.x) / this.tileWidth);
-    
-      reference = [2, numCarte]; // num player + num card
-    } else {
+    return new Cible(typeCible,reference);
+  }
 
-    }
-    
-    if (this.isPointInZone(x, y, garbageZone)) {
-      typeCible = "corbeille";
-    
-    } else {
 
-    }
-    /* 
+      /* 
     - identifier cible à finir (joueur, num carte + corbeille (taille 1 card))
     - calcul num carte
     - clic event -> identifier cible (log cible de x y)
     - enum de types cible (ajouter "extérieur")
     */
-
-
-    return new Cible(typeCible,reference);
-  }
-
 }
 
 export default View;

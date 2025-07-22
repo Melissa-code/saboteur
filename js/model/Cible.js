@@ -1,12 +1,16 @@
+import TypesCibles from './TypesCibles.js';
+
 class Cible {
     constructor(type, reference) {
-        this.type = type; // type String: matrice - joueur - corbeille (à créer)
-        this.reference = reference; // instance de player, coord x y, null/"corbeille" 
+        this.type = type; 
+        this.reference = reference; 
         /*
-            matrice => reference = position i,j dans la matrice
-            joueur => reference = Num joeur, Num carte
-            corbeille => null
+            MATRICE => reference = [x, y] position dans la matrice
+            JOUEUR => reference = [numJoueur, numCarte] 
+            CORBEILLE => reference = null
+            EXTERIEUR => reference = null
         */
+
     }
 }
 

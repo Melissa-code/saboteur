@@ -5,6 +5,7 @@ import Directions from './Directions.js';
 import Player from './Player.js'; 
 import Actions from './Actions.js'; 
 import Cible from './Cible.js'; 
+import TypesCibles from '../model/TypesCibles.js';
 
 class Game {
   constructor() {
@@ -147,7 +148,7 @@ class Game {
   }
 
   distribuerCartesJoueurs() {
-    for (let i=0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       // retire et retourne la derniere 
       this.joueur1.addCarte(this.pioche.pop())
       this.joueur2.addCarte(this.pioche.pop())
@@ -156,36 +157,35 @@ class Game {
 
   jouerCarteSurCible(joueur, carte, cible) {
     switch(cible.type) {
-      // type: matrice
-      case "matrice": 
-          const [x, y] = cible.reference ;
-          const success = this.placerCarte(x, y, carte); 
-          if (success) {
-            console.log("carte placée: ", "x :" + x, "y :" + y)
-          }
-          else {
-            console.log("impossible de placer la carte : ", "x :" + x, "y :" + y)
-            joueur.addCarte(carte); // ajoute à pioche
-          }
-      break;
-      // type: joueur 
-      case "joueur": 
-          const joueurCible = cible.reference; 
-          if (carte instanceof CarteAction) {
-            // bloquer joueur adv
-            console.log("Carte jouée sur l'aute joueur ", joueurCible.id); 
-          } else {
-            console.log("carte ne  peut pas etre jouée sur joueur ", joueurCible.id)
-          }
-      break;
-      // type: corbeille
-      case "corbeille": 
-      console.log("Carte dans la corbeille ", carte);
-        //
-      break;
+      case TypesCibles.MATRICE: 
+        const [x, y] = cible.reference;
+        const success = this.placerCarte(x, y, carte); 
+        if (success) {
+          console.log("carte placée: ", "x :" + x, "y :" + y)
+        }
+        else {
+          console.log("impossible de placer la carte : ", "x :" + x, "y :" + y)
+          joueur.addCarte(carte); // ajoute à pioche
+        }
+        break;
+      case TypesCibles.JOUEUR: 
+        const [numJoueur, numCarte] = cible.reference; 
+        if (carte instanceof CarteAction) {
+          // bloquer joueur adv
+          console.log("Carte jouée sur l'autre joueur ", numJoueur); 
+        } else {
+          console.log("Cette carte ne peut pas etre jouée sur le joueur ", numJoueur)
+        }
+        break;
+      case TypesCibles.CORBEILLE:
+        console.log("Carte dans la corbeille ", carte);
+        break;
+      case TypesCibles.EXTERIEUR:
+        console.log("Carte en dehors des zones", carte);
+        break;
       default:
-        console.log("Cible inconnue");
-      break;
+        //
+        break;
     }
   }
   
