@@ -1,4 +1,5 @@
 import TypesCibles from '../model/TypesCibles.js';
+import Cible from '../model/Cible.js';
 
 class View {
   // tileWidth:50 & tileHeight:70
@@ -208,12 +209,12 @@ class View {
 
     // joueurs
     this.ctx.fillStyle = "#000000";
-    this.ctx.font = "20px Tagesschrift, arial";
+    this.ctx.font = "18px Tagesschrift, arial";
 
-    const textOffsetY = this.isMobile ? zone.y + this.playerHandMarginY : this.playerHandMarginY;
+    const textDecalageY = this.isMobile ? zone.y + this.playerHandMarginY : this.playerHandMarginY;
     const textStartX = zone.x + this.playerHandMarginX;
-    this.ctx.fillText("Cartes du Joueur 1", textStartX, textOffsetY);
-    this.ctx.fillText("Cartes du Joueur 2", textStartX, textOffsetY + this.cardsRowsSpacingY);
+    this.ctx.fillText("Cartes du Joueur 1", textStartX, textDecalageY);
+    this.ctx.fillText("Cartes du Joueur 2", textStartX, textDecalageY + this.cardsRowsSpacingY);
 
     this.drawPlayerCards(this.game.joueur1, this.zones.player1Cards);
     this.drawPlayerCards(this.game.joueur2, this.zones.player2Cards);
@@ -249,7 +250,7 @@ class View {
     this.ctx.fillRect(zone.x, zone.y, zone.width, zone.height);
 
     this.ctx.fillStyle = "#000000";
-    this.ctx.font = "20px Tagesschrift, arial";
+    this.ctx.font = "18px Tagesschrift, arial";
     this.ctx.textAlign = "center"; 
     this.ctx.fillText("X", zone.x + zone.width / 2, zone.y + zone.height / 2 + this.playerCardsSpacingX / 2);
   }
@@ -258,24 +259,27 @@ class View {
     return x >= zone.x && y >= zone.y && x <= (zone.x + zone.width) && y <= (zone.y + zone.height)
   }
 
-  getNumCarteDansZone(x, zoneX, marge, largeurCarte, espacement, nbCartes) {
-    const decalageX = x - zoneX - marge;
-    const bloc = largeurCarte + espacement;
+  getNumCartePlayerZone(x, zone, marge, largeurCarte, espacement, nbCartes) {
+    const decalageX = x - zone.x - marge; //position de 1re carte 
+    // clic avant cartes
+    if (decalageX < 0) {
+      return null;
+    } 
 
-    const numCarte = Math.floor(decalageX / bloc);
-    const reste = decalageX % bloc;
+    const bloc = largeurCarte + espacement;//40 + 10 = 50
+    const numCarte = Math.floor(decalageX / bloc);//65/50 = 1
+    const reste = decalageX % bloc; // 65 % 50 = 15
 
-    if (numCarte < 0 || numCarte >= nbCartes || reste > largeurCarte) {
-      return null; // clic dans l’espace / dehors
-    }
+    if (numCarte < 0 || numCarte >= nbCartes) return null;
+    if (reste > largeurCarte) return null; // clic dans espace entre les cartes
 
     return numCarte;
   }
 
-  identifierCible(x,y)
-  {
+  identifierCible(x, y) {
     let typeCible = TypesCibles.EXTERIEUR;
     let reference = null;
+
     const gameBoardZone = this.zones.gameBoard;
     const player1CardsZone = this.zones.player1Cards; 
     const player2CardsZone = this.zones.player2Cards; 
@@ -287,23 +291,52 @@ class View {
       const matrixY = Math.floor((y - gameBoardZone.y) / this.tileHeight);
       reference = [matrixX, matrixY];
     } 
+
     else if (this.isPointInZone(x, y, player1CardsZone)) {
       typeCible = TypesCibles.JOUEUR;
-      // getNumCarteDansZone(x, zone, marge, largeurCarte, espacement, nbCartes)
-      const numCarte = Math.floor((x - player1CardsZone.x) / this.tileWidth);
-      reference = [1, numCarte]; // num player + num card
+      //const numCarte = Math.floor((x - player1CardsZone.x) / this.tileWidth);// ATTENTION space entre cartes!!
+      const numCarte = this.getNumCartePlayerZone(
+        x,
+        player1CardsZone,
+        this.playerHandMarginX,
+        this.tileWidth,
+        this.playerCardsSpacingX,
+        5 
+      );
+      if (numCarte !== null) {
+        typeCible = TypesCibles.JOUEUR;
+        reference = [1, numCarte];
+      } else {
+        typeCible = TypesCibles.EXTERIEUR;
+        reference = null;
+      } 
     } 
+
     else if (this.isPointInZone(x, y, player2CardsZone)) {
       typeCible = TypesCibles.JOUEUR;
-        const numCarte = Math.floor((x - player2CardsZone.x) / this.tileWidth);
+      const numCarte = this.getNumCartePlayerZone(
+        x,
+        player2CardsZone,
+        this.playerHandMarginX,
+        this.tileWidth,
+        this.playerCardsSpacingX,
+        5 
+      );
+      if (numCarte !== null) {
+        typeCible = TypesCibles.JOUEUR;
         reference = [2, numCarte];
+      } else {
+        typeCible = TypesCibles.EXTERIEUR;
+        reference = null;
+      } 
     } 
+
     else if (this.isPointInZone(x, y, garbageZone)) {
         typeCible = TypesCibles.CORBEILLE;
         reference = null;
     }
 
-    return new Cible(typeCible,reference);
+    return new Cible(typeCible, reference);
   }
 
 
