@@ -106,7 +106,7 @@ class Game {
 
     if(existeVoisinage) {
       this.matrix[y][x] = carteAPlacer;
-      console.log('Carte placée :', x, y);
+      //console.log('Carte placée :', x, y);
     }
 
     return existeVoisinage;
@@ -161,7 +161,7 @@ class Game {
         const [x, y] = cible.reference;
         const success = this.placerCarte(x, y, carte); 
         if (success) {
-          console.log("carte placée: ", "x :" + x, "y :" + y)
+          //console.log("carte placée: ", "x :" + x, "y :" + y)
         }
         else {
           console.log("impossible de placer la carte : ", "x :" + x, "y :" + y)

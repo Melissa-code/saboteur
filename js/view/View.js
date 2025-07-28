@@ -16,8 +16,10 @@ class View {
     this.playerHandWidth = 7 * this.tileWidth;
     this.playerHandHeight = 4 * this.tileHeight;
     this.playerHandMarginX = this.tileWidth / 2;
-    this.playerHandMarginY = this.tileHeight / 2;
     this.playerCardsSpacingX = ((this.playerHandWidth - 2 * this.playerHandMarginX) - 5 * this.tileWidth) / 4; // space between 5 player cards
+    console.log("playerCardsSpacingX", this.playerCardsSpacingX);
+    this.playerHandMarginY = this.tileHeight / 2 + this.playerCardsSpacingX;
+    console.log("this.tileHeight / 2",this.tileHeight / 2, "this.playerHandMarginY",this.playerHandMarginY)
     this.cardsRowsSpacingY = this.tileHeight * 2; // space between  player1Cards and player2Cards
 
     this.isMobile = window.innerWidth < 600;
@@ -56,7 +58,7 @@ class View {
       //player1Cards
       this.zones.player1Cards = {
         x: 0,
-        y: this.zones.playerCards.y,
+        y: this.gameboardHeight + this.playerHandMarginY,
         width: this.playerHandWidth, 
         height: this.tileHeight
       };
@@ -64,7 +66,7 @@ class View {
       //player2Cards
       this.zones.player2Cards = {
         x: 0,
-        y: this.zones.playerCards.y + this.cardsRowsSpacingY,
+        y: this.zones.player1Cards.y + this.cardsRowsSpacingY,
         width: this.playerHandWidth, 
         height: this.tileHeight
       };
@@ -100,15 +102,15 @@ class View {
         x: this.zones.playerCards.x,
         y: 0,
         width: this.playerHandWidth, 
-        height: this.tileHeight
+        height: this.playerHandHeight /2
       };
       
       // player2Cards
       this.zones.player2Cards = {
         x: this.zones.playerCards.x,
-        y: this.zones.playerCards.y + this.cardsRowsSpacingY,
+        y: this.zones.playerCards.y + this.playerHandHeight /2,
         width: this.playerHandWidth, 
-        height: this.tileHeight
+        height: this.playerHandHeight /2
       };
       
       // garbage
@@ -211,10 +213,10 @@ class View {
     this.ctx.fillStyle = "#000000";
     this.ctx.font = "18px Tagesschrift, arial";
 
-    const textDecalageY = this.isMobile ? zone.y + this.playerHandMarginY : this.playerHandMarginY;
+    const textDecalageY = this.isMobile ? zone.y + this.playerHandMarginY : this.playerHandMarginY - this.playerCardsSpacingX;
     const textStartX = zone.x + this.playerHandMarginX;
     this.ctx.fillText("Cartes du Joueur 1", textStartX, textDecalageY);
-    this.ctx.fillText("Cartes du Joueur 2", textStartX, textDecalageY + this.cardsRowsSpacingY);
+    this.ctx.fillText("Cartes du Joueur 2", textStartX, textDecalageY + this.playerHandHeight/2);
 
     this.drawPlayerCards(this.game.joueur1, this.zones.player1Cards);
     this.drawPlayerCards(this.game.joueur2, this.zones.player2Cards);
@@ -223,7 +225,7 @@ class View {
   drawPlayerCards(joueur, zone) {
     for (let i = 0; i < 5; i++) {
       const carteX = zone.x + this.playerHandMarginX + i * (this.tileWidth + this.playerCardsSpacingX);
-      const carteY = zone.y + this.playerHandMarginY + this.playerCardsSpacingX;
+      const carteY = zone.y + this.playerHandMarginY ;
       this.ctx.fillStyle = "#FFFFFF";
       this.ctx.fillRect(carteX, carteY, this.tileWidth, this.tileHeight);
       
@@ -259,12 +261,21 @@ class View {
     return x >= zone.x && y >= zone.y && x <= (zone.x + zone.width) && y <= (zone.y + zone.height)
   }
 
-  getNumCartePlayerZone(x, zone, marge, largeurCarte, espacement, nbCartes) {
-    const decalageX = x - zone.x - marge; //position de 1re carte 
+  getNumCartePlayerZone(x, y, zone, margeX, margeY, largeurCarte, hauteurCarte, espacement, nbCartes) {
+    const decalageX = x - zone.x - margeX; //position de 1re carte 
+    const decalageY = y - zone.y ;
+    console.log('*: ',y , zone.y , margeY);
+    
+    console.log(x, y, zone, decalageX, decalageY, largeurCarte, hauteurCarte, espacement, nbCartes) 
+   
     // clic avant cartes
     if (decalageX < 0) {
       return null;
     } 
+
+    if (decalageY < margeY || decalageY > margeY + hauteurCarte) {
+      return null;
+    }
 
     const bloc = largeurCarte + espacement;//40 + 10 = 50
     const numCarte = Math.floor(decalageX / bloc);//65/50 = 1
@@ -297,9 +308,12 @@ class View {
       //const numCarte = Math.floor((x - player1CardsZone.x) / this.tileWidth);// ATTENTION space entre cartes!!
       const numCarte = this.getNumCartePlayerZone(
         x,
+        y,
         player1CardsZone,
         this.playerHandMarginX,
+        this.playerHandMarginY ,
         this.tileWidth,
+        this.tileHeight,
         this.playerCardsSpacingX,
         5 
       );
@@ -316,9 +330,12 @@ class View {
       typeCible = TypesCibles.JOUEUR;
       const numCarte = this.getNumCartePlayerZone(
         x,
+        y,
         player2CardsZone,
         this.playerHandMarginX,
+        this.playerHandMarginY,
         this.tileWidth,
+        this.tileHeight,
         this.playerCardsSpacingX,
         5 
       );
