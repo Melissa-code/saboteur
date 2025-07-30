@@ -27,18 +27,20 @@ class Game {
     cartesBut[2].devoile = false;
     this.tirerAuSortCarteTresor(cartesBut);
 
-    this.joueurActuel = 0; 
+    this.joueurActuel = 1; 
 
     let roles = this.getRandomRole();
     this.joueur1 = new Player(1, roles[0]);
     this.joueur2 = new Player(2, roles[1]); 
- 
+
+    this.action1 = null;
+    this.action2 = null;
     this.distribuerCartesJoueurs()
 
     let carte = this.joueur1.cartes[4];
     let cible = new Cible("matrice", [1, 3]);
     // let cible = new Cible("joueur", this.joueur2);
-    this.jouerCarteSurCible(this.joueur1, carte, cible)
+    //this.jouerCarteSurCible(this.joueur1, carte, cible)
 
     let carte2 = this.joueur2.cartes[2];
     let cible2 = new Cible("matrice", [2, 4]);
@@ -155,7 +157,44 @@ class Game {
     }
   }
 
-  jouerCarteSurCible(joueur, carte, cible) {
+  notifierCible(cible) {
+    // 
+    if (cible.type == TypesCibles.EXTERIEUR) {
+      console.log('clic en dehors des zones actives')
+      return
+    }
+    if (this.action1 == null) {
+      if (cible.type == TypesCibles.JOUEUR) {
+        const [numJoueur, numCarte] = cible.reference;
+        if (numJoueur == this.joueurActuel && numCarte !== -1) {
+          this.action1 = cible;
+        } 
+        else console.log("premier clic n'est pas sur une carte du joueur courant.");
+        return;
+      } else {
+        console.log('premier clic hors de la zone des joueurs.')
+        return
+      }
+    }
+
+    // code pour tariter l'action 2
+    if (cible.type == TypesCibles.CORBEILLE || cible.type == TypesCibles.MATRICE) {
+      this.action2 = cible; 
+      this.appliquerActions();
+      return
+    }
+    if (cible.type == TypesCibles.JOUEUR) {
+      if (cible.reference[0] !== this.joueurActuel) {
+        this.action2 = cible; 
+        this.appliquerActions();
+        return
+      }
+    }
+    console.log('2e clic incorrect.')
+  }
+
+  appliquerActions(/*joueur, carte, cible*/) {
+    return;
     switch(cible.type) {
       case TypesCibles.MATRICE: 
         const [x, y] = cible.reference;
@@ -189,7 +228,8 @@ class Game {
     }
   }
   
-
+// faire appliquerActions : jouer carte chemin sur la grille
+// changer le tour et neutraliser action 1 et 2 (mettre à null)
 
 }
 

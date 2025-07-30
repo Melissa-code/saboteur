@@ -6,7 +6,7 @@ class Cible {
         this.reference = reference; 
         /*
             MATRICE => reference = [x, y] position dans la matrice
-            JOUEUR => reference = [numJoueur, numCarte] 
+            JOUEUR => reference = [numJoueur, numCarte] , num= -1 | num carte cliquee
             CORBEILLE => reference = null
             EXTERIEUR => reference = null
         */

@@ -21,4 +21,6 @@ canvas.addEventListener("click", (event) => {
 
   const cible = view.identifierCible(x, y); //return new Cible(typeCible,reference);
   console.log("Clic sur la cible : ", cible.type, cible.reference);
+
+  game.notifierCible(cible);
 });
