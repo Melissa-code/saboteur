@@ -198,7 +198,9 @@ class Game {
     //carte
     const [numJoueur, numCarte] = this.action1.reference;
     const carte = joueur.cartes[numCarte]; 
+    
     console.log("nb de cartes avant jeu: ", joueur.cartes.length);
+    joueur.removeCarte(numCarte);
 
     switch(this.action2.type) {
       case TypesCibles.MATRICE: 
@@ -239,7 +241,6 @@ class Game {
         break;
     }
 
-    joueur.removeCarte(numCarte);
     console.log("nb de cartes après jeu: ", joueur.cartes.length);
 
     this.changerTour();

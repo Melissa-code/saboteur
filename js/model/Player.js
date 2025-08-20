@@ -14,8 +14,10 @@ class Player {
     }
 
     removeCarte(numCarte) {
-        const index = this.cartes.indexOf(numCarte);
-        this.cartes.splice(index, 1); 
+        console.log("numCarte", numCarte)
+        if (numCarte >= 0 && numCarte < this.cartes.length) {
+            this.cartes.splice(numCarte, 1);
+        }
     }
 
     addCarteBloquante(carteAction) {

@@ -219,6 +219,8 @@ class View {
     const textStartX = zone.x + this.playerHandMarginX;
     this.ctx.fillText("Cartes du Joueur 1", textStartX, textDecalageY);
     this.ctx.fillText("Cartes du Joueur 2", textStartX, textDecalageY + this.playerHandHeight/2);
+    // this.ctx.fillText("Cartes du Joueur 1", 650, 20);
+    // this.ctx.fillText("Cartes du Joueur 2", 650, 150);
 
     this.drawPlayerCards(this.game.joueur1, this.zones.player1Cards);
     this.drawPlayerCards(this.game.joueur2, this.zones.player2Cards);
@@ -266,10 +268,7 @@ class View {
   getNumCartePlayerZone(x, y, zone, margeX, margeY, largeurCarte, hauteurCarte, espacement, nbCartes) {
     const decalageX = x - zone.x - margeX; //position de 1re carte 
     const decalageY = y - zone.y ;
-    ///console.log('*: ',y , zone.y , margeY);
-    
-    //console.log(x, y, zone, decalageX, decalageY, largeurCarte, hauteurCarte, espacement, nbCartes) 
-   
+
     // clic avant cartes
     if (decalageX < 0) {
       return null;
