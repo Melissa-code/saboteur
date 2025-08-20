@@ -256,7 +256,7 @@ class View {
     this.ctx.fillStyle = "#000000";
     this.ctx.font = "18px Tagesschrift, arial";
     this.ctx.textAlign = "center"; 
-    this.ctx.fillText("X", zone.x + zone.width / 2, zone.y + zone.height / 2 + this.playerCardsSpacingX / 2);
+    this.ctx.fillText("🗑️", zone.x + zone.width / 2, zone.y + zone.height / 2 + this.playerCardsSpacingX / 2);
   }
 
   isPointInZone(x, y, zone) {

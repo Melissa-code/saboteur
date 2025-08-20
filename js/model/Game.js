@@ -28,23 +28,13 @@ class Game {
     this.tirerAuSortCarteTresor(cartesBut);
 
     this.joueurActuel = 1; 
-
     let roles = this.getRandomRole();
     this.joueur1 = new Player(1, roles[0]);
     this.joueur2 = new Player(2, roles[1]); 
-
+   
     this.action1 = null;
     this.action2 = null;
     this.distribuerCartesJoueurs()
-
-    let carte = this.joueur1.cartes[4];
-    let cible = new Cible("matrice", [1, 3]);
-    // let cible = new Cible("joueur", this.joueur2);
-    //this.jouerCarteSurCible(this.joueur1, carte, cible)
-
-    let carte2 = this.joueur2.cartes[2];
-    let cible2 = new Cible("matrice", [2, 4]);
-    //this.jouerCarteSurCible(this.joueur2, carte2, cible2)
   }
 
   initGame() {
@@ -76,9 +66,8 @@ class Game {
   }
 
   passerAuJoueurSuivant() {
-    // J1=0-> 0+1=1 : Divise 1 par 2 : 1/2=0 reste 1 (next joueur)
-    // revient au 1er joueur après le dernier
-    this.joueurActuelIndex = (this.joueurActuelIndex + 1) % this.joueurs.length;
+    // J1=0-> 0+1=1 : Divise 1 par 2 : 1/2=0 reste 1 (next joueur)->revient au 1er joueur après le dernier
+    this.joueurActuelIndex = (this.joueurActuelIndex + 1) % this.roles.length;
   }
 
   placerCarte(x, y, carteAPlacer) {
@@ -106,7 +95,7 @@ class Game {
       existeVoisinage = true
     }
 
-    if(existeVoisinage) {
+    if (existeVoisinage) {
       this.matrix[y][x] = carteAPlacer;
       //console.log('Carte placée :', x, y);
     }
@@ -114,8 +103,7 @@ class Game {
     return existeVoisinage;
   }
 
-  /**
-   * 
+  /** 
    * @returns array[] d'objets CarteChemin
    */
   selectionnerTroisCartesChemin() {
@@ -158,78 +146,110 @@ class Game {
   }
 
   notifierCible(cible) {
-    // 
-    if (cible.type == TypesCibles.EXTERIEUR) {
+    if (cible.type === TypesCibles.EXTERIEUR) {
       console.log('clic en dehors des zones actives')
       return
     }
-    if (this.action1 == null) {
-      if (cible.type == TypesCibles.JOUEUR) {
+
+    if (this.action1 === null) {
+      if (cible.type === TypesCibles.JOUEUR) {
         const [numJoueur, numCarte] = cible.reference;
-        if (numJoueur == this.joueurActuel && numCarte !== -1) {
+        if (numJoueur === this.joueurActuel && numCarte !== -1) {
           this.action1 = cible;
-        } 
-        else console.log("premier clic n'est pas sur une carte du joueur courant.");
-        return;
+          return;
+        } else {
+          console.log("premier clic n'est pas sur une carte du joueur courant.");
+          return;
+        }
       } else {
-        console.log('premier clic hors de la zone des joueurs.')
-        return
+          console.log('premier clic hors de la zone des joueurs.')
+          return
       }
     }
 
-    // code pour tariter l'action 2
-    if (cible.type == TypesCibles.CORBEILLE || cible.type == TypesCibles.MATRICE) {
+    // code pour traiter l'action 2
+    if (cible.type === TypesCibles.CORBEILLE || cible.type === TypesCibles.MATRICE) {
       this.action2 = cible; 
       this.appliquerActions();
       return
     }
-    if (cible.type == TypesCibles.JOUEUR) {
+
+    if (cible.type === TypesCibles.JOUEUR) {
       if (cible.reference[0] !== this.joueurActuel) {
         this.action2 = cible; 
         this.appliquerActions();
         return
       }
     }
-    console.log('2e clic incorrect.')
+    
+    console.log('clic incorrect');
   }
 
-  appliquerActions(/*joueur, carte, cible*/) {
-    return;
-    switch(cible.type) {
+  changerTour() {
+    const newJoueur = this.joueurActuel === 1 ? this.joueur2 : this.joueur1;
+    console.log("A présent au tour du joueur " + newJoueur.id + " de jouer."); 
+    this.joueurActuel = newJoueur.id;
+  }
+
+  appliquerActions() {
+    const joueur = this.joueurActuel === 1 ? this.joueur1 : this.joueur2; 
+    console.log("joueur courant ", joueur.id);
+    
+    //carte
+    const [numJoueur, numCarte] = this.action1.reference;
+    const carte = joueur.cartes[numCarte]; 
+    console.log("nb de cartes avant jeu: ", joueur.cartes.length);
+
+    switch(this.action2.type) {
       case TypesCibles.MATRICE: 
-        const [x, y] = cible.reference;
+        const [x, y] = this.action2.reference;
         const success = this.placerCarte(x, y, carte); 
         if (success) {
-          //console.log("carte placée: ", "x :" + x, "y :" + y)
+          console.log("carte placée: ", "x :" + x, "y :" + y)
         }
         else {
           console.log("impossible de placer la carte : ", "x :" + x, "y :" + y)
           joueur.addCarte(carte); // ajoute à pioche
         }
         break;
+
       case TypesCibles.JOUEUR: 
-        const [numJoueur, numCarte] = cible.reference; 
+        const [numJoueurCible, numCarteCible] = this.action2.reference;
+        const joueurCible = numJoueurCible === 1 ? this.joueur1 : this.joueur2; 
+
         if (carte instanceof CarteAction) {
           // bloquer joueur adv
-          console.log("Carte jouée sur l'autre joueur ", numJoueur); 
+          console.log("Carte jouée sur l'autre joueur ", joueurCible); 
         } else {
-          console.log("Cette carte ne peut pas etre jouée sur le joueur ", numJoueur)
+          console.log("Cette carte ne peut pas etre jouée sur le joueur ", joueurCible)
+          joueur.addCarte(carte);
         }
         break;
+
       case TypesCibles.CORBEILLE:
         console.log("Carte dans la corbeille ", carte);
         break;
+
       case TypesCibles.EXTERIEUR:
         console.log("Carte en dehors des zones", carte);
         break;
+
       default:
-        //
+        console.log("erreur pour appliquer une action", carte);
         break;
     }
+
+    joueur.removeCarte(numCarte);
+    console.log("nb de cartes après jeu: ", joueur.cartes.length);
+
+    this.changerTour();
+    this.action1 = null;
+    this.action2 = null;
   }
-  
-// faire appliquerActions : jouer carte chemin sur la grille
-// changer le tour et neutraliser action 1 et 2 (mettre à null)
+
+
+  // faire appliquerActions : jouer carte chemin sur la grille
+  // changer le tour et neutraliser action 1 et 2 (mettre à null)
 
 }
 

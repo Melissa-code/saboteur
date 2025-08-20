@@ -13,8 +13,7 @@ export class Card {
 
 
 class CarteNain {
-    //chercheur
-    //saboteur
+    //chercheur ou saboteur
     constructor(typeNain) {
         this.typeNain = typeNain; 
     }

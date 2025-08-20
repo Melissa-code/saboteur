@@ -13,9 +13,8 @@ class Player {
         this.cartes.push(carte); 
     }
 
-    removeCarte(carte) {
-        const index = this.cartes.indexOf(carte);
-        //this.cartes.splice(index, 1)[0]; 
+    removeCarte(numCarte) {
+        const index = this.cartes.indexOf(numCarte);
         this.cartes.splice(index, 1); 
     }
 

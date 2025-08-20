@@ -12,9 +12,9 @@ window.addEventListener('resize', () => {
 
 
 // Test identifier cible 
+// cf. https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
 const canvas = document.querySelector("#myCanvas");
 canvas.addEventListener("click", (event) => {
-  //https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
   const rect = canvas.getBoundingClientRect();
   const x = event.clientX - rect.left; //x du coin gauche du canvas
   const y = event.clientY - rect.top; //y du haut du canvas
