@@ -73,4 +73,13 @@ export class CarteAction extends Card {
             || this.titreAction == Actions.CASSER_PIOCHE
     }
 
+    estCarteReparation() {
+        return this.titreAction == Actions.REPARER_CHARIOT
+            || this.titreAction == Actions.REPARER_LAMPE
+            || this.titreAction == Actions.REPARER_PIOCHE
+            || this.titreAction == Actions.REPARER_CHARIOT_LAMPE
+            || this.titreAction == Actions.REPARER_LAMPE_PIOCHE
+            || this.titreAction == Actions.REPARER_PIOCHE_CHARIOT
+    }
+
 }

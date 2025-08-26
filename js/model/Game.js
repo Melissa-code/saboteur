@@ -194,24 +194,25 @@ class Game {
   appliquerActions() {
     const joueur = this.joueurActuel === 1 ? this.joueur1 : this.joueur2; 
     console.log("joueur courant ", joueur.id);
-    
+    let success = false; 
+
     //carte
     const [numJoueur, numCarte] = this.action1.reference;
     const carte = joueur.cartes[numCarte]; 
-    
-    console.log("nb de cartes avant jeu: ", joueur.cartes.length);
-    joueur.removeCarte(numCarte);
-
+  
     switch(this.action2.type) {
       case TypesCibles.MATRICE: 
+        if (joueur.cartesBloquent.length !== 0) {
+          break; // TODO : à tester 
+        }
         const [x, y] = this.action2.reference;
-        const success = this.placerCarte(x, y, carte); 
+        success = this.placerCarte(x, y, carte); 
+        
         if (success) {
           console.log("carte placée: ", "x :" + x, "y :" + y)
         }
         else {
           console.log("impossible de placer la carte : ", "x :" + x, "y :" + y)
-          joueur.addCarte(carte); // ajoute à pioche
         }
         break;
 
@@ -220,15 +221,41 @@ class Game {
         const joueurCible = numJoueurCible === 1 ? this.joueur1 : this.joueur2; 
 
         if (carte instanceof CarteAction) {
+
+          console.log("Tentative de jouer une carte bloquante",
+            "joueur courant:", joueur.id,
+            "joueur cible:", numJoueurCible,
+            "carte:", carte
+          );
+ 
           // bloquer joueur adv
-          console.log("Carte jouée sur l'autre joueur ", joueurCible); 
-        } else {
-          console.log("Cette carte ne peut pas etre jouée sur le joueur ", joueurCible)
-          joueur.addCarte(carte);
+          if (carte.estCarteBloquante()) {
+            if (joueur.id === numJoueurCible) {
+              console.log("Impossible de se bloquer soi-même !");
+            } else {
+              success = joueurCible.addCarteBloquante(carte);
+            }
+          }
+          if (success) {
+            console.log("Carte bloquante jouée sur l'autre joueur a fonctionné", joueurCible.id); 
+          } else {
+            console.log("Cette carte bloquante ne peut pas etre jouée sur le joueur ", joueurCible.id)
+          }
+
+          // débloquer joueur (joueur 1 doit pouvoir jouer sur luimeme)
+          if (carte.estCarteReparation()) {
+            success = joueurCible.removeCarteBloquante(carte);
+          }
+          if (success) {
+            console.log("Carte débloquante a fonctionné sur le joueur ", joueurCible.id); 
+          } else {
+            console.log("Cette carte débloquante ne peut pas etre jouée sur le joueur ", joueurCible.id)
+          }
         }
         break;
 
       case TypesCibles.CORBEILLE:
+        success = true; 
         console.log("Carte dans la corbeille ", carte);
         break;
 
@@ -241,17 +268,20 @@ class Game {
         break;
     }
 
-    console.log("nb de cartes après jeu: ", joueur.cartes.length);
+    if (success) {
+      joueur.removeCarte(numCarte);
+      this.changerTour();
+      joueur.addCarte(this.pioche.pop());
 
-    this.changerTour();
+    }
+
     this.action1 = null;
     this.action2 = null;
   }
 
-
-  // faire appliquerActions : jouer carte chemin sur la grille
-  // changer le tour et neutraliser action 1 et 2 (mettre à null)
-
+  // afficher les cartes bloquantes/débloquantes 
+  // voir pour que joueur 1 puisse se déblqouqer lui meme 
+  // trouver visuel (ex entourer la carte couleur) pour le 1 clic (on sait qu'elle est sélectionnée)
 }
 
 export default Game;
