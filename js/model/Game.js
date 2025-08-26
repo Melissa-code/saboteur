@@ -230,10 +230,19 @@ class Game {
  
           // bloquer joueur adv
           if (carte.estCarteBloquante()) {
-            if (joueur.id === numJoueurCible) {
-              console.log("Impossible de se bloquer soi-même !");
-            } else {
-              success = joueurCible.addCarteBloquante(carte);
+            // Bloquer uniquement l'autre joueur
+            if (carte.estCarteBloquante()) {
+              if (joueur.id === numJoueurCible) {
+                console.log("Impossible de se bloquer soi-même !");
+              } else {
+                let bloque = joueurCible.addCarteBloquante(carte);
+                if (bloque) {
+                  console.log("Carte bloquante jouée sur l'autre joueur a fonctionné", joueurCible.id);
+                  success = true;
+                } else {
+                  console.log("Cette carte bloquante ne peut pas être jouée sur le joueur ", joueurCible.id);
+                }
+              }
             }
           }
           if (success) {
@@ -244,12 +253,18 @@ class Game {
 
           // débloquer joueur (joueur 1 doit pouvoir jouer sur luimeme)
           if (carte.estCarteReparation()) {
-            success = joueurCible.removeCarteBloquante(carte);
-          }
-          if (success) {
-            console.log("Carte débloquante a fonctionné sur le joueur ", joueurCible.id); 
-          } else {
-            console.log("Cette carte débloquante ne peut pas etre jouée sur le joueur ", joueurCible.id)
+            if (joueur.id !== numJoueurCible) {
+              console.log("Impossible de réparer un autre joueur !");
+            } else {
+              console.log("Tentative de réparation:", carte.titreAction, "sur joueur", joueur.id);
+              let debloque = joueur.removeCarteBloquante(carte); 
+              if (debloque) {
+                console.log("Carte débloquante a fonctionné sur le joueur ", joueur.id);
+                success = true;
+              } else {
+                console.log("Aucune carte bloquante à retirer pour le joueur ", joueur.id);
+              }
+            }
           }
         }
         break;
