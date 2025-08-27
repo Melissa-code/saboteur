@@ -156,6 +156,7 @@ class Game {
         const [numJoueur, numCarte] = cible.reference;
         if (numJoueur === this.joueurActuel && numCarte !== -1) {
           this.action1 = cible;
+
           return;
         } else {
           console.log("premier clic n'est pas sur une carte du joueur courant.");
@@ -168,10 +169,10 @@ class Game {
     }
 
     // code pour traiter l'action 2 (2e clic)
-
     if (cible.type === TypesCibles.CORBEILLE || cible.type === TypesCibles.MATRICE) {
       this.action2 = cible; 
       this.appliquerActions();
+
       return
     }
 
@@ -211,6 +212,11 @@ class Game {
   }
 
     console.log('clic incorrect');
+  }
+
+  // action1 contient la cible de la carte sélectionnée
+  getCarteSelectionnee() {
+    return this.action1; 
   }
 
   changerTour() {

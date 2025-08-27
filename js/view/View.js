@@ -24,6 +24,8 @@ class View {
 
     this.isMobile = window.innerWidth < 600;
 
+    this.selectedCard = null; //joueurId: 1|2, index: 0..4 
+
     // zones 
     this.initializeZones();
 
@@ -204,6 +206,16 @@ class View {
     }
   }
 
+  isCarteSelectionnee(joueurId, indexCarte) {
+    const carteSelectionnee = this.game.getCarteSelectionnee();
+    if (!carteSelectionnee || carteSelectionnee.type !== TypesCibles.JOUEUR) {
+      return false;
+    }
+    
+    const [numJoueur, numCarte] = carteSelectionnee.reference;
+    return numJoueur === joueurId && numCarte === indexCarte;
+  }
+
   displayPlayersCards() {
     const zone = this.zones.playerCards;
 
@@ -230,6 +242,7 @@ class View {
     for (let i = 0; i < 5; i++) {
       const carteX = zone.x + this.playerHandMarginX + i * (this.tileWidth + this.playerCardsSpacingX);
       const carteY = zone.y + this.playerHandMarginY ;
+      
       this.ctx.fillStyle = "#FFFFFF";
       this.ctx.fillRect(carteX, carteY, this.tileWidth, this.tileHeight);
       
@@ -239,6 +252,13 @@ class View {
         image.onload = () => {
           this.ctx.drawImage(image, carteX, carteY, this.tileWidth, this.tileHeight);
         }
+      }
+
+      // Bordure carte sélectionnée
+      if (this.isCarteSelectionnee(joueur.id, i)) {
+        this.ctx.lineWidth = 3;
+        this.ctx.strokeStyle = "gold";
+        this.ctx.strokeRect(carteX - 2, carteY - 2, this.tileWidth + 4, this.tileHeight + 4);
       }
     }
   }
