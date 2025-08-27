@@ -167,21 +167,49 @@ class Game {
       }
     }
 
-    // code pour traiter l'action 2
+    // code pour traiter l'action 2 (2e clic)
+
     if (cible.type === TypesCibles.CORBEILLE || cible.type === TypesCibles.MATRICE) {
       this.action2 = cible; 
       this.appliquerActions();
       return
     }
 
+    // if (cible.type === TypesCibles.JOUEUR) {
+    //   if (cible.reference[0] !== this.joueurActuel) {
+    //     this.action2 = cible; 
+    //     this.appliquerActions();
+    //     return
+    //   }
+    // }
+
     if (cible.type === TypesCibles.JOUEUR) {
-      if (cible.reference[0] !== this.joueurActuel) {
-        this.action2 = cible; 
+    const [numJoueurCible, numCarteCible] = cible.reference; //[numJoueur, numCarte]
+
+    // Si cible est un autre joueur
+    if (numJoueurCible !== this.joueurActuel) {
+      this.action2 = cible; 
+      this.appliquerActions();
+
+      return;
+    }
+
+    // Si cible est soi-même: uniquement si la carte est réparation
+    if (numJoueurCible === this.joueurActuel) {
+      // identifier carte jouée 
+      const joueur = this.joueurActuel === 1 ? this.joueur1 : this.joueur2;
+      const [numJoueur, numCarte] = this.action1.reference;
+      const carte = joueur.cartes[numCarte];
+    
+      if (carte instanceof CarteAction && carte.estCarteReparation()) {
+        this.action2 = cible;
         this.appliquerActions();
-        return
+
+        return;
       }
     }
-    
+  }
+
     console.log('clic incorrect');
   }
 
@@ -222,7 +250,7 @@ class Game {
 
         if (carte instanceof CarteAction) {
 
-          console.log("Tentative de jouer une carte bloquante",
+          console.log(
             "joueur courant:", joueur.id,
             "joueur cible:", numJoueurCible,
             "carte:", carte
@@ -237,7 +265,6 @@ class Game {
               } else {
                 let bloque = joueurCible.addCarteBloquante(carte);
                 if (bloque) {
-                  console.log("Carte bloquante jouée sur l'autre joueur a fonctionné", joueurCible.id);
                   success = true;
                 } else {
                   console.log("Cette carte bloquante ne peut pas être jouée sur le joueur ", joueurCible.id);
@@ -251,20 +278,17 @@ class Game {
             console.log("Cette carte bloquante ne peut pas etre jouée sur le joueur ", joueurCible.id)
           }
 
-          // débloquer joueur (joueur 1 doit pouvoir jouer sur luimeme)
+          // débloquer joueur (joueur 1 doit pouvoir jouer sur lui-meme)
           if (carte.estCarteReparation()) {
-            if (joueur.id !== numJoueurCible) {
-              console.log("Impossible de réparer un autre joueur !");
+            console.log("Tentative de réparation:", carte.titreAction, "sur joueur", joueur.id);
+            let debloque = joueur.removeCarteBloquante(carte); 
+            if (debloque) {
+              console.log("Carte débloquante a fonctionné sur le joueur ", joueur.id);
+              success = true;
             } else {
-              console.log("Tentative de réparation:", carte.titreAction, "sur joueur", joueur.id);
-              let debloque = joueur.removeCarteBloquante(carte); 
-              if (debloque) {
-                console.log("Carte débloquante a fonctionné sur le joueur ", joueur.id);
-                success = true;
-              } else {
-                console.log("Aucune carte bloquante à retirer pour le joueur ", joueur.id);
-              }
+              console.log("Aucune carte bloquante à retirer pour le joueur ", joueur.id);
             }
+          
           }
         }
         break;
