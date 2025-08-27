@@ -260,6 +260,24 @@ class View {
         this.ctx.strokeStyle = "gold";
         this.ctx.strokeRect(carteX - 2, carteY - 2, this.tileWidth + 4, this.tileHeight + 4);
       }
+
+      // 🔹 Dessiner les cartes bloquantes au-dessus
+  joueur.cartesBloquent.forEach((carte, index) => {
+    const carteX = zone.x + this.playerHandMarginX + index * (this.tileWidth + this.playerCardsSpacingX);
+    const carteY = zone.y + this.playerHandMarginY - this.tileHeight - 10; // au-dessus
+
+    const image = new Image();
+    image.src = carte.image;
+    image.onload = () => {
+      this.ctx.drawImage(image, carteX, carteY, this.tileWidth, this.tileHeight);
+    };
+
+    // petit contour rouge pour montrer que c’est un malus
+    this.ctx.lineWidth = 2;
+    this.ctx.strokeStyle = "red";
+    this.ctx.strokeRect(carteX, carteY, this.tileWidth, this.tileHeight);
+  }); 
+
     }
   }
 
