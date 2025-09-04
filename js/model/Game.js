@@ -152,6 +152,8 @@ class Game {
     }
 
     if (this.action1 === null) {
+
+
       if (cible.type === TypesCibles.JOUEUR) {
         const [numJoueur, numCarte] = cible.reference;
         if (numJoueur === this.joueurActuel && numCarte !== -1) {
@@ -176,13 +178,6 @@ class Game {
       return
     }
 
-    // if (cible.type === TypesCibles.JOUEUR) {
-    //   if (cible.reference[0] !== this.joueurActuel) {
-    //     this.action2 = cible; 
-    //     this.appliquerActions();
-    //     return
-    //   }
-    // }
 
     if (cible.type === TypesCibles.JOUEUR) {
     const [numJoueurCible, numCarteCible] = cible.reference; //[numJoueur, numCarte]
@@ -227,7 +222,7 @@ class Game {
 
   appliquerActions() {
     const joueur = this.joueurActuel === 1 ? this.joueur1 : this.joueur2; 
-    console.log("joueur courant ", joueur.id);
+    console.log("joueur courant : ", joueur.id);
     let success = false; 
 
     //carte
@@ -236,10 +231,42 @@ class Game {
   
     switch(this.action2.type) {
       case TypesCibles.MATRICE: 
-        if (joueur.cartesBloquent.length !== 0) {
-          break; // TODO : à tester 
-        }
         const [x, y] = this.action2.reference;
+
+        if (joueur.cartesBloquent.length !== 0) {
+          break; 
+        }
+
+        // détruit carte chemin 
+        if (carte instanceof CarteAction) {
+          if (carte.titreAction === Actions.DETRUIT_CARTE_CHEMIN) {
+            const positionsCartesBloquees = [[0,3], [10, 1], [10,3], [10,5]];
+            let incorrect = false
+            for (let position of positionsCartesBloquees) {
+              if(position[0] === y && position[1] === x) {
+                incorrect = true;
+                console.log("carte détruit chemin sur carte ")
+                break;
+              }
+            }
+
+            if (this.matrix[y][x] === null) {
+              console.log("carte détruit chemin sur aucune carte")
+              incorrect = true;
+            }
+
+            if (incorrect)
+              break;
+            else {
+              this.matrix[y][x] = null; 
+              console.log("carte détruit chemin SUCCESS")
+              success = true; 
+            }
+            
+          }
+        }
+
+        
         success = this.placerCarte(x, y, carte); 
         
         if (success) {
@@ -287,7 +314,8 @@ class Game {
           // débloquer joueur (joueur 1 doit pouvoir jouer sur lui-meme)
           if (carte.estCarteReparation()) {
             console.log("Tentative de réparation:", carte.titreAction, "sur joueur", joueur.id);
-            let debloque = joueur.removeCarteBloquante(carte); 
+           
+            let debloque = joueurCible.removeCarteBloquante(carte); 
             if (debloque) {
               console.log("Carte débloquante a fonctionné sur le joueur ", joueur.id);
               success = true;
@@ -324,9 +352,11 @@ class Game {
     this.action2 = null;
   }
 
-  // afficher les cartes bloquantes/débloquantes 
-  // voir pour que joueur 1 puisse se déblqouqer lui meme 
-  // trouver visuel (ex entourer la carte couleur) pour le 1 clic (on sait qu'elle est sélectionnée)
+  // ne pas afficher la carte bleue la détruire par la carte action faite pour
+  // arranger le visuel 
+  // faire carte voir : dévoilée 2s
+  
+  // chemin correct et gagné (jusque trésor)
 }
 
 export default Game;

@@ -61,6 +61,7 @@ export class CarteChemin extends Card {
 
 // bloque debloque
 export class CarteAction extends Card {
+    
     constructor(titreAction, image) {
         super(image);
         this.titreAction = titreAction; 
