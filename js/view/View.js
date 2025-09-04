@@ -168,6 +168,7 @@ class View {
 
         // load image
         const cell = this.game.matrix[y][x];
+
         if (cell !== null) {
           if (cell.devoile == true) {
             const image = new Image();
@@ -194,6 +195,17 @@ class View {
             this.ctx.fill(); 
           }
         } 
+        // this.matrix[y][x] === null
+        else {
+          this.ctx.fillStyle = "#FFFFFF"; 
+          this.ctx.fillRect(
+            drawX,
+            drawY, 
+            this.tileWidth,
+            this.tileHeight
+          );
+        }
+
         // border
         this.ctx.lineWidth = 1;
         this.ctx.strokeStyle = "#000000";

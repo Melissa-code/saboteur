@@ -242,6 +242,8 @@ class Game {
           if (carte.titreAction === Actions.DETRUIT_CARTE_CHEMIN) {
             const positionsCartesBloquees = [[0,3], [10, 1], [10,3], [10,5]];
             let incorrect = false
+
+            // pas destruction des cartes obligatoires deja en place 
             for (let position of positionsCartesBloquees) {
               if(position[0] === y && position[1] === x) {
                 incorrect = true;
@@ -249,18 +251,21 @@ class Game {
                 break;
               }
             }
-
+           
+            // sic ase vide
             if (this.matrix[y][x] === null) {
               console.log("carte détruit chemin sur aucune carte")
               incorrect = true;
             }
 
+            // si possible qu’il y avait bien une carte
             if (incorrect)
               break;
             else {
               this.matrix[y][x] = null; 
-              console.log("carte détruit chemin SUCCESS")
+              console.log("carte détruit carte chemin :SUCCESS", this.matrix[y][x])
               success = true; 
+              return
             }
             
           }
