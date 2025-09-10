@@ -18,14 +18,14 @@ class Game {
 
     this.pioche = CardFactory.shuffleCartes()
    
-    let cartesBut = this.selectionnerTroisCartesChemin()
-    this.matrix[1][10] = cartesBut[0]
-    cartesBut[0].devoile = false;
-    this.matrix[3][10] = cartesBut[1]
-    cartesBut[1].devoile = false;
-    this.matrix[5][10] = cartesBut[2]
-    cartesBut[2].devoile = false;
-    this.tirerAuSortCarteTresor(cartesBut);
+    this.cartesBut = this.selectionnerTroisCartesChemin()
+    this.matrix[1][10] = this.cartesBut[0]
+    this.cartesBut[0].devoile = false;
+    this.matrix[3][10] = this.cartesBut[1]
+    this.cartesBut[1].devoile = false;
+    this.matrix[5][10] = this.cartesBut[2]
+    this.cartesBut[2].devoile = false;
+    this.tirerAuSortCarteTresor(this.cartesBut);
 
     this.joueurActuel = 1; 
     let roles = this.getRandomRole();
@@ -271,32 +271,34 @@ class Game {
           }
         }
 
+        // Carte but 
         if (carte instanceof CarteAction) {
-            if (carte.titreAction === Actions.REGARDER_CARTE_BUT) {
-              console.log(Actions.REGARDER_CARTE_BUT +' '+ y +' '+ x)
-              // cartes qui peuvent etre vues 
-              const positionsCartesBut = [[10, 1], [10,3], [10,5]];
-              //let correct = false;
+          if (carte.titreAction === Actions.REGARDER_CARTE_BUT) {
+            console.log(Actions.REGARDER_CARTE_BUT +' '+ y +' '+ x)
+            // cartes qui peuvent etre vues 
+            const positionsCartesBut = [[10, 1], [10,3], [10,5]];
+            //let correct = false;
 
-              // voir 3 cartes but deja en place 
-              for (let position of positionsCartesBut) {
-                if (position[0] === x && position[1] === y) {
-                  success = true;
-                  // appliquer l'action oeil 
-                  this.matrix[y][x].devoile = true;
+            // voir 3 cartes but deja en place 
+            for (let position of positionsCartesBut) {
+              if (position[0] === x && position[1] === y) {
+                success = true;
+                // appliquer l'action oeil 
+                this.matrix[y][x].devoile = true;
 
-                  setTimeout(()=> {
-                    this.matrix[y][x].devoile = false; 
-                  }, 3000);
+                setTimeout(()=> {
+                  this.matrix[y][x].devoile = false; 
+                }, 3000);
 
-                  console.log("voir la carte but ", "x: "+x, " y: "+y);
-                  console.log("carte but image :", this.matrix[y][x].image)
-                  break;
-                }
+                console.log("voir la carte but ", "x: "+x, " y: "+y);
+                console.log("carte but image :", this.matrix[y][x].image)
+                break;
               }
-              break;
             }
-          } 
+            break;
+          }
+        } 
+
         success = this.placerCarte(x, y, carte); 
         
         if (success) {

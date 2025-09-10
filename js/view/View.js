@@ -29,6 +29,12 @@ class View {
 
     this.setCanvasSize();
     this.refresh();
+
+    const cartesBut = this.game.cartesBut;
+    console.log(cartesBut)
+
+    const carteButDevoilee = cartesBut[1];
+    this.drawCarteCheminWithTresor(carteButDevoilee, 3, 4)
   }
 
   /**
@@ -218,6 +224,34 @@ class View {
     }
   }
 
+  drawCarteCheminWithTresor(carteButDevoilee, x, y) {
+    // Créer un élément SVG petit et le positionner par-dessus la carte
+    // avec position: absolute et z-index élevé
+    const drawX = this.zones.gameBoard.x + (x * this.tileWidth);
+    const drawY = this.zones.gameBoard.y + (y * this.tileHeight);
+
+    const image = new Image();
+    image.src = carteButDevoilee.image; 
+    image.onload = ()=> {
+      this.ctx.drawImage(image, drawX, drawY, this.tileWidth, this.tileHeight); 
+
+      // if 
+      this.drawTresor(drawX, drawY)
+    }
+  }
+
+  drawTresor(x, y) {
+    const tresorSize = this.tileWidth/2; 
+    const tresorX = x + 10;
+    const tresorY = y + 10; 
+    const tresorImage = new Image();
+    tresorImage.src = './images/treasure.svg';
+
+    tresorImage.onload = () => {
+        this.ctx.drawImage(tresorImage, tresorX, tresorY, tresorSize, tresorSize);
+    };
+  }
+
   isCarteSelectionnee(joueurId, indexCarte) {
     const carteSelectionnee = this.game.getCarteSelectionnee();
     if (!carteSelectionnee || carteSelectionnee.type !== TypesCibles.JOUEUR) {
@@ -235,7 +269,7 @@ class View {
     this.ctx.fillStyle = "#FFFFFF"; 
     this.ctx.fillRect(zone.x, zone.y, zone.width, this.playerHandHeight);
 
-    // joueurs
+    // label joueurs
     this.ctx.fillStyle = "#000000";
     this.ctx.font = "18px Tagesschrift, arial";
 
@@ -250,6 +284,7 @@ class View {
     this.drawPlayerCards(this.game.joueur2, this.zones.player2Cards);
   }
 
+  // cartes des joueurs 
   drawPlayerCards(joueur, zone) {
     for (let i = 0; i < 5; i++) {
       const carteX = zone.x + this.playerHandMarginX + i * (this.tileWidth + this.playerCardsSpacingX);
