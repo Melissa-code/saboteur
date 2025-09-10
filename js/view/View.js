@@ -17,9 +17,7 @@ class View {
     this.playerHandHeight = 4 * this.tileHeight;
     this.playerHandMarginX = this.tileWidth / 2;
     this.playerCardsSpacingX = ((this.playerHandWidth - 2 * this.playerHandMarginX) - 5 * this.tileWidth) / 4; // space between 5 player cards
-    ///console.log("playerCardsSpacingX", this.playerCardsSpacingX);
     this.playerHandMarginY = this.tileHeight / 2 + this.playerCardsSpacingX;
-    //console.log("this.tileHeight / 2",this.tileHeight / 2, "this.playerHandMarginY",this.playerHandMarginY)
     this.cardsRowsSpacingY = this.tileHeight * 2; // space between  player1Cards and player2Cards
 
     this.isMobile = window.innerWidth < 600;
@@ -181,7 +179,8 @@ class View {
                 this.tileWidth,
                 this.tileHeight
               );
-            }
+            };
+            // tester s'il y a un tresor a afficher
           // carte retournée
           } else {
             this.ctx.fillStyle = "#008bf8";

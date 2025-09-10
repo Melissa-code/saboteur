@@ -4,7 +4,7 @@ import Cible from '../model/Cible.js';
 
 const game = new Game(); 
 const view = new View(game, document, 50, 70); 
-
+game.view = view;
 
 window.addEventListener('resize', () => {
   view.handleResize();
@@ -26,3 +26,4 @@ canvas.addEventListener("click", (event) => {
 
   view.refresh();
 });
+

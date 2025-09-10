@@ -265,21 +265,47 @@ class Game {
               this.matrix[y][x] = null; 
               console.log("carte détruit carte chemin :SUCCESS", this.matrix[y][x])
               success = true; 
-              return
+              break;
             }
             
           }
         }
 
-        
+        if (carte instanceof CarteAction) {
+            if (carte.titreAction === Actions.REGARDER_CARTE_BUT) {
+              console.log(Actions.REGARDER_CARTE_BUT +' '+ y +' '+ x)
+              // cartes qui peuvent etre vues 
+              const positionsCartesBut = [[10, 1], [10,3], [10,5]];
+              //let correct = false;
+
+              // voir 3 cartes but deja en place 
+              for (let position of positionsCartesBut) {
+                if (position[0] === x && position[1] === y) {
+                  success = true;
+                  // appliquer l'action oeil 
+                  this.matrix[y][x].devoile = true;
+
+                  setTimeout(()=> {
+                    this.matrix[y][x].devoile = false; 
+                  }, 3000);
+
+                  console.log("voir la carte but ", "x: "+x, " y: "+y);
+                  console.log("carte but image :", this.matrix[y][x].image)
+                  break;
+                }
+              }
+              break;
+            }
+          } 
         success = this.placerCarte(x, y, carte); 
         
         if (success) {
           console.log("carte placée: ", "x :" + x, "y :" + y)
         }
         else {
-          console.log("impossible de placer la carte : ", "x :" + x, "y :" + y)
-        }
+            console.log("impossible de placer la carte : ", "x :" + x, "y :" + y)
+          }
+        
         break;
 
       case TypesCibles.JOUEUR: 
@@ -360,7 +386,9 @@ class Game {
   // ne pas afficher la carte bleue la détruire par la carte action faite pour
   // arranger le visuel 
   // faire carte voir : dévoilée 2s
-  
+  // corriger ne peut pas placer carte sur 1re 
+
+  // afficher trésor 
   // chemin correct et gagné (jusque trésor)
 }
 
