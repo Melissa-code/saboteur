@@ -5,6 +5,9 @@ class View {
   // tileWidth:50 & tileHeight:70
   constructor(game, document, tileWidth, tileHeight) {
     this.game = game;
+
+    this.game.addEventListener("change", ()=> this.refresh()); 
+
     this.tileWidth = tileWidth;
     this.tileHeight = tileHeight;
     this.myCanva = document.querySelector("#myCanvas");
@@ -230,11 +233,9 @@ class View {
     //checker si cartesbut 
     if (!this.game.cartesBut) return false;
 
-    for (const carteBut of this.game.cartesBut) {
-        console.log("carteBut avec tresor: ", carteBut.tresor);
-        
+    for (const carteBut of this.game.cartesBut) {        
         if (carteBut === carte && carteBut.tresor === "./images/treasure.svg") {
-            console.log("carte tresor trouvée: ", carteBut);
+           
             return true;
         } 
     }

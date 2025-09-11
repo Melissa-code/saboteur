@@ -7,8 +7,9 @@ import Actions from './Actions.js';
 import Cible from './Cible.js'; 
 import TypesCibles from '../model/TypesCibles.js';
 
-class Game {
+class Game extends EventTarget{
   constructor() {
+    super(); 
     this.width = 11;
     this.height = 7;
     this.matrix = this.initGame();
@@ -70,6 +71,32 @@ class Game {
     this.joueurActuelIndex = (this.joueurActuelIndex + 1) % this.roles.length;
   }
 
+  testDevoilerCarteBut(x, y, carteAPlacer) {
+    const positionsPossibles = [[10, 0], [10, 2], [10, 4], [10,6], [9,1], [9,3], [9,5]];
+
+    // for (const positionPossible of positionsPossibles) {
+    //   if (x === positionPossible[0] && y === positionPossible[1]) {
+    //     // devoiler la carte but d a coté
+
+    //   }
+    // }
+
+    if (x ==9 && y%2==1) {
+      let indiceCarteBute = y/2; /// y=1=>0 y=3=>1 y=5=>2
+        if (this.cartesBut[indiceCarteBute].devoile == false) {
+          if (carteAPlacer.droite != 0) {
+            this.cartesBut[indiceCarteBute].devoile = true; 
+            console.log("carte dévoilée: ", indiceCarteBute)
+          }
+        }
+    }
+
+    // faire rotation
+    // debug quand on place une carte qi n'a pas de connexion avec voisinage 
+    // finir testDevoilerCartebut
+
+  }
+
   placerCarte(x, y, carteAPlacer) {
     let existeVoisinage = false; 
 
@@ -97,7 +124,7 @@ class Game {
 
     if (existeVoisinage) {
       this.matrix[y][x] = carteAPlacer;
-      //console.log('Carte placée :', x, y);
+      console.log('Carte placée :', x, y);
     }
 
     return existeVoisinage;
@@ -134,7 +161,7 @@ class Game {
     let carteTresor = cartesBut[indexCarteTresor]; 
     carteTresor.ajouterTresor();
 
-    console.log("carte trésor: ", carteTresor)
+    ///console.log("carte trésor: ", carteTresor)
 
     return carteTresor;  
   }
@@ -290,6 +317,7 @@ class Game {
 
                 setTimeout(()=> {
                   this.matrix[y][x].devoile = false; 
+                  this.dispatchEvent(new Event("change"))
                 }, 3000);
 
                 console.log("voir la carte but ", "x: "+x, " y: "+y);
