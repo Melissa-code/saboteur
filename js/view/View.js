@@ -175,18 +175,18 @@ class View {
 
         if (cell !== null) {
           if (cell.devoile == true) {
-            const image = new Image();
-            image.src = cell.image;
-            image.onload = () => {
-              this.ctx.drawImage(
-                image,
-                drawX, 
-                drawY, 
-                this.tileWidth,
-                this.tileHeight
-              );
+            // carte trésor ?
+            if (this.isCarteTresor(cell)) {
+              this.drawCarteCheminWithTresor(cell, x, y)
+            // image de carte
+            } else {
+              const image = new Image();
+              image.src = cell.image;
+              image.onload = () => {
+                this.ctx.drawImage(image, drawX, drawY, this.tileWidth, this.tileHeight);
+              }
             };
-            // tester s'il y a un tresor a afficher
+
           // carte retournée
           } else {
             this.ctx.fillStyle = "#008bf8";
@@ -200,6 +200,7 @@ class View {
             this.ctx.fill(); 
           }
         } 
+
         // this.matrix[y][x] === null
         else {
           this.ctx.fillStyle = "#FFFFFF"; 
@@ -224,9 +225,17 @@ class View {
     }
   }
 
+  isCarteTresor(carte) {
+    if (!this.game.cartesBut) return false;
+      for (const carteBut of this.game.cartesBut)  {
+        if (carteBut === carte && carteBut.tresor === true) {
+          return true;
+        } 
+      }
+      return false;
+  }
+
   drawCarteCheminWithTresor(carteButDevoilee, x, y) {
-    // Créer un élément SVG petit et le positionner par-dessus la carte
-    // avec position: absolute et z-index élevé
     const drawX = this.zones.gameBoard.x + (x * this.tileWidth);
     const drawY = this.zones.gameBoard.y + (y * this.tileHeight);
 
@@ -234,15 +243,13 @@ class View {
     image.src = carteButDevoilee.image; 
     image.onload = ()=> {
       this.ctx.drawImage(image, drawX, drawY, this.tileWidth, this.tileHeight); 
-
-      // if 
       this.drawTresor(drawX, drawY)
     }
   }
 
   drawTresor(x, y) {
-    const tresorSize = this.tileWidth/2; 
-    const tresorX = x + 10;
+    const tresorSize = this.tileHeight/1.5; 
+    const tresorX = x;
     const tresorY = y + 10; 
     const tresorImage = new Image();
     tresorImage.src = './images/treasure.svg';

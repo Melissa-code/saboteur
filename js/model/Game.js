@@ -271,7 +271,7 @@ class Game {
           }
         }
 
-        // Carte but 
+        // Regarde Carte but 
         if (carte instanceof CarteAction) {
           if (carte.titreAction === Actions.REGARDER_CARTE_BUT) {
             console.log(Actions.REGARDER_CARTE_BUT +' '+ y +' '+ x)
