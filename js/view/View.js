@@ -33,8 +33,8 @@ class View {
     const cartesBut = this.game.cartesBut;
     console.log(cartesBut)
 
-    const carteButDevoilee = cartesBut[1];
-    this.drawCarteCheminWithTresor(carteButDevoilee, 3, 4)
+    //const carteButDevoilee = cartesBut[1];
+    //this.drawCarteCheminWithTresor(carteButDevoilee, 3, 4)
   }
 
   /**
@@ -174,10 +174,11 @@ class View {
         const cell = this.game.matrix[y][x];
 
         if (cell !== null) {
-          if (cell.devoile == true) {
+          if (cell.devoile === true) {
             // carte trésor ?
             if (this.isCarteTresor(cell)) {
               this.drawCarteCheminWithTresor(cell, x, y)
+
             // image de carte
             } else {
               const image = new Image();
@@ -226,13 +227,19 @@ class View {
   }
 
   isCarteTresor(carte) {
+    //checker si cartesbut 
     if (!this.game.cartesBut) return false;
-      for (const carteBut of this.game.cartesBut)  {
-        if (carteBut === carte && carteBut.tresor === true) {
-          return true;
+
+    for (const carteBut of this.game.cartesBut) {
+        console.log("carteBut avec tresor: ", carteBut.tresor);
+        
+        if (carteBut === carte && carteBut.tresor === "./images/treasure.svg") {
+            console.log("carte tresor trouvée: ", carteBut);
+            return true;
         } 
-      }
-      return false;
+    }
+    
+    return false;
   }
 
   drawCarteCheminWithTresor(carteButDevoilee, x, y) {

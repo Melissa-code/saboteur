@@ -134,6 +134,8 @@ class Game {
     let carteTresor = cartesBut[indexCarteTresor]; 
     carteTresor.ajouterTresor();
 
+    console.log("carte trésor: ", carteTresor)
+
     return carteTresor;  
   }
 
@@ -274,7 +276,7 @@ class Game {
         // Regarde Carte but 
         if (carte instanceof CarteAction) {
           if (carte.titreAction === Actions.REGARDER_CARTE_BUT) {
-            console.log(Actions.REGARDER_CARTE_BUT +' '+ y +' '+ x)
+            console.log(Actions.REGARDER_CARTE_BUT + 'ici :' + ' ' + x +' '+ y)
             // cartes qui peuvent etre vues 
             const positionsCartesBut = [[10, 1], [10,3], [10,5]];
             //let correct = false;
