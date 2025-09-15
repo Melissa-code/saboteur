@@ -173,7 +173,6 @@ class View {
           this.tileHeight
         );
 
-        // load image
         const cell = this.game.matrix[y][x];
 
         if (cell !== null) {
@@ -234,10 +233,9 @@ class View {
     if (!this.game.cartesBut) return false;
 
     for (const carteBut of this.game.cartesBut) {        
-        if (carteBut === carte && carteBut.tresor === "./images/treasure.svg") {
-           
-            return true;
-        } 
+      if (carteBut === carte && carteBut.tresor === "./images/treasure.svg") {
+        return true;
+      } 
     }
     
     return false;

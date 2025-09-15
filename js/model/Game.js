@@ -181,13 +181,11 @@ class Game extends EventTarget{
     }
 
     if (this.action1 === null) {
-
-
       if (cible.type === TypesCibles.JOUEUR) {
         const [numJoueur, numCarte] = cible.reference;
+
         if (numJoueur === this.joueurActuel && numCarte !== -1) {
           this.action1 = cible;
-
           return;
         } else {
           console.log("premier clic n'est pas sur une carte du joueur courant.");
@@ -200,40 +198,57 @@ class Game extends EventTarget{
     }
 
     // code pour traiter l'action 2 (2e clic)
+
     if (cible.type === TypesCibles.CORBEILLE || cible.type === TypesCibles.MATRICE) {
       this.action2 = cible; 
       this.appliquerActions();
-
       return
     }
 
-
     if (cible.type === TypesCibles.JOUEUR) {
-    const [numJoueurCible, numCarteCible] = cible.reference; //[numJoueur, numCarte]
+      const [numJoueurCible, numCarteCible] = cible.reference; //[numJoueur, numCarte]
+      const [numJoueurAction1, numCarteAction1] = this.action1.reference;
 
-    // Si cible est un autre joueur
-    if (numJoueurCible !== this.joueurActuel) {
-      this.action2 = cible; 
-      this.appliquerActions();
+      // rotation (ne pas  appliquerActions() sélection)
+      if (numJoueurAction1 === numJoueurCible && numCarteAction1 === numCarteCible) {
+        const joueurCourant = this.joueurActuel === 1 ? this.joueur1 : this.joueur2; 
+        const carteAJouer = joueurCourant.cartes[numCarteAction1];
 
-      return;
-    }
+        if (carteAJouer instanceof CarteChemin) {
+          console.log(carteAJouer)
+          carteAJouer.rotation();
+        }
+        console.log(carteAJouer)
+        console.log('Carte tournée de 180°');
+        return;
 
-    // Si cible est soi-même: uniquement si la carte est réparation
-    if (numJoueurCible === this.joueurActuel) {
-      // identifier carte jouée 
-      const joueur = this.joueurActuel === 1 ? this.joueur1 : this.joueur2;
-      const [numJoueur, numCarte] = this.action1.reference;
-      const carte = joueur.cartes[numCarte];
-    
-      if (carte instanceof CarteAction && carte.estCarteReparation()) {
-        this.action2 = cible;
+      }
+
+      // Si cible est un autre joueur
+      if (numJoueurCible !== this.joueurActuel) {
+        this.action2 = cible; 
         this.appliquerActions();
 
         return;
       }
+
+      // Si cible est soi-même: uniquement si la carte est réparation
+      if (numJoueurCible === this.joueurActuel) {
+
+        // identifier carte jouée 
+        const joueur = this.joueurActuel === 1 ? this.joueur1 : this.joueur2;
+        const [numJoueur, numCarte] = this.action1.reference;
+        const carte = joueur.cartes[numCarte];
+      
+        if (carte instanceof CarteAction && carte.estCarteReparation()) {
+          this.action2 = cible;
+          this.appliquerActions();
+
+          return;
+        }
+
+      }
     }
-  }
 
     console.log('clic incorrect');
   }
