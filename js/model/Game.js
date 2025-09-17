@@ -1,6 +1,6 @@
 import GameStates from "./GameStates.js";
 import { Card, CarteChemin, CarteAction } from './Card.js'; 
-import { CardFactory } from "./CardFactory.js";
+import CardFactory from './CardFactory.js'; 
 import Directions from './Directions.js';
 import Player from './Player.js'; 
 import Actions from './Actions.js'; 
@@ -209,7 +209,7 @@ class Game extends EventTarget{
       const [numJoueurCible, numCarteCible] = cible.reference; //[numJoueur, numCarte]
       const [numJoueurAction1, numCarteAction1] = this.action1.reference;
 
-      // rotation (ne pas  appliquerActions() sélection)
+      // rotation (ne pas appliquerActions() sélection)
       if (numJoueurAction1 === numJoueurCible && numCarteAction1 === numCarteCible) {
         const joueurCourant = this.joueurActuel === 1 ? this.joueur1 : this.joueur2; 
         const carteAJouer = joueurCourant.cartes[numCarteAction1];
@@ -220,6 +220,8 @@ class Game extends EventTarget{
         }
         console.log(carteAJouer)
         console.log('Carte tournée de 180°');
+        // event change pour que la Vue se redessine
+        this.dispatchEvent(new Event("change"));
         return;
 
       }

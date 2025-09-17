@@ -1,4 +1,3 @@
-import { CardFactory } from './CardFactory.js';
 import Directions from './Directions.js';
 import Actions from './Actions.js';
 
@@ -29,6 +28,7 @@ export class CarteChemin extends Card {
         this.gauche = gauche;
         this.devoile = devoile;
         this.tresor = tresor;
+        this.rotated = false;
     }
 
     rotation() {
@@ -38,6 +38,8 @@ export class CarteChemin extends Card {
         let tempDroite = this.droite; 
         this.droite = this.gauche; 
         this.gauche = tempDroite; 
+
+        this.rotated = true;
     }
 
     // return bool 
@@ -54,8 +56,6 @@ export class CarteChemin extends Card {
     ajouterTresor() {
         this.tresor = "./images/treasure.svg";
     }
-    
-    
 }
 
 

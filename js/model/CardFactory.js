@@ -1,7 +1,7 @@
 import { Card, CarteChemin, CarteAction } from './Card.js'; 
 import Actions from './Actions.js'; 
 
-export class CardFactory {
+class CardFactory {
     
      /**
      * return CarteChemin 
@@ -111,5 +111,6 @@ export class CardFactory {
 
         return pioche; 
     }
-
 }
+
+export default CardFactory; 

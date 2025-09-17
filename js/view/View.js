@@ -1,12 +1,14 @@
 import TypesCibles from '../model/TypesCibles.js';
 import Cible from '../model/Cible.js';
+import {Card, CarteChemin, CarteAction } from '../model/Card.js'; 
+
 
 class View {
   // tileWidth:50 & tileHeight:70
   constructor(game, document, tileWidth, tileHeight) {
     this.game = game;
 
-    this.game.addEventListener("change", ()=> this.refresh()); 
+    this.game.addEventListener("change", () => this.refresh()); 
 
     this.tileWidth = tileWidth;
     this.tileHeight = tileHeight;
@@ -41,7 +43,7 @@ class View {
   }
 
   /**
-   * zones: gameboard , playersCards, player1Cards,  player2Cards , garbage 
+   * zones: gameboard, playersCards, player1Cards, player2Cards, garbage 
    */
   initializeZones() {
     this.zones = {};
@@ -297,23 +299,39 @@ class View {
     this.drawPlayerCards(this.game.joueur2, this.zones.player2Cards);
   }
 
+  drawImageRotated(image, x, y, width, height, rotation = 0) {
+    if (rotation === 0) {
+      this.ctx.drawImage(image, x, y, width, height);
+    } else {
+      this.ctx.save();// comme si état actuel du canvas mis dans une boîte, rotation d'une img après
+      this.ctx.translate(x + width/2, y + height/2);// x y sont déplacés au centre de l'img != coin supér gauche 
+      this.ctx.rotate(rotation); //tourne autour du nv x y :(0,0)
+      this.ctx.drawImage(image, -width/2, -height/2, width, height);//img dessinée à partir du centre (-width/2, -height/2 pour ne pas etre décalée)
+      this.ctx.restore(); // réinitialise le contexte,origine (0,0) revient à sa position normale
+    }
+  }
+
   // cartes des joueurs 
   drawPlayerCards(joueur, zone) {
     for (let i = 0; i < 5; i++) {
       const carteX = zone.x + this.playerHandMarginX + i * (this.tileWidth + this.playerCardsSpacingX);
-      const carteY = zone.y + this.playerHandMarginY ;
+      const carteY = zone.y + this.playerHandMarginY;
       
       this.ctx.fillStyle = "#FFFFFF";
       this.ctx.fillRect(carteX, carteY, this.tileWidth, this.tileHeight);
       
       if (joueur.cartes[i]) {
+        const carte = joueur.cartes[i];
         const image = new Image();
-        image.src = joueur.cartes[i].image;
+        image.src = carte.image;
+        
         image.onload = () => {
-          this.ctx.drawImage(image, carteX, carteY, this.tileWidth, this.tileHeight);
+            const rotation = carte.rotated ? Math.PI : 0; // 180 (90°= Math.PI/2 radians)
+            this.drawImageRotated(image, carteX, carteY, this.tileWidth, this.tileHeight, rotation);
         }
       }
-
+      
+      
       // Bordure carte sélectionnée
       if (this.isCarteSelectionnee(joueur.id, i)) {
         this.ctx.lineWidth = 3;
