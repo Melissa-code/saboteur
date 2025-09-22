@@ -100,23 +100,23 @@ class Game extends EventTarget{
   placerCarte(x, y, carteAPlacer) {
     let existeVoisinage = false; 
 
-    if (this.matrix[y][x + 1] != null) {
+    if ((x+1)< this.width && this.matrix[y][x + 1] != null) {
       let carteGrille = this.matrix[y][x + 1];
       if (!carteGrille.accepte_voisine(carteAPlacer, Directions["GAUCHE"])) 
         return false;
       existeVoisinage = true
     }
-    if (this.matrix[y][x - 1] != null) {
+    if ((x>=1) && this.matrix[y][x - 1] != null) {
       let carteGrille = this.matrix[y][x - 1];
       if (!carteGrille.accepte_voisine(carteAPlacer, Directions["DROITE"])) return false;
       existeVoisinage = true
     }
-    if (this.matrix[y + 1][x] != null) {
+    if ((y+1)<this.height && this.matrix[y + 1][x] != null) {
       let carteGrille = this.matrix[y + 1][x];
       if (!carteGrille.accepte_voisine(carteAPlacer, Directions["HAUT"])) return false;
       existeVoisinage = true
     }
-    if (this.matrix[y - 1][x] != null) {
+    if ((y>=1) && this.matrix[y - 1][x] != null) {
       let carteGrille = this.matrix[y - 1][x];
       if (!carteGrille.accepte_voisine(carteAPlacer, Directions["BAS"])) return false;
       existeVoisinage = true
@@ -220,10 +220,18 @@ class Game extends EventTarget{
         }
         console.log(carteAJouer)
         console.log('Carte tournée de 180°');
-        // event change pour que la Vue se redessine
+        // event pour que la Vue se redessine
         this.dispatchEvent(new Event("change"));
-        return;
 
+        return;
+      }
+
+      // 2e clic pour changer de carte sélectionnée 
+      if (numJoueurAction1 === numJoueurCible && numCarteAction1 !== numCarteCible) {
+        const [numJoueur, numCarte] = cible.reference;
+          if (numCarte !== -1) {
+              this.action1 = cible;
+          }
       }
 
       // Si cible est un autre joueur
@@ -362,12 +370,6 @@ class Game extends EventTarget{
         const joueurCible = numJoueurCible === 1 ? this.joueur1 : this.joueur2; 
 
         if (carte instanceof CarteAction) {
-
-          console.log(
-            "joueur courant:", joueur.id,
-            "joueur cible:", numJoueurCible,
-            "carte:", carte
-          );
  
           // bloquer joueur adv
           if (carte.estCarteBloquante()) {
@@ -432,12 +434,9 @@ class Game extends EventTarget{
     this.action2 = null;
   }
 
-  // ne pas afficher la carte bleue la détruire par la carte action faite pour
-  // arranger le visuel 
-  // faire carte voir : dévoilée 2s
-  // corriger ne peut pas placer carte sur 1re 
 
-  // afficher trésor 
+  // arranger le visuel 
+  // corriger ne peut pas placer carte sur 1re 
   // chemin correct et gagné (jusque trésor)
 }
 

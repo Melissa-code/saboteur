@@ -185,10 +185,15 @@ class View {
 
             // image de carte
             } else {
+        
               const image = new Image();
               image.src = cell.image;
               image.onload = () => {
-                this.ctx.drawImage(image, drawX, drawY, this.tileWidth, this.tileHeight);
+                let rotation=0;
+                if (cell instanceof CarteChemin)
+                  rotation = (cell.rotated) ? Math.PI : 0;
+                this.drawImageRotated(image, drawX, drawY, this.tileWidth, this.tileHeight, rotation);
+                //this.ctx.drawImage(image, drawX, drawY, this.tileWidth, this.tileHeight);
               }
             };
 

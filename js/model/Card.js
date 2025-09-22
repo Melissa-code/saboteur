@@ -39,16 +39,21 @@ export class CarteChemin extends Card {
         this.droite = this.gauche; 
         this.gauche = tempDroite; 
 
-        this.rotated = true;
+        this.rotated = !this.rotated;
     }
 
     // return bool 
     accepte_voisine(carteVoisine, direction)
     {
-        if (direction === Directions.DROITE) return this.droite === 2 && carteVoisine.gauche !== 0;
-        if (direction === Directions.GAUCHE) return this.gauche === 2 && carteVoisine.droite !== 0;
-        if (direction === Directions.HAUT) return this.haut === 2 && carteVoisine.bas !== 0;
-        if (direction === Directions.BAS) return this.bas === 2 && carteVoisine.haut !== 0;
+        console.log(" ma carte ", carteVoisine)
+        console.log("direction ", direction)
+        console.log(" carte accepte voisine ", this)
+
+        // A tester incorrecte quand un des deux (et un seul) est 0 : somme!=0 et produit=0 => incorrecte
+        if (direction === Directions.DROITE) return (this.droite !==0 && carteVoisine.gauche !== 0) || (this.droite === 0 && carteVoisine.gauche === 0);
+        if (direction === Directions.GAUCHE) return (this.gauche !==0 && carteVoisine.droite !== 0) || (this.gauche === 0 && carteVoisine.droite === 0);
+        if (direction === Directions.HAUT) return (this.haut !==0 && carteVoisine.bas !== 0) || (this.haut === 0 && carteVoisine.bas === 0);
+        if (direction === Directions.BAS) return (this.bas !==0 && carteVoisine.haut !== 0) || (this.bas === 0 && carteVoisine.haut === 0);
 
         return false; 
     }  
