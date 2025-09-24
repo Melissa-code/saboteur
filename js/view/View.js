@@ -1,6 +1,6 @@
 import TypesCibles from '../model/TypesCibles.js';
 import Cible from '../model/Cible.js';
-import {Card, CarteChemin, CarteAction } from '../model/Card.js'; 
+import { CarteChemin } from '../model/Card.js'; 
 
 
 class View {
@@ -35,11 +35,8 @@ class View {
     this.setCanvasSize();
     this.refresh();
 
-    const cartesBut = this.game.cartesBut;
-    console.log(cartesBut)
-
-    //const carteButDevoilee = cartesBut[1];
-    //this.drawCarteCheminWithTresor(carteButDevoilee, 3, 4)
+    // const cartesBut = this.game.cartesBut;
+    // console.log(cartesBut)
   }
 
   /**
@@ -199,13 +196,13 @@ class View {
 
           // carte retournée
           } else {
-            this.ctx.fillStyle = "#008bf8";
+            this.ctx.fillStyle = "#2b2d42";
             this.ctx.roundRect(
               drawX,
               drawY, 
               this.tileWidth,
               this.tileHeight,
-              10
+              10 //border-radius 
             );
             this.ctx.fill(); 
           }
@@ -223,8 +220,8 @@ class View {
         }
 
         // border
-        this.ctx.lineWidth = 1;
-        this.ctx.strokeStyle = "#000000";
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeStyle = "#8D99AE";
         this.ctx.strokeRect(
           x * this.tileWidth,
           y * this.tileHeight,
@@ -261,9 +258,9 @@ class View {
   }
 
   drawTresor(x, y) {
-    const tresorSize = this.tileHeight/1.5; 
-    const tresorX = x;
-    const tresorY = y + 10; 
+    const tresorSize = this.tileHeight/2; 
+    const tresorX = x + 6;
+    const tresorY = y + 12; 
     const tresorImage = new Image();
     tresorImage.src = './images/treasure.svg';
 
@@ -339,9 +336,9 @@ class View {
       
       // Bordure carte sélectionnée
       if (this.isCarteSelectionnee(joueur.id, i)) {
-        this.ctx.lineWidth = 3;
-        this.ctx.strokeStyle = "gold";
-        this.ctx.strokeRect(carteX - 2, carteY - 2, this.tileWidth + 4, this.tileHeight + 4);
+        this.ctx.lineWidth = 4;
+        this.ctx.strokeStyle = "#F8F32B";
+        this.ctx.strokeRect(carteX - 0.5, carteY - 1.5, this.tileWidth + 0.5, this.tileHeight + 1.5);
       }
 
       joueur.cartesBloquent.forEach((carte, index) => {

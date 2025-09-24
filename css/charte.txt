@@ -8,3 +8,10 @@ colors:
 font: 
   Tagesschrift Static 400
 
+  #2B2D42
+  #8D99AE
+  #F8F32B
+  #FFFFFF
+  #000000
+
+

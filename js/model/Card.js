@@ -10,14 +10,6 @@ export class Card {
     rotation() {}
 }
 
-
-class CarteNain {
-    //chercheur ou saboteur
-    constructor(typeNain) {
-        this.typeNain = typeNain; 
-    }
-}
-
 export class CarteChemin extends Card {
 
     constructor(haut, droite, bas, gauche, image, devoile = true, tresor = null) {
@@ -41,20 +33,19 @@ export class CarteChemin extends Card {
 
         this.rotated = !this.rotated;
     }
-
-    // return bool 
-    accepte_voisine(carteVoisine, direction)
+ 
+    accepte_voisine(carteAPlacer, direction)
     {
-        console.log(" ma carte ", carteVoisine)
+        console.log(" ma carte à placer : ", carteAPlacer)
         console.log("direction ", direction)
         console.log(" carte accepte voisine ", this)
 
         // A tester incorrecte quand un des deux (et un seul) est 0 : somme!=0 et produit=0 => incorrecte
-        if (direction === Directions.DROITE) return (this.droite !==0 && carteVoisine.gauche !== 0) || (this.droite === 0 && carteVoisine.gauche === 0);
-        if (direction === Directions.GAUCHE) return (this.gauche !==0 && carteVoisine.droite !== 0) || (this.gauche === 0 && carteVoisine.droite === 0);
-        if (direction === Directions.HAUT) return (this.haut !==0 && carteVoisine.bas !== 0) || (this.haut === 0 && carteVoisine.bas === 0);
-        if (direction === Directions.BAS) return (this.bas !==0 && carteVoisine.haut !== 0) || (this.bas === 0 && carteVoisine.haut === 0);
-
+        if (direction === Directions.GAUCHE) return (this.gauche !== 0 && carteAPlacer.droite !== 0) || (this.gauche === 0 && carteAPlacer.droite === 0);
+        if (direction === Directions.DROITE) return (this.droite !== 0 && carteAPlacer.gauche !== 0) || (this.droite === 0 && carteAPlacer.gauche === 0);
+        if (direction === Directions.HAUT) return (this.haut !== 0 && carteAPlacer.bas !== 0) || (this.haut === 0 && carteAPlacer.bas === 0);
+        if (direction === Directions.BAS) return (this.bas !== 0 && carteAPlacer.haut !== 0) || (this.bas === 0 && carteAPlacer.haut === 0);
+      
         return false; 
     }  
 
@@ -62,7 +53,6 @@ export class CarteChemin extends Card {
         this.tresor = "./images/treasure.svg";
     }
 }
-
 
 // bloque debloque
 export class CarteAction extends Card {

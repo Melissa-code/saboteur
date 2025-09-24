@@ -98,33 +98,42 @@ class Game extends EventTarget{
   }
 
   placerCarte(x, y, carteAPlacer) {
+    // s'assurer qu'au moins un voisin existe
     let existeVoisinage = false; 
 
-    if ((x+1)< this.width && this.matrix[y][x + 1] != null) {
+    // Pour voisin de droite 
+    if ((x + 1) < this.width && this.matrix[y][x + 1] != null) {
       let carteGrille = this.matrix[y][x + 1];
-      if (!carteGrille.accepte_voisine(carteAPlacer, Directions["GAUCHE"])) 
-        return false;
-      existeVoisinage = true
-    }
-    if ((x>=1) && this.matrix[y][x - 1] != null) {
-      let carteGrille = this.matrix[y][x - 1];
-      if (!carteGrille.accepte_voisine(carteAPlacer, Directions["DROITE"])) return false;
-      existeVoisinage = true
-    }
-    if ((y+1)<this.height && this.matrix[y + 1][x] != null) {
-      let carteGrille = this.matrix[y + 1][x];
-      if (!carteGrille.accepte_voisine(carteAPlacer, Directions["HAUT"])) return false;
-      existeVoisinage = true
-    }
-    if ((y>=1) && this.matrix[y - 1][x] != null) {
-      let carteGrille = this.matrix[y - 1][x];
-      if (!carteGrille.accepte_voisine(carteAPlacer, Directions["BAS"])) return false;
-      existeVoisinage = true
-    }
+      if (!carteGrille.accepte_voisine(carteAPlacer, Directions.GAUCHE)) return false;
 
+      existeVoisinage = true
+    }
+    // Pour voisin de gauche
+    if ((x >= 1) && this.matrix[y][x - 1] != null) {
+      let carteGrille = this.matrix[y][x - 1];
+      if (!carteGrille.accepte_voisine(carteAPlacer, Directions.DROITE)) return false;
+
+      existeVoisinage = true
+    }
+    // Pour voisin du haut
+    if ((y >= 1) && this.matrix[y - 1][x] != null) {
+      let carteGrille = this.matrix[y - 1][x];
+      if (!carteGrille.accepte_voisine(carteAPlacer, Directions.BAS)) return false;
+
+      existeVoisinage = true
+    }
+    // Pour voisin du bas
+    if ((y + 1) < this.height && this.matrix[y + 1][x] != null) {
+      let carteGrille = this.matrix[y + 1][x];
+      if (!carteGrille.accepte_voisine(carteAPlacer, Directions.HAUT)) return false;
+
+      existeVoisinage = true
+    }
+    
+    // si tous les voisins acceptent la carte et au moins un voisin existe
     if (existeVoisinage) {
       this.matrix[y][x] = carteAPlacer;
-      console.log('Carte placée :', x, y);
+      console.log('Carte à jouer placée ici :', 'x: ' + x, 'y: ' +y);
     }
 
     return existeVoisinage;
@@ -435,7 +444,7 @@ class Game extends EventTarget{
   }
 
 
-  // arranger le visuel 
+  // arranger le visuel (https://coolors.co/2b2d42-8d99ae-f8f32b-ffffff-000000)
   // corriger ne peut pas placer carte sur 1re 
   // chemin correct et gagné (jusque trésor)
 }
