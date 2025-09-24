@@ -85,33 +85,42 @@ class Game extends EventTarget{
     }
   }
 
+  /**
+   * Respecte les contraintes tunnel-tunnel(2-2)/tunnel-impasse(2-1)/mur-mur(0-0) 
+   * Au moins une liaison entre tunnels existe (pas de zone isolée sur plateau jeu)
+   */
   placerCarte(x, y, carteAPlacer) {
-    // au moins un voisin existe + 
+    if (this.matrix[y][x] != null) {
+      console.log('La case est déjà occupée');
+      return false;
+    }
+
+    // au moins un voisin existe + connexion entre les 2 cartes
     let existeVoisinage = false; 
     let connexionCartes = false;
-
-    // Pour voisin de droite 
+    
+    // Pour voisine de droite 
     if ((x + 1) < this.width && this.matrix[y][x + 1] != null) {
       let carteGrille = this.matrix[y][x + 1];
       if (!carteGrille.accepte_voisine(carteAPlacer, Directions.GAUCHE)) return false;
       if (carteGrille.gauche !== 0 && carteAPlacer.droite !== 0) connexionCartes = true;
       existeVoisinage = true
     }
-    // Pour voisin de gauche
+    // Pour voisine de gauche
     if ((x >= 1) && this.matrix[y][x - 1] != null) {
       let carteGrille = this.matrix[y][x - 1];
       if (!carteGrille.accepte_voisine(carteAPlacer, Directions.DROITE)) return false;
       if (carteGrille.droite !== 0 && carteAPlacer.gauche !== 0) connexionCartes = true;
       existeVoisinage = true
     }
-    // Pour voisin du haut
+    // Pour voisine du haut
     if ((y >= 1) && this.matrix[y - 1][x] != null) {
       let carteGrille = this.matrix[y - 1][x];
       if (!carteGrille.accepte_voisine(carteAPlacer, Directions.BAS)) return false;
       if (carteGrille.bas !== 0 && carteAPlacer.haut !== 0) connexionCartes = true;
       existeVoisinage = true
     }
-    // Pour voisin du bas
+    // Pour voisine du bas
     if ((y + 1) < this.height && this.matrix[y + 1][x] != null) {
       let carteGrille = this.matrix[y + 1][x];
       if (!carteGrille.accepte_voisine(carteAPlacer, Directions.HAUT)) return false;
@@ -121,7 +130,7 @@ class Game extends EventTarget{
 
     if (existeVoisinage && connexionCartes) {
       this.matrix[y][x] = carteAPlacer;
-      console.log('Carte à jouer placée ici :', 'x: ' + x, 'y: ' + y);
+      //console.log('Carte à jouer placée ici :', 'x: ' + x, 'y: ' + y);
       return true;
     }
 
