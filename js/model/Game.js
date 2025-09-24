@@ -74,69 +74,58 @@ class Game extends EventTarget{
   testDevoilerCarteBut(x, y, carteAPlacer) {
     const positionsPossibles = [[10, 0], [10, 2], [10, 4], [10,6], [9,1], [9,3], [9,5]];
 
-    // for (const positionPossible of positionsPossibles) {
-    //   if (x === positionPossible[0] && y === positionPossible[1]) {
-    //     // devoiler la carte but d a coté
-
-    //   }
-    // }
-
     if (x ==9 && y%2==1) {
-      let indiceCarteBute = y/2; /// y=1=>0 y=3=>1 y=5=>2
-        if (this.cartesBut[indiceCarteBute].devoile == false) {
+      let indiceCarteBut = y/2; /// y=1=>0 y=3=>1 y=5=>2
+        if (this.cartesBut[indiceCarteBut].devoile == false) {
           if (carteAPlacer.droite != 0) {
-            this.cartesBut[indiceCarteBute].devoile = true; 
-            console.log("carte dévoilée: ", indiceCarteBute)
+            this.cartesBut[indiceCarteBut].devoile = true; 
+            console.log("carte dévoilée: ", indiceCarteBut)
           }
         }
     }
-
-    // faire rotation
-    // debug quand on place une carte qi n'a pas de connexion avec voisinage 
-    // finir testDevoilerCartebut
-
   }
 
   placerCarte(x, y, carteAPlacer) {
-    // s'assurer qu'au moins un voisin existe
+    // au moins un voisin existe + 
     let existeVoisinage = false; 
+    let connexionCartes = false;
 
     // Pour voisin de droite 
     if ((x + 1) < this.width && this.matrix[y][x + 1] != null) {
       let carteGrille = this.matrix[y][x + 1];
       if (!carteGrille.accepte_voisine(carteAPlacer, Directions.GAUCHE)) return false;
-
+      if (carteGrille.gauche !== 0 && carteAPlacer.droite !== 0) connexionCartes = true;
       existeVoisinage = true
     }
     // Pour voisin de gauche
     if ((x >= 1) && this.matrix[y][x - 1] != null) {
       let carteGrille = this.matrix[y][x - 1];
       if (!carteGrille.accepte_voisine(carteAPlacer, Directions.DROITE)) return false;
-
+      if (carteGrille.droite !== 0 && carteAPlacer.gauche !== 0) connexionCartes = true;
       existeVoisinage = true
     }
     // Pour voisin du haut
     if ((y >= 1) && this.matrix[y - 1][x] != null) {
       let carteGrille = this.matrix[y - 1][x];
       if (!carteGrille.accepte_voisine(carteAPlacer, Directions.BAS)) return false;
-
+      if (carteGrille.bas !== 0 && carteAPlacer.haut !== 0) connexionCartes = true;
       existeVoisinage = true
     }
     // Pour voisin du bas
     if ((y + 1) < this.height && this.matrix[y + 1][x] != null) {
       let carteGrille = this.matrix[y + 1][x];
       if (!carteGrille.accepte_voisine(carteAPlacer, Directions.HAUT)) return false;
-
+      if (carteGrille.haut !== 0 && carteAPlacer.bas !== 0) connexionCartes = true;
       existeVoisinage = true
     }
-    
-    // si tous les voisins acceptent la carte et au moins un voisin existe
-    if (existeVoisinage) {
+
+    if (existeVoisinage && connexionCartes) {
       this.matrix[y][x] = carteAPlacer;
-      console.log('Carte à jouer placée ici :', 'x: ' + x, 'y: ' +y);
+      console.log('Carte à jouer placée ici :', 'x: ' + x, 'y: ' + y);
+      return true;
     }
 
-    return existeVoisinage;
+    return false;
   }
 
   /** 
@@ -315,7 +304,7 @@ class Game extends EventTarget{
               }
             }
            
-            // sic ase vide
+            // si case vide
             if (this.matrix[y][x] === null) {
               console.log("carte détruit chemin sur aucune carte")
               incorrect = true;

@@ -34,6 +34,7 @@ export class CarteChemin extends Card {
         this.rotated = !this.rotated;
     }
  
+    //ne pas rejeter carte parce qu’un voisin est mur 0 0
     accepte_voisine(carteAPlacer, direction)
     {
         console.log(" ma carte à placer : ", carteAPlacer)
@@ -41,13 +42,14 @@ export class CarteChemin extends Card {
         console.log(" carte accepte voisine ", this)
 
         // A tester incorrecte quand un des deux (et un seul) est 0 : somme!=0 et produit=0 => incorrecte
-        if (direction === Directions.GAUCHE) return (this.gauche !== 0 && carteAPlacer.droite !== 0) || (this.gauche === 0 && carteAPlacer.droite === 0);
-        if (direction === Directions.DROITE) return (this.droite !== 0 && carteAPlacer.gauche !== 0) || (this.droite === 0 && carteAPlacer.gauche === 0);
-        if (direction === Directions.HAUT) return (this.haut !== 0 && carteAPlacer.bas !== 0) || (this.haut === 0 && carteAPlacer.bas === 0);
-        if (direction === Directions.BAS) return (this.bas !== 0 && carteAPlacer.haut !== 0) || (this.bas === 0 && carteAPlacer.haut === 0);
+        if (direction === Directions.GAUCHE) return (this.gauche !== 0 && carteAPlacer.droite !== 0) || (this.gauche === 0 && carteAPlacer.droite === 0) ;
+        else if (direction === Directions.DROITE) return (this.droite !== 0 && carteAPlacer.gauche !== 0) || (this.droite === 0 && carteAPlacer.gauche === 0);
+        else if (direction === Directions.HAUT) return (this.haut !== 0 && carteAPlacer.bas !== 0) || (this.haut === 0 && carteAPlacer.bas === 0) ;
+        else if (direction === Directions.BAS) return (this.bas !== 0 && carteAPlacer.haut !== 0) || (this.bas === 0 && carteAPlacer.haut === 0) ;
       
         return false; 
     }  
+    
 
     ajouterTresor() {
         this.tresor = "./images/treasure.svg";
