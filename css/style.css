@@ -18,7 +18,7 @@ body {
 
 h1 {
   font-size: 1.8rem;
-  margin: 2rem 1rem ;
+  margin: 1rem;
 }
 
 .title {
@@ -34,7 +34,7 @@ h1 {
   width: 2rem;
 }
 
-.message {     
+.player-turn {     
   background:rgba(43, 45, 66, 0.4); 
   text-align: center;
   display:flex;
@@ -44,6 +44,7 @@ h1 {
   width: 40vh;
   height: 5vh;
   border-radius: 10px;
+  font-size: 16px;
 }
 
 #game-board {
@@ -78,8 +79,9 @@ h1 {
     width: 3rem;
   }
 
-  .message {
+  .player-turn {
     width: 50vh;
+    font-size: 18px;
   }
 
   #game-board {

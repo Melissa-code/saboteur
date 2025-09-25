@@ -34,11 +34,11 @@ class View {
 
     this.setCanvasSize();
     this.refresh();
-    this.messageDiv = document.querySelector(".message");
+    this.playerTurnDiv = document.querySelector(".player-turn");
   }
 
-  showMessage(text) {
-    this.messageDiv.textContent = text;
+  showPlayerTurn(text) {
+    this.playerTurnDiv.textContent = text;
   }
 
   /**
@@ -279,21 +279,16 @@ class View {
 
   displayPlayersCards() {
     const zone = this.zones.playerCards;
-
-    // zone des cartes joueurs
     this.ctx.fillStyle = "#FFFFFF"; 
     this.ctx.fillRect(zone.x, zone.y, zone.width, this.playerHandHeight);
 
-    // label joueurs
+    // label joueurs + rôles 
     this.ctx.fillStyle = "#000000";
     this.ctx.font = "18px Tagesschrift, arial";
-
     const textDecalageY = this.isMobile ? zone.y + this.playerHandMarginY : this.playerHandMarginY - this.playerCardsSpacingX;
     const textStartX = zone.x + this.playerHandMarginX;
-    this.ctx.fillText("Cartes du Joueur 1", textStartX, textDecalageY);
-    this.ctx.fillText("Cartes du Joueur 2", textStartX, textDecalageY + this.playerHandHeight/2);
-    // this.ctx.fillText("Cartes du Joueur 1", 650, 20);
-    // this.ctx.fillText("Cartes du Joueur 2", 650, 150);
+    this.ctx.fillText("Cartes du Joueur 1 - " + this.game.joueur1.role, textStartX, textDecalageY);
+    this.ctx.fillText("Cartes du Joueur 2 - " + this.game.joueur2.role, textStartX, textDecalageY + this.playerHandHeight/2);
 
     this.drawPlayerCards(this.game.joueur1, this.zones.player1Cards);
     this.drawPlayerCards(this.game.joueur2, this.zones.player2Cards);
@@ -372,7 +367,7 @@ class View {
       image.onload = () => {
         const corbeilleWidth = zone.width /1.5;
         const corbeilleHeight = zone.height /1.5;
-        // centre l'image 
+        // centre l'image
         const drawX = zone.x + (zone.width - corbeilleWidth)/2;
         const drawY = zone.y + (zone.height - corbeilleHeight)/2;
         this.ctx.drawImage(image, drawX, drawY, corbeilleWidth, corbeilleHeight);

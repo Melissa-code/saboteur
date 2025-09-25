@@ -264,7 +264,7 @@ class Game extends EventTarget {
     const newJoueur = this.joueurActuel === 1 ? this.joueur2 : this.joueur1;
     this.joueurActuel = newJoueur.id;
 
-    this.dispatchEvent(new CustomEvent("message", {
+    this.dispatchEvent(new CustomEvent("showPlayerTurn", {
       detail: `C'est au tour du joueur ${newJoueur.id} de jouer.`
     }));
   }
@@ -428,11 +428,6 @@ class Game extends EventTarget {
     this.action1 = null;
     this.action2 = null;
   }
-
-
-  // arranger le visuel (https://coolors.co/2b2d42-8d99ae-f8f32b-ffffff-000000)
-  // corriger ne peut pas placer carte sur 1re 
-  // chemin correct et gagné (jusque trésor)
 }
 
 export default Game;

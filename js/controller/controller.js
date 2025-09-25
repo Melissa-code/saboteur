@@ -6,9 +6,9 @@ const game = new Game();
 const view = new View(game, document, 50, 70); 
 game.view = view;
 
-game.addEventListener("message", (e) => view.showMessage(e.detail));
-game.dispatchEvent(new CustomEvent("message", {
-  detail: `C'est au tour du joueur ${game.joueurActuel} de jouer.`
+game.addEventListener("showPlayerTurn", (e) => view.showPlayerTurn(e.detail));
+game.dispatchEvent(new CustomEvent("showPlayerTurn", {
+  detail: `C'est au tour du joueur ${game.joueurActuel} de jouer.` // detail: propriete obligatoire 
 })); 
   
 window.addEventListener('resize', () => {
