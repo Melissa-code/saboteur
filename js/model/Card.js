@@ -37,9 +37,11 @@ export class CarteChemin extends Card {
     //ne pas rejeter carte parce qu’un voisin est mur 0 0
     accepte_voisine(carteAPlacer, direction)
     {
-        // console.log(" ma carte à placer : ", carteAPlacer)
-        // console.log("direction ", direction)
-        // console.log(" carte accepte voisine ", this)
+        console.log(" ma carte à placer : ", carteAPlacer)
+        console.log("direction ", direction)
+        console.log(" carte accepte voisine ", this)
+
+        if (this.devoile === true) return true; 
 
         // A tester incorrecte quand un des deux (et un seul) est 0 : somme!=0 et produit=0 => incorrecte
         if (direction === Directions.GAUCHE) return (this.gauche !== 0 && carteAPlacer.droite !== 0) || (this.gauche === 0 && carteAPlacer.droite === 0) ;

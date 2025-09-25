@@ -1,10 +1,8 @@
-import GameStates from "./GameStates.js";
-import { Card, CarteChemin, CarteAction } from './Card.js'; 
+import { CarteChemin, CarteAction } from './Card.js'; 
 import CardFactory from './CardFactory.js'; 
 import Directions from './Directions.js';
 import Player from './Player.js'; 
 import Actions from './Actions.js'; 
-import Cible from './Cible.js'; 
 import TypesCibles from '../model/TypesCibles.js';
 
 
@@ -81,33 +79,38 @@ class Game extends EventTarget {
       return false;
     }
 
-    // au moins un voisin existe + connexion entre les 2 cartes
+    // au moins une voisine existe + connexion entre les 2 cartes pour toutes les cartes dévoilées
     let existeVoisinage = false; 
     let connexionCartes = false;
+
+    console.log("carte grille de test" , this.matrix[y][x + 1])
+    console.log("carte grille de test" ,  this.matrix[y][x - 1])
+    console.log("carte grille de test" , this.matrix[y - 1][x])
+    console.log("carte grille de test" , this.matrix[y + 1][x])
     
     // Pour voisine de droite 
-    if ((x + 1) < this.width && this.matrix[y][x + 1] != null) {
+    if ((x + 1) < this.width && this.matrix[y][x + 1] != null && this.matrix[y][x + 1].devoile === true) {
       let carteGrille = this.matrix[y][x + 1];
       if (!carteGrille.accepte_voisine(carteAPlacer, Directions.GAUCHE)) return false;
       if (carteGrille.gauche !== 0 && carteAPlacer.droite !== 0) connexionCartes = true;
       existeVoisinage = true
-    }
+    } 
     // Pour voisine de gauche
-    if ((x >= 1) && this.matrix[y][x - 1] != null) {
+    if ((x >= 1) && this.matrix[y][x - 1] != null && this.matrix[y][x - 1].devoile === true) {
       let carteGrille = this.matrix[y][x - 1];
-      if (!carteGrille.accepte_voisine(carteAPlacer, Directions.DROITE)) return false;
+      if (carteGrille.accepte_voisine(carteAPlacer, Directions.DROITE)) existeVoisinage = true;
       if (carteGrille.droite !== 0 && carteAPlacer.gauche !== 0) connexionCartes = true;
-      existeVoisinage = true
+      console.log(existeVoisinage,connexionCartes);
     }
     // Pour voisine du haut
-    if ((y >= 1) && this.matrix[y - 1][x] != null) {
+    if ((y >= 1) && this.matrix[y - 1][x] != null && this.matrix[y - 1][x].devoile === true) {
       let carteGrille = this.matrix[y - 1][x];
       if (!carteGrille.accepte_voisine(carteAPlacer, Directions.BAS)) return false;
       if (carteGrille.bas !== 0 && carteAPlacer.haut !== 0) connexionCartes = true;
       existeVoisinage = true
     }
     // Pour voisine du bas
-    if ((y + 1) < this.height && this.matrix[y + 1][x] != null) {
+    if ((y + 1) < this.height && this.matrix[y + 1][x] != null && this.matrix[y + 1][x].devoile === true) {
       let carteGrille = this.matrix[y + 1][x];
       if (!carteGrille.accepte_voisine(carteAPlacer, Directions.HAUT)) return false;
       if (carteGrille.haut !== 0 && carteAPlacer.bas !== 0) connexionCartes = true;
@@ -121,6 +124,51 @@ class Game extends EventTarget {
     }
 
     return false;
+  }
+
+  /**
+   * 
+   * Rappel: this.cartesBut[[1,10], [3,10], [5,10]]
+   * tunnel 1 et 2 (0: mur)
+  **/
+  correspondanceCarteBut() {
+    console.log(this.cartesBut); 
+      
+    for(let y = 1; y <= 5; y = y + 2) {
+      let carteBut = this.matrix[10][y];
+
+      if (carteBut.devoile === true) continue; 
+
+      //carte à gauche
+      if (this.matrix[9][y] !== null) {
+        if (this.matrix[9][y].droite !== 0)
+        {
+          this.matrix[10][y].devoile = true;
+          this.dispatchEvent(new Event("change"))
+          continue;
+        }
+      }
+      // carte en haut
+      if (this.matrix[10][y - 1] !== null) {
+        if (this.matrix[10][y - 1].bas !== 0)
+        {
+          this.matrix[10][y].devoile = true;
+          this.dispatchEvent(new Event("change"))
+          continue;
+        }
+      }
+      // carte en bas
+      if (this.matrix[10][y + 1] !== null) {
+        if (this.matrix[10][y + 1].haut !== 0)
+        {
+          this.matrix[10][y].devoile = true;
+          this.dispatchEvent(new Event("change"))
+          continue;
+        }
+      }
+    }
+    // rendre devoilee false 
+
   }
 
   /** 
