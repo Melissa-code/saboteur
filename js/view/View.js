@@ -34,9 +34,11 @@ class View {
 
     this.setCanvasSize();
     this.refresh();
+    this.messageDiv = document.querySelector(".message");
+  }
 
-    // const cartesBut = this.game.cartesBut;
-    // console.log(cartesBut)
+  showMessage(text) {
+    this.messageDiv.textContent = text;
   }
 
   /**

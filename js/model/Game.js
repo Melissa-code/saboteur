@@ -7,7 +7,8 @@ import Actions from './Actions.js';
 import Cible from './Cible.js'; 
 import TypesCibles from '../model/TypesCibles.js';
 
-class Game extends EventTarget{
+
+class Game extends EventTarget {
   constructor() {
     super(); 
     this.width = 11;
@@ -40,11 +41,10 @@ class Game extends EventTarget{
 
   initGame() {
     let newMatrix = [];
-
     for (let y = 0; y < this.height; y++) {
       let row = [];
       for (let x = 0; x < this.width; x++) {
-        row.push(null); //case vide:
+        row.push(null); //case vide: null
       }
       newMatrix.push(row);
     }
@@ -57,10 +57,10 @@ class Game extends EventTarget{
     const randomRoles = [];
     const indexRole = Math.floor(Math.random() * roles.length);
     const randomRole = roles[indexRole]; 
+    const indexRole2 = (indexRole +1) % 2;
+    const randomRole2 = roles[indexRole2];
 
     randomRoles.push(randomRole)
-    let indexRole2 = (indexRole +1) % 2;
-    const randomRole2 = roles[indexRole2]; 
     randomRoles.push(randomRole2)
 
     return randomRoles;
@@ -69,20 +69,6 @@ class Game extends EventTarget{
   passerAuJoueurSuivant() {
     // J1=0-> 0+1=1 : Divise 1 par 2 : 1/2=0 reste 1 (next joueur)->revient au 1er joueur après le dernier
     this.joueurActuelIndex = (this.joueurActuelIndex + 1) % this.roles.length;
-  }
-
-  testDevoilerCarteBut(x, y, carteAPlacer) {
-    const positionsPossibles = [[10, 0], [10, 2], [10, 4], [10,6], [9,1], [9,3], [9,5]];
-
-    if (x ==9 && y%2==1) {
-      let indiceCarteBut = y/2; /// y=1=>0 y=3=>1 y=5=>2
-        if (this.cartesBut[indiceCarteBut].devoile == false) {
-          if (carteAPlacer.droite != 0) {
-            this.cartesBut[indiceCarteBut].devoile = true; 
-            console.log("carte dévoilée: ", indiceCarteBut)
-          }
-        }
-    }
   }
 
   /**
@@ -167,7 +153,6 @@ class Game extends EventTarget{
     const indexCarteTresor = Math.floor(Math.random() * cartesBut.length);
     let carteTresor = cartesBut[indexCarteTresor]; 
     carteTresor.ajouterTresor();
-
     ///console.log("carte trésor: ", carteTresor)
 
     return carteTresor;  
@@ -277,8 +262,11 @@ class Game extends EventTarget{
 
   changerTour() {
     const newJoueur = this.joueurActuel === 1 ? this.joueur2 : this.joueur1;
-    console.log("A présent au tour du joueur " + newJoueur.id + " de jouer."); 
     this.joueurActuel = newJoueur.id;
+
+    this.dispatchEvent(new CustomEvent("message", {
+      detail: `C'est au tour du joueur ${newJoueur.id} de jouer.`
+    }));
   }
 
   appliquerActions() {

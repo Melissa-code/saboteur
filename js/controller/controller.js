@@ -1,29 +1,30 @@
 import View from '../view/View.js';
 import Game from '../model/Game.js'; 
-import Cible from '../model/Cible.js';
+
 
 const game = new Game(); 
 const view = new View(game, document, 50, 70); 
 game.view = view;
 
+game.addEventListener("message", (e) => view.showMessage(e.detail));
+game.dispatchEvent(new CustomEvent("message", {
+  detail: `C'est au tour du joueur ${game.joueurActuel} de jouer.`
+})); 
+  
 window.addEventListener('resize', () => {
   view.handleResize();
 });
 
-
-// Test identifier cible 
-// cf. https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
 const canvas = document.querySelector("#myCanvas");
 canvas.addEventListener("click", (event) => {
+  // cf https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
   const rect = canvas.getBoundingClientRect();
-  const x = event.clientX - rect.left; //x du coin gauche du canvas
-  const y = event.clientY - rect.top; //y du haut du canvas
+  const x = event.clientX - rect.left; //x coin gauche du canvas
+  const y = event.clientY - rect.top; //y haut du canvas
 
   const cible = view.identifierCible(x, y); //return new Cible(typeCible,reference);
-  console.log("Clic sur la cible : ", cible.type, cible.reference);
-
+  // console.log("Clic sur la cible : ", cible.type, cible.reference);
   game.notifierCible(cible);
 
   view.refresh();
 });
-
