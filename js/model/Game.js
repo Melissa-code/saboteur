@@ -34,8 +34,8 @@ class Game extends EventTarget {
     this.joueur1 = new Player(1, roles[0]);
     this.joueur2 = new Player(2, roles[1]); 
    
-    this.action1 = null;
-    this.action2 = null;
+    this.action1 = null; // 1er clic (sélection carte/rotation)
+    this.action2 = null; // 2e clic (sur cible)
     this.distribuerCartesJoueurs()
   }
 
@@ -131,7 +131,6 @@ class Game extends EventTarget {
   
     while (cartesBut.length < 3 && this.pioche.length > 0) {
       const carte = this.pioche.shift(); 
-
       if (carte instanceof CarteChemin) {
         cartesBut.push(carte);
       } else {
@@ -151,9 +150,9 @@ class Game extends EventTarget {
    */
   tirerAuSortCarteTresor(cartesBut) {
     const indexCarteTresor = Math.floor(Math.random() * cartesBut.length);
-    let carteTresor = cartesBut[indexCarteTresor]; 
+    const carteTresor = cartesBut[indexCarteTresor]; 
     carteTresor.ajouterTresor();
-    ///console.log("carte trésor: ", carteTresor)
+    //console.log("carte trésor: ", carteTresor)
 
     return carteTresor;  
   }
@@ -169,6 +168,13 @@ class Game extends EventTarget {
   notifierCible(cible) {
     if (cible.type === TypesCibles.EXTERIEUR) {
       console.log('clic en dehors des zones actives')
+
+      this.dispatchEvent(new CustomEvent("message", {
+        detail: {
+          text: `Clic en dehors des zones actives.`,
+          color: `red`
+        }
+      })); 
       return
     }
 
@@ -181,6 +187,13 @@ class Game extends EventTarget {
           return;
         } else {
           console.log("premier clic n'est pas sur une carte du joueur courant.");
+
+          this.dispatchEvent(new CustomEvent("message", {
+            detail: {
+              text: `Sélectionnez une carte du joueur courant.`, 
+              color: `red`
+            }
+          })); 
           return;
         }
       } else {

@@ -35,10 +35,21 @@ class View {
     this.setCanvasSize();
     this.refresh();
     this.playerTurnDiv = document.querySelector(".player-turn");
+    this.messageDiv = document.querySelector(".message");
   }
 
   showPlayerTurn(text) {
     this.playerTurnDiv.textContent = text;
+  }
+
+  showMessage({text, color = "white"}) {
+    this.messageDiv.textContent = text;
+    this.messageDiv.style.color = color; 
+    this.messageDiv.classList.add("show");
+
+    setTimeout(() => {
+      this.messageDiv.classList.remove("show");
+    }, 4000);
   }
 
   /**

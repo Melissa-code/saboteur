@@ -37,14 +37,37 @@ h1 {
 .player-turn {     
   background:rgba(43, 45, 66, 0.4); 
   text-align: center;
-  display:flex;
+  display: flex;
   justify-content: center;
   align-items: center;
-  margin: 1.3rem ;
+  margin: 1.3rem;
   width: 40vh;
   height: 5vh;
   border-radius: 10px;
   font-size: 16px;
+}
+
+.message {     
+  background:rgba(141, 153, 174, 0.2); 
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40vh;
+  height: 5vh;
+  border-radius: 10px;
+  font-size: 16px;
+  opacity: 0; /* invisible */
+  position: absolute; /* pour ne pas décaler tout le jeu verticalement */
+  top: 27vh;       
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100; 
+}
+
+.message.show {
+  opacity: 1;               
+  pointer-events: auto;
 }
 
 #game-board {
@@ -82,6 +105,12 @@ h1 {
   .player-turn {
     width: 50vh;
     font-size: 18px;
+  }
+  
+  .message {
+    width: 60vh;
+    font-size: 18px;
+    position: absolute;
   }
 
   #game-board {

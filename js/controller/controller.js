@@ -9,11 +9,11 @@ game.view = view;
 game.addEventListener("showPlayerTurn", (e) => view.showPlayerTurn(e.detail));
 game.dispatchEvent(new CustomEvent("showPlayerTurn", {
   detail: `C'est au tour du joueur ${game.joueurActuel} de jouer.` // detail: propriete obligatoire 
-})); 
+}));
+
+game.addEventListener("message", (e) => view.showMessage(e.detail));
   
-window.addEventListener('resize', () => {
-  view.handleResize();
-});
+window.addEventListener('resize', () => view.handleResize());
 
 const canvas = document.querySelector("#myCanvas");
 canvas.addEventListener("click", (event) => {
