@@ -233,9 +233,7 @@ class View {
   }
 
   isCarteTresor(carte) {
-    //checker si cartesbut 
     if (!this.game.cartesBut) return false;
-
     for (const carteBut of this.game.cartesBut) {        
       if (carteBut === carte && carteBut.tresor === "./images/treasure.svg") {
         return true;
@@ -248,7 +246,6 @@ class View {
   drawCarteCheminWithTresor(carteButDevoilee, x, y) {
     const drawX = this.zones.gameBoard.x + (x * this.tileWidth);
     const drawY = this.zones.gameBoard.y + (y * this.tileHeight);
-
     const image = new Image();
     image.src = carteButDevoilee.image; 
     image.onload = ()=> {
@@ -263,7 +260,6 @@ class View {
     const tresorY = y + 12; 
     const tresorImage = new Image();
     tresorImage.src = './images/treasure.svg';
-
     tresorImage.onload = () => {
         this.ctx.drawImage(tresorImage, tresorX, tresorY, tresorSize, tresorSize);
     };
@@ -333,14 +329,15 @@ class View {
         }
       }
       
-      
-      // Bordure carte sélectionnée
+      //Bordure carte sélectionnée
       if (this.isCarteSelectionnee(joueur.id, i)) {
-        this.ctx.lineWidth = 4;
+        this.ctx.lineWidth = 8;
         this.ctx.strokeStyle = "#F8F32B";
-        this.ctx.strokeRect(carteX - 0.5, carteY - 1.5, this.tileWidth + 0.5, this.tileHeight + 1.5);
+        this.ctx.beginPath(); //border-radius
+        this.ctx.roundRect(carteX -0.2, carteY -1, this.tileWidth +0.2, this.tileHeight +1, 5); 
+        this.ctx.stroke();
       }
-
+  
       joueur.cartesBloquent.forEach((carte, index) => {
         const carteX = zone.x + this.playerHandMarginX + index * (this.tileWidth/2 + this.playerCardsSpacingX);
         const carteY = zone.y + this.playerHandMarginY - this.tileHeight/2 - 10; // au-dessus
@@ -368,10 +365,16 @@ class View {
     this.ctx.fillStyle = "#FFFFFF";
     this.ctx.fillRect(zone.x, zone.y, zone.width, zone.height);
 
-    this.ctx.fillStyle = "#000000";
-    this.ctx.font = "18px Tagesschrift, arial";
-    this.ctx.textAlign = "center"; 
-    this.ctx.fillText("🗑️", zone.x + zone.width / 2, zone.y + zone.height / 2 + this.playerCardsSpacingX / 2);
+    const image = new Image();
+      image.src = "./images/corbeille.svg";
+      image.onload = () => {
+        const corbeilleWidth = zone.width /1.5;
+        const corbeilleHeight = zone.height /1.5;
+        // centre l'image 
+        const drawX = zone.x + (zone.width - corbeilleWidth)/2;
+        const drawY = zone.y + (zone.height - corbeilleHeight)/2;
+        this.ctx.drawImage(image, drawX, drawY, corbeilleWidth, corbeilleHeight);
+      };
   }
 
   isPointInZone(x, y, zone) {

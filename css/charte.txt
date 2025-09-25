@@ -1,17 +1,12 @@
 colors:
-  vert #04e762
-  ocre #f5b700 
-  rose #dc0073
-  bleu #008bf8
-  vert clair #89fc00 
-
-font: 
-  Tagesschrift Static 400
 
   #2B2D42
   #8D99AE
   #F8F32B
   #FFFFFF
   #000000
+
+font: 
+  Tagesschrift Static 400
 
 
