@@ -18,14 +18,13 @@ class Game extends EventTarget {
 
     this.pioche = CardFactory.shuffleCartes()
    
-    this.cartesBut = this.selectionnerTroisCartesChemin()
+    this.cartesBut = this.selectionnerTroisCartesBut()
     this.matrix[1][10] = this.cartesBut[0]
     this.cartesBut[0].devoile = false;
     this.matrix[3][10] = this.cartesBut[1]
     this.cartesBut[1].devoile = false;
     this.matrix[5][10] = this.cartesBut[2]
     this.cartesBut[2].devoile = false;
-    this.tirerAuSortCarteTresor(this.cartesBut);
 
     this.joueurActuel = 1; 
     let roles = this.getRandomRole();
@@ -83,10 +82,18 @@ class Game extends EventTarget {
     let existeVoisinage = false; 
     let connexionCartes = false;
 
-    console.log("carte grille de test" , this.matrix[y][x + 1])
-    console.log("carte grille de test" ,  this.matrix[y][x - 1])
-    console.log("carte grille de test" , this.matrix[y - 1][x])
-    console.log("carte grille de test" , this.matrix[y + 1][x])
+    if ((x + 1) < this.width) {
+      console.log("carte grille de test DROITE" , this.matrix[y][x + 1]);
+    }
+    if (x >= 1) {
+      console.log("carte grille de test GAUCHE" , this.matrix[y][x - 1]);
+    }
+    if (y >= 1) {
+      console.log("carte grille de test HAUT" , this.matrix[y - 1][x]);
+    }
+    if ((y + 1) < this.height) {
+      console.log("carte grille de test BAS" , this.matrix[y + 1][x]);
+    }
     
     // Pour voisine de droite 
     if ((x + 1) < this.width && this.matrix[y][x + 1] != null && this.matrix[y][x + 1].devoile === true) {
@@ -96,11 +103,17 @@ class Game extends EventTarget {
       existeVoisinage = true
     } 
     // Pour voisine de gauche
+    // if ((x >= 1) && this.matrix[y][x - 1] != null && this.matrix[y][x - 1].devoile === true) {
+    //   let carteGrille = this.matrix[y][x - 1];
+    //   if (!carteGrille.accepte_voisine(carteAPlacer, Directions.DROITE)) return false;
+    //   if (carteGrille.droite !== 0 && carteAPlacer.gauche !== 0) connexionCartes = true;
+    //   console.log(existeVoisinage,connexionCartes);
+    // }
     if ((x >= 1) && this.matrix[y][x - 1] != null && this.matrix[y][x - 1].devoile === true) {
       let carteGrille = this.matrix[y][x - 1];
-      if (carteGrille.accepte_voisine(carteAPlacer, Directions.DROITE)) existeVoisinage = true;
+      if (!carteGrille.accepte_voisine(carteAPlacer, Directions.DROITE)) {console.log("false");return false}; 
       if (carteGrille.droite !== 0 && carteAPlacer.gauche !== 0) connexionCartes = true;
-      console.log(existeVoisinage,connexionCartes);
+      existeVoisinage = true;
     }
     // Pour voisine du haut
     if ((y >= 1) && this.matrix[y - 1][x] != null && this.matrix[y - 1][x].devoile === true) {
@@ -120,6 +133,7 @@ class Game extends EventTarget {
     if (existeVoisinage && connexionCartes) {
       this.matrix[y][x] = carteAPlacer;
       //console.log('Carte à jouer placée ici :', 'x: ' + x, 'y: ' + y);
+      this.revelerCarteBut(); 
       return true;
     }
 
@@ -131,53 +145,62 @@ class Game extends EventTarget {
    * Rappel: this.cartesBut[[1,10], [3,10], [5,10]]
    * tunnel 1 et 2 (0: mur)
   **/
-  correspondanceCarteBut() {
+  revelerCarteBut() {
     console.log(this.cartesBut); 
       
     for(let y = 1; y <= 5; y = y + 2) {
-      let carteBut = this.matrix[10][y];
+      let carteBut = this.matrix[y][10];
 
       if (carteBut.devoile === true) continue; 
 
       //carte à gauche
-      if (this.matrix[9][y] !== null) {
-        if (this.matrix[9][y].droite !== 0)
-        {
-          this.matrix[10][y].devoile = true;
+      if (this.matrix[y][9] !== null) {
+        if (this.matrix[y][9].droite !== 0) {
+          this.matrix[y][10].devoile = true;
           this.dispatchEvent(new Event("change"))
           continue;
         }
       }
       // carte en haut
-      if (this.matrix[10][y - 1] !== null) {
-        if (this.matrix[10][y - 1].bas !== 0)
-        {
-          this.matrix[10][y].devoile = true;
+      if (this.matrix[y - 1][10] !== null) {
+        if (this.matrix[y - 1][10].bas !== 0) {
+          this.matrix[y][10].devoile = true;
           this.dispatchEvent(new Event("change"))
           continue;
         }
       }
       // carte en bas
-      if (this.matrix[10][y + 1] !== null) {
-        if (this.matrix[10][y + 1].haut !== 0)
-        {
-          this.matrix[10][y].devoile = true;
+      if (this.matrix[y + 1][10] !== null) {
+        if (this.matrix[y + 1][10].haut !== 0) {
+          this.matrix[y][10].devoile = true;
           this.dispatchEvent(new Event("change"))
           continue;
         }
       }
     }
-    // rendre devoilee false 
+  }
 
+
+  tirerCarteCroix() {
+    for (let i = 0; i < this.pioche.length; i++) {
+      if (this.pioche[i] instanceof CarteChemin) {
+        let somme = this.pioche[i].haut + this.pioche[i].bas + this.pioche[i].gauche + this.pioche[i].droite
+        if (somme === 8) {
+          let carteCroix = this.pioche[i]; 
+          this.pioche.splice(i,1)
+          return carteCroix;
+        }
+      }
+    }
   }
 
   /** 
    * @returns array[] d'objets CarteChemin
    */
-  selectionnerTroisCartesChemin() {
+  selectionnerTroisCartesBut() {
     let cartesBut = []; 
   
-    while (cartesBut.length < 3 && this.pioche.length > 0) {
+    while (cartesBut.length < 2 && this.pioche.length > 0) {
       const carte = this.pioche.shift(); 
       if (carte instanceof CarteChemin) {
         cartesBut.push(carte);
@@ -186,24 +209,20 @@ class Game extends EventTarget {
       }
     }
 
+    let carteTresor = this.tirerCarteCroix(); 
+    carteTresor.ajouterTresor();
+    cartesBut.push(carteTresor)
+
     if (cartesBut.length < 3) {
       console.log("Pas assez de cartes chemin dans la pioche !");
     }
-
+    const indexCarteTresor = Math.floor(Math.random() * cartesBut.length);
+    let carte = cartesBut[indexCarteTresor]
+    cartesBut[indexCarteTresor] = carteTresor
+    cartesBut[2]=carte;
     return cartesBut; 
   }
 
-  /**
-   * @returns obj CarteChemin 
-   */
-  tirerAuSortCarteTresor(cartesBut) {
-    const indexCarteTresor = Math.floor(Math.random() * cartesBut.length);
-    const carteTresor = cartesBut[indexCarteTresor]; 
-    carteTresor.ajouterTresor();
-    //console.log("carte trésor: ", carteTresor)
-
-    return carteTresor;  
-  }
 
   distribuerCartesJoueurs() {
     for (let i = 0; i < 5; i++) {
@@ -401,8 +420,8 @@ class Game extends EventTarget {
                   this.dispatchEvent(new Event("change"))
                 }, 3000);
 
-                console.log("voir la carte but ", "x: "+x, " y: "+y);
-                console.log("carte but image :", this.matrix[y][x].image)
+                // console.log("voir la carte but ", "x: "+x, " y: "+y);
+                // console.log("carte but image :", this.matrix[y][x].image)
                 break;
               }
             }
