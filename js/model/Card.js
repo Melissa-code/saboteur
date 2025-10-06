@@ -41,8 +41,6 @@ export class CarteChemin extends Card {
         console.log("direction ", direction)
         console.log(" carte accepte voisine ", this)
 
-        if (this.devoile === true) return true; 
-
         // A tester incorrecte quand un des deux (et un seul) est 0 : somme!=0 et produit=0 => incorrecte
         if (direction === Directions.GAUCHE) return (this.gauche !== 0 && carteAPlacer.droite !== 0) || (this.gauche === 0 && carteAPlacer.droite === 0) ;
         else if (direction === Directions.DROITE) return (this.droite !== 0 && carteAPlacer.gauche !== 0) || (this.droite === 0 && carteAPlacer.gauche === 0);

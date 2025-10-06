@@ -103,12 +103,6 @@ class Game extends EventTarget {
       existeVoisinage = true
     } 
     // Pour voisine de gauche
-    // if ((x >= 1) && this.matrix[y][x - 1] != null && this.matrix[y][x - 1].devoile === true) {
-    //   let carteGrille = this.matrix[y][x - 1];
-    //   if (!carteGrille.accepte_voisine(carteAPlacer, Directions.DROITE)) return false;
-    //   if (carteGrille.droite !== 0 && carteAPlacer.gauche !== 0) connexionCartes = true;
-    //   console.log(existeVoisinage,connexionCartes);
-    // }
     if ((x >= 1) && this.matrix[y][x - 1] != null && this.matrix[y][x - 1].devoile === true) {
       let carteGrille = this.matrix[y][x - 1];
       if (!carteGrille.accepte_voisine(carteAPlacer, Directions.DROITE)) {console.log("false");return false}; 
