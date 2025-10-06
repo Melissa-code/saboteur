@@ -68,65 +68,67 @@ class Game extends EventTarget {
     this.joueurActuelIndex = (this.joueurActuelIndex + 1) % this.roles.length;
   }
 
+  afficherMessage(text, color = 'black') {
+    this.dispatchEvent(new CustomEvent("message", {
+      detail: { text, color }
+    }));
+  }
+
   /**
-   * Respecte les contraintes tunnel-tunnel(2-2)/tunnel-impasse(2-1)/mur-mur(0-0) 
-   * Au moins une liaison entre tunnels existe (pas de zone isolée sur plateau jeu)
+   * Vérifie si 2 cartes ont une connexion de tunnel
+   * Les deux côtés en contact doivent avoir un tunnel (valeur !== 0)
+   * Empêche de placer deux cartes "dos à dos" (mur contre mur sans connexion)
+   */
+  verifierConnexion(carteGrille, coteCarteGrille, carteAPlacer, coteCarteAPlacer) {
+    return carteGrille[coteCarteGrille] !== 0 && carteAPlacer[coteCarteAPlacer] !== 0;
+  }
+
+  /**
+   * Respecte les contraintes tunnel-tunnel(2-2)/ tunnel-impasse(2-1)/ mur-mur(0-0) 
+   * Au moins une liaison entre les tunnels existe (pas de zone isolée sur plateau jeu)
    */
   placerCarte(x, y, carteAPlacer) {
+
     if (this.matrix[y][x] != null) {
-      console.log('La case est déjà occupée');
+      this.afficherMessage('La case est déjà occupée', 'red');
       return false;
     }
 
     // au moins une voisine existe + connexion entre les 2 cartes pour toutes les cartes dévoilées
     let existeVoisinage = false; 
     let connexionCartes = false;
-
-    if ((x + 1) < this.width) {
-      console.log("carte grille de test DROITE" , this.matrix[y][x + 1]);
-    }
-    if (x >= 1) {
-      console.log("carte grille de test GAUCHE" , this.matrix[y][x - 1]);
-    }
-    if (y >= 1) {
-      console.log("carte grille de test HAUT" , this.matrix[y - 1][x]);
-    }
-    if ((y + 1) < this.height) {
-      console.log("carte grille de test BAS" , this.matrix[y + 1][x]);
-    }
     
-    // Pour voisine de droite 
+    // Pour voisine (carteGrille) de droite 
     if ((x + 1) < this.width && this.matrix[y][x + 1] != null && this.matrix[y][x + 1].devoile === true) {
       let carteGrille = this.matrix[y][x + 1];
       if (!carteGrille.accepte_voisine(carteAPlacer, Directions.GAUCHE)) return false;
-      if (carteGrille.gauche !== 0 && carteAPlacer.droite !== 0) connexionCartes = true;
+      if (this.verifierConnexion(carteGrille, 'gauche', carteAPlacer, 'droite')) connexionCartes = true;
       existeVoisinage = true
     } 
-    // Pour voisine de gauche
+    // Pour voisine (carteGrille) de gauche
     if ((x >= 1) && this.matrix[y][x - 1] != null && this.matrix[y][x - 1].devoile === true) {
       let carteGrille = this.matrix[y][x - 1];
       if (!carteGrille.accepte_voisine(carteAPlacer, Directions.DROITE)) {console.log("false");return false}; 
-      if (carteGrille.droite !== 0 && carteAPlacer.gauche !== 0) connexionCartes = true;
+      if (this.verifierConnexion(carteGrille, 'droite', carteAPlacer, 'gauche')) connexionCartes = true;
       existeVoisinage = true;
     }
-    // Pour voisine du haut
+    // Pour voisine (carteGrille) du haut
     if ((y >= 1) && this.matrix[y - 1][x] != null && this.matrix[y - 1][x].devoile === true) {
       let carteGrille = this.matrix[y - 1][x];
       if (!carteGrille.accepte_voisine(carteAPlacer, Directions.BAS)) return false;
-      if (carteGrille.bas !== 0 && carteAPlacer.haut !== 0) connexionCartes = true;
+      if (this.verifierConnexion(carteGrille, 'bas', carteAPlacer, 'haut')) connexionCartes = true;
       existeVoisinage = true
     }
-    // Pour voisine du bas
+    // Pour voisine (carteGrille) du bas
     if ((y + 1) < this.height && this.matrix[y + 1][x] != null && this.matrix[y + 1][x].devoile === true) {
       let carteGrille = this.matrix[y + 1][x];
       if (!carteGrille.accepte_voisine(carteAPlacer, Directions.HAUT)) return false;
-      if (carteGrille.haut !== 0 && carteAPlacer.bas !== 0) connexionCartes = true;
+      if (this.verifierConnexion(carteGrille, 'haut', carteAPlacer, 'bas')) connexionCartes = true;
       existeVoisinage = true
     }
 
     if (existeVoisinage && connexionCartes) {
       this.matrix[y][x] = carteAPlacer;
-      //console.log('Carte à jouer placée ici :', 'x: ' + x, 'y: ' + y);
       this.revelerCarteBut(); 
       return true;
     }
