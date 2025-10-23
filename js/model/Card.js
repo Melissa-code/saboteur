@@ -21,6 +21,7 @@ export class CarteChemin extends Card {
         this.devoile = devoile;
         this.tresor = tresor;
         this.rotated = false;
+        this.visite = false; 
     }
 
     rotation() {
@@ -49,6 +50,22 @@ export class CarteChemin extends Card {
       
         return false; 
     }  
+
+    seConnecte(carteAPlacer, direction)
+    {
+        console.log(" ma carte à placer : ", carteAPlacer)
+        console.log("direction ", direction)
+        console.log(" carte accepte voisine ", this)
+
+        if (direction === Directions.GAUCHE) return (this.gauche == 2 && carteAPlacer.droite == 2);
+        else if (direction === Directions.DROITE) return (this.droite == 2 && carteAPlacer.gauche == 2) ;
+        else if (direction === Directions.HAUT) return (this.haut == 2 && carteAPlacer.bas == 2) ;
+        else if (direction === Directions.BAS) return (this.bas == 2 && carteAPlacer.haut == 2);
+      
+        return false; 
+    }  
+
+
     
 
     ajouterTresor() {

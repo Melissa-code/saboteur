@@ -129,11 +129,29 @@ class Game extends EventTarget {
 
     if (existeVoisinage && connexionCartes) {
       this.matrix[y][x] = carteAPlacer;
-      this.revelerCarteBut(); 
+      this.testRevelerCarteBut(); 
+
+      // carte depart matrix[3][0]
+      if (this.parcourir(3, 0) === true) {
+        console.log("C'est gagné :) ")
+      };
+      
+      this.marquerCarteVisite(); 
+
       return true;
     }
 
     return false;
+  }
+
+  marquerCarteVisite() {
+    for (let y = 0; y < this.height; y++) {
+      for (let x = 0; x < this.width; x++) {
+        if (this.matrix[y][x] !== null) {
+          this.matrix[y][x].visite = false; 
+        }
+      }
+    }
   }
 
   /**
@@ -141,7 +159,7 @@ class Game extends EventTarget {
    * Rappel: this.cartesBut[[1,10], [3,10], [5,10]]
    * tunnel 1 et 2 (0: mur)
   **/
-  revelerCarteBut() {
+  testRevelerCarteBut() {
     console.log(this.cartesBut); 
       
     for(let y = 1; y <= 5; y = y + 2) {
@@ -215,7 +233,7 @@ class Game extends EventTarget {
     const indexCarteTresor = Math.floor(Math.random() * cartesBut.length);
     let carte = cartesBut[indexCarteTresor]
     cartesBut[indexCarteTresor] = carteTresor
-    cartesBut[2]=carte;
+    cartesBut[2] = carte;
     return cartesBut; 
   }
 
@@ -504,6 +522,74 @@ class Game extends EventTarget {
     this.action1 = null;
     this.action2 = null;
   }
+
+  // array cartes pas vides seConnectent 
+  verifierCartesVoisines(x, y) {
+    let cartesAParcourir = [];
+    let carte = this.matrix[y][x];
+
+    // gauche 
+    if (x > 0 && this.matrix[y][x -1] !== null) {
+      let carteVoisine = this.matrix[y][x -1];
+      if (carteVoisine.visite == false && carte.seConnecte(carteVoisine, Directions.GAUCHE)) {
+        cartesAParcourir.push([y, x-1])
+      }
+    }
+    // droite
+    if (x < this.width-1 && this.matrix[y][x +1] !== null) {
+      let carteVoisine = this.matrix[y][x + 1];
+      if (carteVoisine.visite == false && carte.seConnecte(carteVoisine, Directions.DROITE)) {
+        cartesAParcourir.push([y, x + 1])
+      }
+    }
+    // haut
+    if (y > 0 && this.matrix[y-1][x] !== null) {
+      let carteVoisine = this.matrix[y-1][x];
+      if (carteVoisine.visite == false && carte.seConnecte(carteVoisine, Directions.HAUT)) {
+        cartesAParcourir.push([y -1, x])
+      }
+    }
+    // bas
+    if (y < this.height - 1 && this.matrix[y + 1][x] !== null) {
+      let carteVoisine = this.matrix[y + 1][x];
+      if (carteVoisine.visite == false && carte.seConnecte(carteVoisine, Directions.BAS)) {
+        cartesAParcourir.push([y+1, x])
+      }
+    }
+
+    console.log("Cartes a parcourir : ", cartesAParcourir)
+    return cartesAParcourir;
+  }
+
+  /**
+   * Recherche récursive d'un chemin entre la carte départ matrix[3][0] et la carte trésor (recherche d'un tunnel continu)
+   * pour déterminer si le joueur a gagné 
+   * carte.visite = true; -> eviter boucles infinies
+   */
+  parcourir(y, x) {
+    const carte = this.matrix[y][x]; 
+    carte.visite = true; 
+
+    if (carte.tresor !== null) {
+      return true; 
+    }
+
+    // recuperer les coordonnées des cartes voisines si elles snt connectées: verifierCartesVoisines()
+    const cartesAParcourir = this.verifierCartesVoisines(x, y); 
+
+    let cheminTrouve = false;
+    // pour chaque voisine connectée, appel récursif de parcourir()
+    for (let i = 0; i < cartesAParcourir.length; i++) {
+      const voisinCoordonnees = cartesAParcourir[i];
+      const voisinY = voisinCoordonnees[0];
+      const voisinX = voisinCoordonnees[1];
+      cheminTrouve = cheminTrouve || this.parcourir(voisinY, voisinX); // true/false 
+    }
+
+    return cheminTrouve;
+  }
+
+
 }
 
 export default Game;

@@ -121,3 +121,66 @@ Ce sont des constantes qui définissent les zones et leurs positions sur le canv
 ## Factory 
 
 - CardFactory gère la création et la préparation des cartes (centralise la logique)
+
+
+---
+
+## Trouver le trésor - récursivité avec méthode parcourir() 
+
+- Le plateau de jeu simplifié : 
+````
+y ↓   x →
+
+     0     1     2
+   ┌────┬────┬────┐
+0  │ D  │ →  │ T  │
+   └────┴────┴────┘
+
+D = carte Départ
+→ = carte couloir (ex: connectée gauche-droite)
+T = carte Trésor
+```
+
+Toutes les cartes sont reliées par leurs tunnels. 
+(haut, bas, gauche, droite ne valent pas 0 là où elles sont connectées)
+
+### Étape 1 : Appel initial
+
+- parcourir(0, 0)
+
+```
+[Appel 1] sur (0,0)
+└── Marque (0,0) comme visitée
+└── Ce n’est pas un trésor
+└── Cherche cartes voisines connectées  → trouve (0,1)
+└── Appelle parcourir(0,1)
+```
+
+### Étape 2 : Deuxième appel
+
+- parcourir(0,1)
+
+```
+[Appel 2] sur (0,1)
+└── Marque (0,1) comme visitée
+└── Ce n’est pas un trésor
+└── Cherche cartes voisines connectées :
+      → trouve (0,0) (déjà visitée, ignore)
+      → trouve (0,2)
+└── Appelle parcourir(0,2)
+```
+
+### Étape 3 : Troisième appel
+
+- parcourir(0,3)
+
+````
+[Appel 3] sur (0,2)
+└── Marque (0,2) comme visitée
+└── C’est un trésor ! 
+└── return true  → il existe un chemin jusqu’au trésor
+```
+
+- Chaque carte visitée est marquée visite = true, ce qui empêche de tourner en rond (boucles infinies)
+
+
