@@ -1,5 +1,6 @@
-colors:
+Charte graphique 
 
+colors:
   #2B2D42
   #8D99AE
   #F8F32B
