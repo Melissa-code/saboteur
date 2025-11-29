@@ -1,186 +1,142 @@
 # Jeu du Saboteur 
 
-## 1. règles du jeu:
+## 1. Description 
 
-- cartes chemin
-- cartes rôles cachés
+Implémentation JavaScript du jeu de société Saboteur, un jeu de stratégie dans lequel des nains chercheurs d'or construisent un tunnel de cartes pour atteindre le trésor, tandis que des saboteurs infiltrés tentent de les en empêcher.
 
-- le plateau de jeu commence avec une case de **départ**
-- et des **cartes objectifs** à l'aurte bout 
-
-- les joueurs choisissent des **cartes chemin** (ligne, virage, croisement)
-- les posent pour connecter le départ à l'un des objectifs
-
-- les **Saboteurs** perturbent la construction du chemin 
-- les **Chercheurs** créent un chemin vers l'or
-
-- Gestion de cartes: pose, rotztion, types
-- rôles cachés: chercheurs/saboteurs 
-- Logique de victoire: atteindre l'objectif/empêcher cela
+Cette version numérique permet de jouer à 2 joueurs (1 nain Chercheur d'or et 1 nain Saboteur) directement dans le navigateur avec gestion automatique des règles et détection de la victoire.
 
 ---
 
-## 2. But du jeu :
+## 2. But du jeu
 
-- Nains chercheurs d'or
-- Nains saboteurs qui veulent empêcher les autres de trouver l'or
-- On part d'une case au centre (départ) 
-- Le but: atteindre une des 3 faces cachées (une carte contient le trésor)
-- on pose les cartes chemin sur le plateau de jeu pour y arriver 
+#### Nain Chercheur d'or
 
----
+Construire un tunnel de cartes depuis la carte de départ jusqu'à la carte trésor (cachée parmi 3 cartes retournées).
 
-## 3. Architecture du jeu
+#### Nain Saboteur
 
-### Le Modèle de données (Model)
-- le plateau de jeu (array 2D)
-- les cartes de chaque joueur
-- les rôles des joueurs
-- l'état du jeu (en cours ou terminé)
-- les objectifs (cartes cachées)
-- le joueur courant 
-
-### L'affichage du jeu (View)
-
-- l'affichage du plateau de jeu: case de départ, les cases, case objectif
-- l'affichage des cartes: montre les cartes que le joueur peut poser
-- l'affichage du joueur s'il est chercheur ou saboteur 
-- indique la carte sélectionnée par le joueur
-- des informations de l'état du jeu
-- Elle est mise à jour à chaque action
-
-### Le contrôleur (Controller)
-
-- Gère la logique du jeu, les actions du joueur
-- sélectionne une carte et la poser
-- vérifie si la pose est valide (ex: connecter des chemins)
-- change de joueur après chaque tour 
-- vérifie si victoire ?
-- gère les rôles cachés 
-
-### Etats du jeu 
-
-- **en cours**: le jeu avance 
-- **gagné**: chemin valide jusqu'à l'objectif 
-- **perdu**: saboteur empêche de finir le chemin
-
----
-
-## 4. Les étapes du jeu 
-
-### L'initialisation 
-
-- Crée le plateu de jeu vide (9*15)
-- Distribue les cartes aux joueurs 
-- Attribue un rôle aux joueurs 
-- Place la carte de départ 
-- Place les objectifs 
-
-### Le début du tour 
-
-- le joueur courant choisit une carte
-- soit il peut poser la carte , soit il passe son tour 
-
-### la validation des actions 
-
-- il faut vérifier que la carte posée est valide
-- si oui, mettre l'état du jeu à jour (refresh)
-
-### Le tour suivant 
-
-- on change de joueur 
-
-### Vérifier si victoire ou défaite 
-
-- Vérifie si un des joueurs a attient un objectif 
-- Annonce si un joueur a gagné 
+Empêcher le nain Chercheur d'or d'atteindre le trésor en :
+- posant des impasses dans le tunnel, 
+- cassant les outils du nain Chercheur d'or (pioche, lampe, chariot), 
+- détruisant des cartes chemin déjà posées.
 
 --- 
-#### Variables de positionnement relatif
 
-Ce sont des constantes qui définissent les zones et leurs positions sur le canvas de manière structurée. Définition des coordonnées de chaque zone.
---- 
+## 3. Règles du jeu
 
-## 5. Les tests
+#### Mise en place
 
-- Avant de coder, penser aux tests ?
+- Le plateau commence avec une carte de départ à gauche,
+- 3 cartes but (dont 1 trésor) sont placées face cachée à droite,
+- chaque joueur reçoit 5 cartes.
 
-### Tests de logique
+#### Tour de jeu
 
-- Vérifie que les cartes sont posées correctement 
-- Vérifie que les chemins sont connectés 
+À chaque tour, le joueur doit faire une action :
 
-### Tests de victoire 
+- poser une carte chemin sur le plateau connectée au réseau existant pour créer un tunnel
+- jouer une carte action sur un autre joueur ou soi-même pour :
+   - saboter : casser un outil (pioche, lampe, chariot)
+   - réparer : réparer un outil cassé
+   - regarder : voir secrètement une des cartes but
+   - détruire : retirer une carte chemin du plateau
+- défausser une carte s'il ne peut rien jouer
 
-- vérifie qu'un joueur a gagné 
 
-### Tests de rotation
+puis piocher une nouvelle carte pour toujours avoir 5 cartes en main.
 
-- Vérifier que les cartes peuvent être tournées correctement 
+#### Fin de la partie 
 
-## Factory 
+La partie se termine quand :
+- soit un chemin connecte la carte de départ à la carte trésor sans interruption → Victoire du Chercheur d'or
 
-- CardFactory gère la création et la préparation des cartes (centralise la logique)
-
+- soit la pioche est vide → Victoire du Saboteur
 
 ---
 
-## Trouver le trésor - récursivité avec méthode parcourir() 
+## 4. Comment jouer ?
 
-- Le plateau de jeu simplifié : 
-````
-y ↓   x →
+#### Installation
 
-     0     1     2
-   ┌────┬────┬────┐
-0  │ D  │ →  │ T  │
-   └────┴────┴────┘
+- Cloner le projet `git clone https://github.com/Melissa-code/saboteur.git`, 
+- Ouvrir index.html dans un navigateur ou lancer live server `http://127.0.0.1:5500/saboteur/`.
 
-D = carte Départ
-→ = carte couloir (ex: connectée gauche-droite)
-T = carte Trésor
-```
+#### Contrôles
 
-Toutes les cartes sont reliées par leurs tunnels. 
-(haut, bas, gauche, droite ne valent pas 0 là où elles sont connectées)
+- 1er clic : sélectionner une carte de la main du joueur (bordure jaune autour), 
+- 2e clic sur la même carte : faire tourner la carte de 180°, 
+- 2e clic ailleurs : jouer la carte 
+   - sur le plateau de jeu → poser une carte chemin
+   - sur un joueur → jouer une carte action
+   - sur la corbeille → défausser la carte
 
-### Étape 1 : Appel initial
+---
 
-- parcourir(0, 0)
+## 5. Technologies utilisées
 
-```
-[Appel 1] sur (0,0)
-└── Marque (0,0) comme visitée
-└── Ce n’est pas un trésor
-└── Cherche cartes voisines connectées  → trouve (0,1)
-└── Appelle parcourir(0,1)
-```
+- HTML5
+- CSS3
+- Canvas
+- JavaScript Vanilla
 
-### Étape 2 : Deuxième appel
+---
 
-- parcourir(0,1)
+## 6. Structure du projet
+
+#### Architecture MVC
 
 ```
-[Appel 2] sur (0,1)
-└── Marque (0,1) comme visitée
-└── Ce n’est pas un trésor
-└── Cherche cartes voisines connectées :
-      → trouve (0,0) (déjà visitée, ignore)
-      → trouve (0,2)
-└── Appelle parcourir(0,2)
+saboteur/
+├── index.html
+├── styles/
+│   └── style.css
+├── js/
+│   ├── controller/
+│   │   └── Controller.js
+│   ├── enum/
+│   │   ├── Directions.js
+│   │   ├── Actions.js
+│   │   └── TypesCibles.js
+│   ├── model/
+│   │   ├── Game.js
+│   │   ├── Card.js
+│   │   ├── CardFactory.js
+│   │   ├── Cible.js
+│   │   └── Player.js
+│   └── view/
+│       └── View.js
+└── images/
+    ├── cartes_chemin/
+    ├── cartes_action/
+    └── treasure.svg
 ```
 
-### Étape 3 : Troisième appel
+#### Patterns POO
 
-- parcourir(0,3)
+[Voir la documentation technique](./docs/TECHNICAL.md)
 
-````
-[Appel 3] sur (0,2)
-└── Marque (0,2) comme visitée
-└── C’est un trésor ! 
-└── return true  → il existe un chemin jusqu’au trésor
-```
+- Pattern MVC pour séparation des responsabilités
+- DFS pour la détection de victoire
+- Factory Pattern pour la création de cartes
+- Observer Pattern pour Model-View
 
-- Chaque carte visitée est marquée visite = true, ce qui empêche de tourner en rond (boucles infinies)
+## 7. Fonctionnalités
 
+- Placer les cartes chemin avec vérification des connexions entre elles
+- Faire une rotation des cartes chemin (180°)
+- Jouer une carte action (saboter, réparer, supprimer une carte chemin, voir une carte but)
+- Détecter automatiquement la victoire
+- Afficher le chemin gagnant
 
+---
+
+## 8. Auteur 
+
+Mélissa-code
+
+---
+
+## 9. Licence 
+
+MIT 
