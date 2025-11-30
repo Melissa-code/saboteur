@@ -6,12 +6,14 @@ export class Card {
         this.image = image
     }
 
-    // return true/false
     rotation() {}
 }
 
-export class CarteChemin extends Card {
+/***********************************************************
+ * CarteChemin class
+***********************************************************/
 
+export class CarteChemin extends Card {
     constructor(haut, droite, bas, gauche, image, devoile = true, tresor = null) {
         super(image)
         this.haut = haut;
@@ -31,18 +33,12 @@ export class CarteChemin extends Card {
         let tempDroite = this.droite; 
         this.droite = this.gauche; 
         this.gauche = tempDroite; 
-
         this.rotated = !this.rotated;
     }
  
     //ne pas rejeter carte parce qu’un voisin est mur 0 0
     accepte_voisine(carteAPlacer, direction)
     {
-        console.log(" ma carte à placer : ", carteAPlacer)
-        console.log("direction ", direction)
-        console.log(" carte accepte voisine ", this)
-
-        // A tester incorrecte quand un des deux (et un seul) est 0 : somme!=0 et produit=0 => incorrecte
         if (direction === Directions.GAUCHE) return (this.gauche !== 0 && carteAPlacer.droite !== 0) || (this.gauche === 0 && carteAPlacer.droite === 0) ;
         else if (direction === Directions.DROITE) return (this.droite !== 0 && carteAPlacer.gauche !== 0) || (this.droite === 0 && carteAPlacer.gauche === 0);
         else if (direction === Directions.HAUT) return (this.haut !== 0 && carteAPlacer.bas !== 0) || (this.haut === 0 && carteAPlacer.bas === 0) ;
@@ -53,10 +49,6 @@ export class CarteChemin extends Card {
 
     seConnecte(carteAPlacer, direction)
     {
-        console.log(" ma carte à placer : ", carteAPlacer)
-        console.log("direction ", direction)
-        console.log(" carte accepte voisine ", this)
-
         if (direction === Directions.GAUCHE) return (this.gauche == 2 && carteAPlacer.droite == 2);
         else if (direction === Directions.DROITE) return (this.droite == 2 && carteAPlacer.gauche == 2) ;
         else if (direction === Directions.HAUT) return (this.haut == 2 && carteAPlacer.bas == 2) ;
@@ -65,17 +57,16 @@ export class CarteChemin extends Card {
         return false; 
     }  
 
-
-    
-
     ajouterTresor() {
         this.tresor = "./images/treasure.svg";
     }
 }
 
-// bloque debloque
+/***********************************************************
+ * CarteAction class
+ ***********************************************************/
+
 export class CarteAction extends Card {
-    
     constructor(titreAction, image) {
         super(image);
         this.titreAction = titreAction; 
@@ -83,18 +74,17 @@ export class CarteAction extends Card {
 
     // bool 
     estCarteBloquante() {
-        return this.titreAction == Actions.CASSER_CHARIOT 
-            || this.titreAction == Actions.CASSER_LAMPE
-            || this.titreAction == Actions.CASSER_PIOCHE
+        return this.titreAction === Actions.CASSER_CHARIOT 
+            || this.titreAction === Actions.CASSER_LAMPE
+            || this.titreAction === Actions.CASSER_PIOCHE
     }
 
     estCarteReparation() {
-        return this.titreAction == Actions.REPARER_CHARIOT
-            || this.titreAction == Actions.REPARER_LAMPE
-            || this.titreAction == Actions.REPARER_PIOCHE
-            || this.titreAction == Actions.REPARER_CHARIOT_LAMPE
-            || this.titreAction == Actions.REPARER_LAMPE_PIOCHE
-            || this.titreAction == Actions.REPARER_PIOCHE_CHARIOT
+        return this.titreAction === Actions.REPARER_CHARIOT
+            || this.titreAction === Actions.REPARER_LAMPE
+            || this.titreAction === Actions.REPARER_PIOCHE
+            || this.titreAction === Actions.REPARER_CHARIOT_LAMPE
+            || this.titreAction === Actions.REPARER_LAMPE_PIOCHE
+            || this.titreAction === Actions.REPARER_PIOCHE_CHARIOT
     }
-
 }
