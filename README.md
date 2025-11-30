@@ -71,6 +71,13 @@ La partie se termine quand :
    - sur un joueur → jouer une carte action
    - sur la corbeille → défausser la carte
 
+#### Aperçu 
+
+<div style="display: flex; gap: 3rem;">
+  <img src="./images/saboteur/saboteur_desktop.svg" alt="Aperçu du jeu sur desktop" style="max-width: 100%;  height: auto; border: 2px solid #FFFFFF;" />
+  <img src="./images/saboteur/saboteur_mobile.svg" alt="Aperçu du jeu sur mobile" style="max-width: 100%; height: auto; border: 2px solid #FFFFFF;" />
+</div>
+
 ---
 
 ## 5. Technologies utilisées

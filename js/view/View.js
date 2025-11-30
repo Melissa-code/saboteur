@@ -296,8 +296,8 @@ class View {
     this.ctx.font = "18px Tagesschrift, arial";
     const textDecalageY = this.isMobile ? zone.y + this.playerHandMarginY : this.playerHandMarginY - this.playerCardsSpacingX;
     const textStartX = zone.x + this.playerHandMarginX;
-    this.ctx.fillText("Cartes du Joueur 1 - " + this.game.joueur1.role, textStartX, textDecalageY);
-    this.ctx.fillText("Cartes du Joueur 2 - " + this.game.joueur2.role, textStartX, textDecalageY + this.playerHandHeight/2);
+    this.ctx.fillText("Cartes du Joueur 1 - " + this.game.joueur1.role, textStartX, textDecalageY-5);
+    this.ctx.fillText("Cartes du Joueur 2 - " + this.game.joueur2.role, textStartX, textDecalageY + this.playerHandHeight/2 -5);
 
     this.drawPlayerCards(this.game.joueur1, this.zones.player1Cards);
     this.drawPlayerCards(this.game.joueur2, this.zones.player2Cards);
