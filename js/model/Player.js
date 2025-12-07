@@ -14,7 +14,6 @@ class Player {
     }
 
     removeCarte(numCarte) {
-        console.log("numCarte", numCarte)
         if (numCarte >= 0 && numCarte < this.cartes.length) {
             this.cartes.splice(numCarte, 1);
         }
@@ -97,7 +96,6 @@ class Player {
             return false; 
         }
     }
-
 }
 
 export default Player; 

@@ -134,9 +134,10 @@ class Game extends EventTarget {
       // carte depart matrix[3][0]
       if (this.parcourir(3, 0) === true) {
         console.log("C'est gagné :) ")
-      };
-      
-      this.marquerCarteVisite(); 
+         this.afficherMessage("C'est gagné :) ", 'green');
+      } else {
+        this.reinitialiserMarqueurs(); 
+      }
 
       return true;
     }
@@ -144,11 +145,12 @@ class Game extends EventTarget {
     return false;
   }
 
-  marquerCarteVisite() {
+  reinitialiserMarqueurs() {
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
         if (this.matrix[y][x] !== null) {
           this.matrix[y][x].visite = false; 
+          this.matrix[y][x].cheminVictoire = false;
         }
       }
     }
@@ -160,11 +162,8 @@ class Game extends EventTarget {
    * tunnel 1 et 2 (0: mur)
   **/
   testRevelerCarteBut() {
-    console.log(this.cartesBut); 
-      
     for(let y = 1; y <= 5; y = y + 2) {
       let carteBut = this.matrix[y][10];
-
       if (carteBut.devoile === true) continue; 
 
       //carte à gauche
@@ -193,7 +192,6 @@ class Game extends EventTarget {
       }
     }
   }
-
 
   tirerCarteCroix() {
     for (let i = 0; i < this.pioche.length; i++) {
@@ -304,8 +302,7 @@ class Game extends EventTarget {
           console.log(carteAJouer)
           carteAJouer.rotation();
         }
-        console.log(carteAJouer)
-        console.log('Carte tournée de 180°');
+    
         // event pour que la Vue se redessine
         this.dispatchEvent(new Event("change"));
 
@@ -383,14 +380,14 @@ class Game extends EventTarget {
         // détruit carte chemin 
         if (carte instanceof CarteAction) {
           if (carte.titreAction === Actions.DETRUIT_CARTE_CHEMIN) {
-            const positionsCartesBloquees = [[0,3], [10, 1], [10,3], [10,5]];
+            const positionsCartesBloquees = [[3,0], [1, 10], [3, 10], [5,10]];
             let incorrect = false
 
             // pas destruction des cartes obligatoires deja en place 
             for (let position of positionsCartesBloquees) {
               if(position[0] === y && position[1] === x) {
                 incorrect = true;
-                console.log("carte détruit chemin sur carte ")
+                console.log("Impossible de détruire cette carte obligatoire déjà en place ")
                 break;
               }
             }
@@ -571,25 +568,39 @@ class Game extends EventTarget {
     carte.visite = true; 
 
     if (carte.tresor !== null) {
+      carte.cheminVictoire = true;
       return true; 
     }
 
     // recuperer les coordonnées des cartes voisines si elles snt connectées: verifierCartesVoisines()
     const cartesAParcourir = this.verifierCartesVoisines(x, y); 
 
-    let cheminTrouve = false;
+    //let cheminTrouve = false;
     // pour chaque voisine connectée, appel récursif de parcourir()
     for (let i = 0; i < cartesAParcourir.length; i++) {
       const voisinCoordonnees = cartesAParcourir[i];
       const voisinY = voisinCoordonnees[0];
       const voisinX = voisinCoordonnees[1];
-      cheminTrouve = cheminTrouve || this.parcourir(voisinY, voisinX); // true/false 
+      
+      //cheminTrouve = cheminTrouve || this.parcourir(voisinY, voisinX); // true/false
+      if (this.parcourir(voisinY, voisinX)) {
+        carte.cheminVictoire = true;
+        return true;
+      }
     }
 
-    return cheminTrouve;
+    //return cheminTrouve;
+    return false;
   }
 
+  // tester le parcours du jeu (avec impasses etc )
+  // penser technique marquage (algo pour vue)
 
+  // créer un attribut card: cheminVictoire = false 
+  // dans parcourir() : si carte trésor trouvée alors cheminVictoire = true 
+  // si voisin mene au tresor alors cheminVictoire = true 
+  // reinitaliser cheminVictoire = false  avant nouveau parcours 
+  // Vue : dans displayGrid: if cell.cheminVictoire === true alors bordure carte jaune (function)
 }
 
 export default Game;

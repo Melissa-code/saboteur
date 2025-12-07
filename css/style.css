@@ -120,3 +120,14 @@ h1 {
     margin: 4rem 1rem;
   }
 } 
+
+@media (min-width: 1450px) {
+ 
+  .message {
+    top: 22vh;
+  }
+
+  #game-board {
+    margin: 7rem;
+  }
+}

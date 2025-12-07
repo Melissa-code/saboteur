@@ -201,11 +201,15 @@ class View {
                 let rotation=0;
                 if (cell instanceof CarteChemin)
                   rotation = (cell.rotated) ? Math.PI : 0;
-                this.drawImageRotated(image, drawX, drawY, this.tileWidth, this.tileHeight, rotation);
+                  this.drawImageRotated(image, drawX, drawY, this.tileWidth, this.tileHeight, rotation);
+                
+                // si carte fait partie du chemin gagnant  surligneCarteVictoire(x, y)
+                if (cell.cheminVictoire === true)
+                  this.surlignerCheminVictoire(x * this.tileWidth, y * this.tileHeight)
               }
             };
-
-          // carte retournée
+          
+          // carte retournée (carte.devoile.false)
           } else {
             this.ctx.fillStyle = "#2b2d42";
             this.ctx.roundRect(
@@ -254,6 +258,15 @@ class View {
     return false;
   }
 
+
+  surlignerCheminVictoire(carteX, carteY) {
+    this.ctx.lineWidth = 4;
+    this.ctx.strokeStyle = "#F8F32B";
+    this.ctx.beginPath(); //border-radius
+    this.ctx.roundRect(carteX +1, carteY +1, this.tileWidth -1, this.tileHeight -1); 
+    this.ctx.stroke();
+  }
+
   drawCarteCheminWithTresor(carteButDevoilee, x, y) {
     const drawX = this.zones.gameBoard.x + (x * this.tileWidth);
     const drawY = this.zones.gameBoard.y + (y * this.tileHeight);
@@ -296,8 +309,8 @@ class View {
     this.ctx.font = "18px Tagesschrift, arial";
     const textDecalageY = this.isMobile ? zone.y + this.playerHandMarginY : this.playerHandMarginY - this.playerCardsSpacingX;
     const textStartX = zone.x + this.playerHandMarginX;
-    this.ctx.fillText("Cartes du Joueur 1 - " + this.game.joueur1.role, textStartX, textDecalageY-5);
-    this.ctx.fillText("Cartes du Joueur 2 - " + this.game.joueur2.role, textStartX, textDecalageY + this.playerHandHeight/2 -5);
+    this.ctx.fillText("Cartes du Joueur 1 - " + this.game.joueur1.role, textStartX, textDecalageY);
+    this.ctx.fillText("Cartes du Joueur 2 - " + this.game.joueur2.role, textStartX, textDecalageY + this.playerHandHeight/2);
 
     this.drawPlayerCards(this.game.joueur1, this.zones.player1Cards);
     this.drawPlayerCards(this.game.joueur2, this.zones.player2Cards);
@@ -476,8 +489,6 @@ class View {
 
     return new Cible(typeCible, reference);
   }
-
-
 }
 
 export default View;
