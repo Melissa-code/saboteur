@@ -1,4 +1,6 @@
-// Enum: Object.freeze() -> objet "immuable" (!= TypesCible.MATRICE="pizza")
+/** * Enum immuable pour les 4 types de cibles
+ * @enum {string}
+ */
 const TypesCibles = Object.freeze({
     MATRICE: "matrice",
     JOUEUR: "joueur", 

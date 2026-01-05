@@ -1,4 +1,4 @@
-import TypesCibles from '../model/TypesCibles.js';
+import TypesCibles from '../model/enums/TypesCibles.js';
 import Cible from '../model/Cible.js';
 import { CarteChemin } from '../model/Card.js'; 
 

@@ -1,5 +1,5 @@
-import Directions from './Directions.js';
-import Actions from './Actions.js';
+import Directions from './enums/Directions.js';
+import Actions from './enums/Actions.js';
 
 export class Card {
     constructor(image) {

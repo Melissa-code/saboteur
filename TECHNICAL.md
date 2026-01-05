@@ -12,20 +12,20 @@ Le projet suit une architecture MVC (Model-View-Controller) stricte pour sépare
 Affichage            Interactions          État du jeu
 ```
 
-**Model** (Game.js, Card.js, CardFactory, Player.js, Cible.js)
+- **Model** (Game.js, Card.js, CardFactory, Player.js, Cible.js)
 → gère l'état du jeu, les règles et la logique métier
 
-**View** (View.js)
+- **View** (View.js)
 → affiche le jeu sur Canvas, gère le rendu visuel
 
-**Controller** (Controller.js)
+- **Controller** (Controller.js)
 → capture les clics, traduit les interactions en actions
 
 ---
 
 ## 2. Classes et POO 
 
-#### 2.1. Hiérarchie des cartes
+### 2.1. Hiérarchie des cartes
 
 ```
 Card (classe parent abstraite)
@@ -35,7 +35,7 @@ Card (classe parent abstraite)
     └── Propriétés: titreAction, image
 ```
 
-#### 2.2. Héritage 
+### 2.2. Héritage 
 
 Toutes les cartes héritent de Card qui contient l'image de base.
 
@@ -55,7 +55,7 @@ class CarteChemin extends Card {
 }
 ```
 
-#### 2.3. Factory Pattern
+### 2.3. Factory Pattern
 
 CardFactory.js utilise le pattern Factory pour créer les cartes :
 
@@ -85,7 +85,7 @@ class CardFactory {
 ```
 **Avantage** : Centralise la création des cartes et facile à maintenir.
 
-#### 2.4. Observer Pattern
+### 2.4. Observer Pattern
 
 **Le problème à résoudre :** "Comment mettre à jour l'affichage quand le joueur joue une carte ?" 
 
@@ -134,6 +134,25 @@ Par exemple:
 
 C'est pour cela que les applications web modernes (React, Vue, Angular) utilisent toutes ce pattern : elles ne rechargent jamais la page, elles écoutent les changements et mettent à jour juste ce qui a changé.
 
+
+### 2.5. Sécurisation des données (Enums)
+
+Pour éviter les "Magic Strings" (chaînes de caractères écrites en dur qui causent des bugs en cas de faute de frappe), le projet utilise des Enums immuables. Pourquoi ? 
+
+- **Immuabilité** : Object.freeze() empêche toute modification accidentelle des constantes durant l'exécution (ex: impossible de redéfinir une clé par erreur).
+
+- **Centralisation** : Toutes les valeurs fixes du jeu (Actions, Types de cibles) sont regroupées dans le dossier model/enums/.
+
+- **Auto-complétion** : En utilisant TypesCibles.MATRICE au lieu de la chaîne "matrice", l'éditeur de code aide à la saisie et réduit les erreurs:
+
+```
+// model/enums/TypesCibles.js
+const TypesCibles = Object.freeze({
+    MATRICE: "matrice",
+    JOUEUR: "joueur", 
+    CORBEILLE: "corbeille"
+});
+```
 
 --- 
 

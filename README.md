@@ -127,6 +127,7 @@ saboteur/
 - DFS pour la détection de victoire
 - Factory Pattern pour la création de cartes
 - Observer Pattern pour Model-View
+- Clean Code : typage via JSDoc et immuabilité des constantes 
 
 ## 7. Fonctionnalités
 
@@ -140,7 +141,7 @@ saboteur/
 
 ## 8. Auteur 
 
-Mélissa-code
+Melissa-code
 
 ---
 
