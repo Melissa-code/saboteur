@@ -1,4 +1,4 @@
-import { Card, CarteChemin, CarteAction } from './Card.js'; 
+import  CarteAction  from './cards/CarteAction.js'; 
 import Actions from './enums/Actions.js'; 
 
 class Player {

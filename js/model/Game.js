@@ -1,9 +1,10 @@
-import { CarteChemin, CarteAction } from './Card.js'; 
-import CardFactory from './CardFactory.js'; 
 import Directions from './enums/Directions.js';
-import Player from './Player.js'; 
 import Actions from './enums/Actions.js'; 
 import TypesCibles from './enums/TypesCibles.js';
+import Player from './Player.js'; 
+import CarteChemin from './cards/CarteChemin.js'; 
+import CarteAction  from './cards/CarteAction.js'; 
+import CardFactory from './cards/CardFactory.js'; 
 
 
 class Game extends EventTarget {

@@ -1,6 +1,6 @@
 import TypesCibles from '../model/enums/TypesCibles.js';
 import Cible from '../model/Cible.js';
-import { CarteChemin } from '../model/Card.js'; 
+import CarteChemin  from '../model/cards/CarteChemin.js'; 
 
 
 class View {

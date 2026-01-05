@@ -1,5 +1,6 @@
-import { Card, CarteChemin, CarteAction } from './Card.js'; 
-import Actions from './enums/Actions.js'; 
+import CarteAction  from './CarteAction.js'; 
+import CarteChemin  from './CarteChemin.js'; 
+import Actions from '../enums/Actions.js'; 
 
 class CardFactory {
     

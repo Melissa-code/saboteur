@@ -35,7 +35,9 @@ Card (classe parent abstraite)
     └── Propriétés: titreAction, image
 ```
 
-### 2.2. Héritage 
+### 2.2. Héritage et abstraction
+
+#### 2.2.1. Héritage 
 
 Toutes les cartes héritent de Card qui contient l'image de base.
 
@@ -54,6 +56,28 @@ class CarteChemin extends Card {
   }
 }
 ```
+
+#### 2.2.2. Abstraction
+
+La classe Card est une classe abstraite. Elle définit une signature et fournit une base concrète, l'attribut ***image***, à toutes les cartes du jeu.
+
+- **Méthode abstraite rotation()** : Elle est déclarée dans Card pour garantir que toutes les cartes possèdent cette capacité mais son implémentation est laissée aux classes filles.
+
+- **Avantage** : Cela permet de manipuler un tableau de cards de manière générique tout en bénéficiant du comportement spécifique de chaque type de carte.
+
+```
+export default class Card {
+    constructor(image) {
+        // Pour vérrouiller la classe mère comme une vraie classe abstraite Java
+        if (this.constructor === Card) {
+            throw new Error("Card est une classe abstraite et ne peut pas être instanciée.");
+        }
+        this.image = image;
+    }
+    // ...
+}
+```
+
 
 ### 2.3. Factory Pattern
 
