@@ -17,7 +17,7 @@ class Game extends EventTarget {
     const carteDepart = CardFactory.createCarteChemin("2222", "./images/cartes_chemin/2222.svg");
     this.matrix[3][0] = carteDepart;
 
-    this.pioche = CardFactory.shuffleCartes()
+    this.pioche = CardFactory.generatePioche()
    
     this.cartesBut = this.selectionnerTroisCartesBut()
     this.matrix[1][10] = this.cartesBut[0]
