@@ -21,11 +21,11 @@ class Game extends EventTarget {
    
     this.cartesBut = this.selectionnerTroisCartesBut()
     this.matrix[1][10] = this.cartesBut[0]
-    this.cartesBut[0].devoile = false;
+    this.cartesBut[0].estDevoilee = false;
     this.matrix[3][10] = this.cartesBut[1]
-    this.cartesBut[1].devoile = false;
+    this.cartesBut[1].estDevoilee = false;
     this.matrix[5][10] = this.cartesBut[2]
-    this.cartesBut[2].devoile = false;
+    this.cartesBut[2].estDevoilee = false;
 
     this.joueurActuel = 1; 
     let roles = this.getRandomRole();
@@ -100,30 +100,30 @@ class Game extends EventTarget {
     let connexionCartes = false;
     
     // Pour voisine (carteGrille) de droite 
-    if ((x + 1) < this.width && this.matrix[y][x + 1] != null && this.matrix[y][x + 1].devoile === true) {
+    if ((x + 1) < this.width && this.matrix[y][x + 1] != null && this.matrix[y][x + 1].estDevoilee === true) {
       let carteGrille = this.matrix[y][x + 1];
-      if (!carteGrille.accepte_voisine(carteAPlacer, Directions.GAUCHE)) return false;
+      if (!carteGrille.accepterVoisine(carteAPlacer, Directions.GAUCHE)) return false;
       if (this.verifierConnexion(carteGrille, 'gauche', carteAPlacer, 'droite')) connexionCartes = true;
       existeVoisinage = true
     } 
     // Pour voisine (carteGrille) de gauche
-    if ((x >= 1) && this.matrix[y][x - 1] != null && this.matrix[y][x - 1].devoile === true) {
+    if ((x >= 1) && this.matrix[y][x - 1] != null && this.matrix[y][x - 1].estDevoilee === true) {
       let carteGrille = this.matrix[y][x - 1];
-      if (!carteGrille.accepte_voisine(carteAPlacer, Directions.DROITE)) {console.log("false");return false}; 
+      if (!carteGrille.accepterVoisine(carteAPlacer, Directions.DROITE)) {console.log("false");return false}; 
       if (this.verifierConnexion(carteGrille, 'droite', carteAPlacer, 'gauche')) connexionCartes = true;
       existeVoisinage = true;
     }
     // Pour voisine (carteGrille) du haut
-    if ((y >= 1) && this.matrix[y - 1][x] != null && this.matrix[y - 1][x].devoile === true) {
+    if ((y >= 1) && this.matrix[y - 1][x] != null && this.matrix[y - 1][x].estDevoilee === true) {
       let carteGrille = this.matrix[y - 1][x];
-      if (!carteGrille.accepte_voisine(carteAPlacer, Directions.BAS)) return false;
+      if (!carteGrille.accepterVoisine(carteAPlacer, Directions.BAS)) return false;
       if (this.verifierConnexion(carteGrille, 'bas', carteAPlacer, 'haut')) connexionCartes = true;
       existeVoisinage = true
     }
     // Pour voisine (carteGrille) du bas
-    if ((y + 1) < this.height && this.matrix[y + 1][x] != null && this.matrix[y + 1][x].devoile === true) {
+    if ((y + 1) < this.height && this.matrix[y + 1][x] != null && this.matrix[y + 1][x].estDevoilee === true) {
       let carteGrille = this.matrix[y + 1][x];
-      if (!carteGrille.accepte_voisine(carteAPlacer, Directions.HAUT)) return false;
+      if (!carteGrille.accepterVoisine(carteAPlacer, Directions.HAUT)) return false;
       if (this.verifierConnexion(carteGrille, 'haut', carteAPlacer, 'bas')) connexionCartes = true;
       existeVoisinage = true
     }
@@ -150,7 +150,7 @@ class Game extends EventTarget {
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
         if (this.matrix[y][x] !== null) {
-          this.matrix[y][x].visite = false; 
+          this.matrix[y][x].estVisitee = false; 
           this.matrix[y][x].cheminVictoire = false;
         }
       }
@@ -165,12 +165,12 @@ class Game extends EventTarget {
   testRevelerCarteBut() {
     for(let y = 1; y <= 5; y = y + 2) {
       let carteBut = this.matrix[y][10];
-      if (carteBut.devoile === true) continue; 
+      if (carteBut.estDevoilee === true) continue; 
 
       //carte à gauche
       if (this.matrix[y][9] !== null) {
         if (this.matrix[y][9].droite !== 0) {
-          this.matrix[y][10].devoile = true;
+          this.matrix[y][10].estDevoilee = true;
           this.dispatchEvent(new Event("change"))
           continue;
         }
@@ -178,7 +178,7 @@ class Game extends EventTarget {
       // carte en haut
       if (this.matrix[y - 1][10] !== null) {
         if (this.matrix[y - 1][10].bas !== 0) {
-          this.matrix[y][10].devoile = true;
+          this.matrix[y][10].estDevoilee = true;
           this.dispatchEvent(new Event("change"))
           continue;
         }
@@ -186,7 +186,7 @@ class Game extends EventTarget {
       // carte en bas
       if (this.matrix[y + 1][10] !== null) {
         if (this.matrix[y + 1][10].haut !== 0) {
-          this.matrix[y][10].devoile = true;
+          this.matrix[y][10].estDevoilee = true;
           this.dispatchEvent(new Event("change"))
           continue;
         }
@@ -425,10 +425,10 @@ class Game extends EventTarget {
               if (position[0] === x && position[1] === y) {
                 success = true;
                 // appliquer l'action oeil 
-                this.matrix[y][x].devoile = true;
+                this.matrix[y][x].estDevoilee = true;
 
                 setTimeout(()=> {
-                  this.matrix[y][x].devoile = false; 
+                  this.matrix[y][x].estDevoilee = false; 
                   this.dispatchEvent(new Event("change"))
                 }, 3000);
 
@@ -529,28 +529,28 @@ class Game extends EventTarget {
     // gauche 
     if (x > 0 && this.matrix[y][x -1] !== null) {
       let carteVoisine = this.matrix[y][x -1];
-      if (carteVoisine.visite == false && carte.seConnecte(carteVoisine, Directions.GAUCHE)) {
+      if (carteVoisine.estVisitee == false && carte.seConnecter(carteVoisine, Directions.GAUCHE)) {
         cartesAParcourir.push([y, x-1])
       }
     }
     // droite
     if (x < this.width-1 && this.matrix[y][x +1] !== null) {
       let carteVoisine = this.matrix[y][x + 1];
-      if (carteVoisine.visite == false && carte.seConnecte(carteVoisine, Directions.DROITE)) {
+      if (carteVoisine.estVisitee == false && carte.seConnecter(carteVoisine, Directions.DROITE)) {
         cartesAParcourir.push([y, x + 1])
       }
     }
     // haut
     if (y > 0 && this.matrix[y-1][x] !== null) {
       let carteVoisine = this.matrix[y-1][x];
-      if (carteVoisine.visite == false && carte.seConnecte(carteVoisine, Directions.HAUT)) {
+      if (carteVoisine.estVisitee == false && carte.seConnecter(carteVoisine, Directions.HAUT)) {
         cartesAParcourir.push([y -1, x])
       }
     }
     // bas
     if (y < this.height - 1 && this.matrix[y + 1][x] !== null) {
       let carteVoisine = this.matrix[y + 1][x];
-      if (carteVoisine.visite == false && carte.seConnecte(carteVoisine, Directions.BAS)) {
+      if (carteVoisine.estVisitee == false && carte.seConnecter(carteVoisine, Directions.BAS)) {
         cartesAParcourir.push([y+1, x])
       }
     }
@@ -562,11 +562,11 @@ class Game extends EventTarget {
   /**
    * Recherche récursive d'un chemin entre la carte départ matrix[3][0] et la carte trésor (recherche d'un tunnel continu)
    * pour déterminer si le joueur a gagné 
-   * carte.visite = true; -> eviter boucles infinies
+   * carte.estVisitee = true; -> eviter boucles infinies
    */
   parcourir(y, x) {
     const carte = this.matrix[y][x]; 
-    carte.visite = true; 
+    carte.estVisitee = true; 
 
     if (carte.tresor !== null) {
       carte.cheminVictoire = true;

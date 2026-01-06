@@ -3,7 +3,7 @@ import Actions from '../enums/Actions.js';
 
 /**
  * Représente une carte d'effet (blocage, réparation, éboulement...)
- * hérite de la classe abstraite Card
+ * @extends Card hérite de la classe abstraite Card
  */
 class CarteAction extends Card {
     /**

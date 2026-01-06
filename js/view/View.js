@@ -188,7 +188,7 @@ class View {
         const cell = this.game.matrix[y][x];
 
         if (cell !== null) {
-          if (cell.devoile === true) {
+          if (cell.estDevoilee === true) {
             // carte trésor ?
             if (this.isCarteTresor(cell)) {
               this.drawCarteCheminWithTresor(cell, x, y)
@@ -209,7 +209,7 @@ class View {
               }
             };
           
-          // carte retournée (carte.devoile.false)
+          // carte retournée (carte.estDevoilee.false)
           } else {
             this.ctx.fillStyle = "#2b2d42";
             this.ctx.roundRect(
@@ -250,7 +250,8 @@ class View {
   isCarteTresor(carte) {
     if (!this.game.cartesBut) return false;
     for (const carteBut of this.game.cartesBut) {        
-      if (carteBut === carte && carteBut.tresor === "./images/treasure.svg") {
+      // if (carteBut === carte && carteBut.tresor === "./images/treasure.svg") {
+      if (carteBut === carte && carteBut.tresor === CarteChemin.TYPE_TRESOR) {
         return true;
       } 
     }
@@ -267,11 +268,11 @@ class View {
     this.ctx.stroke();
   }
 
-  drawCarteCheminWithTresor(carteButDevoilee, x, y) {
+  drawCarteCheminWithTresor(carteBute, x, y) {
     const drawX = this.zones.gameBoard.x + (x * this.tileWidth);
     const drawY = this.zones.gameBoard.y + (y * this.tileHeight);
     const image = new Image();
-    image.src = carteButDevoilee.image; 
+    image.src = carteBute.image; 
     image.onload = ()=> {
       this.ctx.drawImage(image, drawX, drawY, this.tileWidth, this.tileHeight); 
       this.drawTresor(drawX, drawY)
