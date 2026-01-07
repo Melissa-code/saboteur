@@ -358,7 +358,7 @@ class View {
         this.ctx.stroke();
       }
   
-      joueur.cartesBloquent.forEach((carte, index) => {
+      joueur.cartesBloquantes.forEach((carte, index) => {
         const carteX = zone.x + this.playerHandMarginX + index * (this.tileWidth/2 + this.playerCardsSpacingX);
         const carteY = zone.y + this.playerHandMarginY - this.tileHeight/2 - 10; // au-dessus
 

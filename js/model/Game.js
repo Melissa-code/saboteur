@@ -374,7 +374,7 @@ class Game extends EventTarget {
       case TypesCibles.MATRICE: 
         const [x, y] = this.action2.reference;
 
-        if (joueur.cartesBloquent.length !== 0) {
+        if (joueur.cartesBloquantes.length !== 0) {
           break; 
         }
 
