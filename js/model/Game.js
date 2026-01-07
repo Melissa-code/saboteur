@@ -28,7 +28,7 @@ class Game extends EventTarget {
     this.cartesBut[2].estDevoilee = false;
 
     this.joueurActuel = 1; 
-    let roles = this.getRandomRole();
+    let roles = this.getRandomRole(2);//2joueurs 
     this.joueur1 = new Player(1, roles[0]);
     this.joueur2 = new Player(2, roles[1]); 
    
@@ -39,6 +39,7 @@ class Game extends EventTarget {
 
   initGame() {
     let newMatrix = [];
+
     for (let y = 0; y < this.height; y++) {
       let row = [];
       for (let x = 0; x < this.width; x++) {
@@ -46,22 +47,27 @@ class Game extends EventTarget {
       }
       newMatrix.push(row);
     }
-
-    return newMatrix;
+    return newMatrix; //matrix[y][x] 
   }
 
-  getRandomRole() {
-    const roles = ['Saboteur', 'Chercheur d\'or']; 
-    const randomRoles = [];
-    const indexRole = Math.floor(Math.random() * roles.length);
-    const randomRole = roles[indexRole]; 
-    const indexRole2 = (indexRole +1) % 2;
-    const randomRole2 = roles[indexRole2];
+  /**
+   * Génère une liste de rôles équilibrée et les distribue aléatoirement (algorithme de Fisher-Yates)
+   * @param {number} [nbJoueurs=2] - Le nombre de joueurs par défaut 2
+   * @returns {string[]} Un tableau contenant les rôles mélangés
+   */
+  getRandomRole(nbJoueurs = 2) {
+    // Initialisation des rôles (1 Saboteur, le reste en Chercheurs d'or)
+    const roles = ['Saboteur'];
+    for (let i = 1; i < nbJoueurs; i++) {
+      roles.push('Chercheur d\'or');
+    }
 
-    randomRoles.push(randomRole)
-    randomRoles.push(randomRole2)
-
-    return randomRoles;
+    // Mélanger les rôles- tableau parcouru: échange chaque élément avec un autre au hasard
+    for (let i = roles.length - 1; i > 0; i--) { 
+      const j = Math.floor(Math.random() * (i + 1));
+      [roles[i], roles[j]] = [roles[j], roles[i]];
+    }
+    return roles;
   }
 
   passerAuJoueurSuivant() {
@@ -76,22 +82,22 @@ class Game extends EventTarget {
   }
 
   /**
-   * Vérifie si 2 cartes ont une connexion de tunnel
-   * Les deux côtés en contact doivent avoir un tunnel (valeur !== 0)
-   * Empêche de placer deux cartes "dos à dos" (mur contre mur sans connexion)
+   * Vérifie la validité de la connexion physique entre deux cartes adjacentes
+   * Une connexion est valide si les deux faces en contact possèdent un tunnel (valeur !== 0): impossible de placer mur contre mur
+   * @returns {boolean} True si les deux tunnels se rejoignent, false s'il y a un mur (0)
    */
   verifierConnexion(carteGrille, coteCarteGrille, carteAPlacer, coteCarteAPlacer) {
     return carteGrille[coteCarteGrille] !== 0 && carteAPlacer[coteCarteAPlacer] !== 0;
   }
 
   /**
-   * Respecte les contraintes tunnel-tunnel(2-2)/ tunnel-impasse(2-1)/ mur-mur(0-0) 
-   * Au moins une liaison entre les tunnels existe (pas de zone isolée sur plateau jeu)
+   * Vérifie la disponibilité de la case, la validité des connexions avec les cartes voisines:au moins une liaison entre les tunnels existe (pas de zone isolée sur plateau jeu)
+   * et déclenche la vérification de victoire si le placement réussi
+   * @returns {boolean} True si la carte a été placée avec succès, false sinon
    */
   placerCarte(x, y, carteAPlacer) {
-
     if (this.matrix[y][x] != null) {
-      this.afficherMessage('La case est déjà occupée', 'red');
+      this.afficherMessage('Cette case est déjà occupée', 'red');
       return false;
     }
 
@@ -134,15 +140,13 @@ class Game extends EventTarget {
 
       // carte depart matrix[3][0]
       if (this.parcourir(3, 0) === true) {
-        console.log("C'est gagné :) ")
-         this.afficherMessage("C'est gagné :) ", 'green');
+        this.afficherMessage("C'est gagné :) ", 'green');
       } else {
         this.reinitialiserMarqueurs(); 
       }
-
       return true;
     }
-
+    
     return false;
   }
 
@@ -593,15 +597,6 @@ class Game extends EventTarget {
     //return cheminTrouve;
     return false;
   }
-
-  // tester le parcours du jeu (avec impasses etc )
-  // penser technique marquage (algo pour vue)
-
-  // créer un attribut card: cheminVictoire = false 
-  // dans parcourir() : si carte trésor trouvée alors cheminVictoire = true 
-  // si voisin mene au tresor alors cheminVictoire = true 
-  // reinitaliser cheminVictoire = false  avant nouveau parcours 
-  // Vue : dans displayGrid: if cell.cheminVictoire === true alors bordure carte jaune (function)
 }
 
 export default Game;
