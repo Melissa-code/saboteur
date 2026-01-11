@@ -213,7 +213,6 @@ class Game extends EventTarget {
       }
     }
 
-    // console.log("Cartes a parcourir : ", cartesAParcourir)
     return cartesAParcourir;
   }
 
@@ -292,20 +291,20 @@ class Game extends EventTarget {
 
   
   /**
-   * 
-   * Rappel: this.cartesBut[[1,10], [3,10], [5,10]]
+   * Dévoile une carte but si une carte chemin connectée est placée à côté
+   * Rappel: this.cartesBut[[1,10], [3,10], [5,10]]: y 1,3,5 et x 10
    * tunnel 1 et 2 (0: mur)
   **/
   testRevelerCarteBut() {
     for(let y = 1; y <= 5; y = y + 2) {
       let carteBut = this.matrix[y][10];
-      if (carteBut.estDevoilee === true) continue; 
+      if (carteBut.estDevoilee === true) continue; //passe à la suivante si dévoilée
 
       // carte à gauche
       if (this.matrix[y][9] !== null) {
         if (this.matrix[y][9].droite !== 0) {
           this.matrix[y][10].estDevoilee = true;
-          this.dispatchEvent(new Event("change"));
+          this.dispatchEvent(new Event("change"));//afficher la carte
           continue;
         }
       }
@@ -389,146 +388,147 @@ class Game extends EventTarget {
   }
 
 
+  /**
+   * récupère la carte sélectionnée du joueur courant (1er clic)
+   */
+  getCarteSelectionnee() {
+    return this.action1; //sélection carte ou rotation carte
+  }
 
- 
- 
 
-  notifierCible(cible) {
-    if (cible.type === TypesCibles.EXTERIEUR) {
-      console.log('clic en dehors des zones actives')
+  /**
+   * Gère la rotation de la carte sélectionnée du joueur courant (re-clic sur la même carte - action1) 
+   */
+  gererRotation(joueur, numCarte) {
+    const carte = joueur.cartes[numCarte];
 
-      this.dispatchEvent(new CustomEvent("message", {
-        detail: {
-          text: `Clic en dehors des zones actives.`,
-          color: `red`
-        }
-      })); 
-      return
+    if (carte instanceof CarteChemin) {
+      carte.rotation();
+      this.dispatchEvent(new Event("change")); // pour que carte se redessine
+    }
+  }
+
+
+  /**
+   * Gère le premier clic du joueur (sélection carte/rotation carte)
+   * @param {Object} cible - cible (clic dans zone joueur) 
+   */
+  gererPremierClic(cible) {
+    if (cible.type !== TypesCibles.JOUEUR) {
+      this.afficherMessage(`Clic incorrect: en dehors de la zone des joueurs.`, `red`);
+      return;
     }
 
-    if (this.action1 === null) {
-      if (cible.type === TypesCibles.JOUEUR) {
-        const [numJoueur, numCarte] = cible.reference;
-
-        if (numJoueur === this.joueurActuel && numCarte !== -1) {
-          this.action1 = cible;
-          return;
-        } else {
-          console.log("premier clic n'est pas sur une carte du joueur courant.");
-
-          this.dispatchEvent(new CustomEvent("message", {
-            detail: {
-              text: `Sélectionnez une carte du joueur courant.`, 
-              color: `red`
-            }
-          })); 
-          return;
-        }
-      } else {
-          console.log('premier clic hors de la zone des joueurs.')
-          return
-      }
+    const [numJoueur, numCarte] = cible.reference;
+    if (numJoueur === this.joueurActuel && numCarte !== -1) {
+      this.action1 = cible; // Sélection réussie
+      this.dispatchEvent(new Event("change")); // montrer quelle carte est choisie
+    } else {
+      this.afficherMessage(`C'est au joueur ${this.joueurActuel} de jouer.`, `red`);
     }
+  }
 
-    // code pour traiter l'action 2 (2e clic)
 
-    if (cible.type === TypesCibles.CORBEILLE || cible.type === TypesCibles.MATRICE) {
+  /**
+   * Gère le deuxième clic du joueur (action2)
+   * @param {Object} cible - cible (clic dans zone joueur/adversaire/corbeille/matrice)
+   */
+  gererDeuxiemeClic(cible) {
+    // cible: CORBEILLE ou MATRICE
+     if (cible.type === TypesCibles.CORBEILLE || cible.type === TypesCibles.MATRICE) {
       this.action2 = cible; 
       this.appliquerActions();
       return
     }
 
+    // cible: JOUEUR (soi-même ou adversaire)
     if (cible.type === TypesCibles.JOUEUR) {
       const [numJoueurCible, numCarteCible] = cible.reference; //[numJoueur, numCarte]
       const [numJoueurAction1, numCarteAction1] = this.action1.reference;
 
-      // rotation (ne pas appliquerActions() sélection)
+      // rotation: Re-clic sur la même carte (ne pas appliquerActions())
       if (numJoueurAction1 === numJoueurCible && numCarteAction1 === numCarteCible) {
         const joueurCourant = this.joueurActuel === 1 ? this.joueur1 : this.joueur2; 
-        const carteAJouer = joueurCourant.cartes[numCarteAction1];
-
-        if (carteAJouer instanceof CarteChemin) {
-          console.log(carteAJouer)
-          carteAJouer.rotation();
-        }
-    
-        // event pour que la Vue se redessine
-        this.dispatchEvent(new Event("change"));
-
-        return;
+        this.gererRotation(joueurCourant, numCarteAction1);
+        return; 
       }
 
-      // 2e clic pour changer de carte sélectionnée 
+      // Changement de sélection: clic sur une autre carte de son propre jeu
       if (numJoueurAction1 === numJoueurCible && numCarteAction1 !== numCarteCible) {
-        const [numJoueur, numCarte] = cible.reference;
+        const [, numCarte] = cible.reference;
           if (numCarte !== -1) {
-              this.action1 = cible;
+              this.action1 = cible; // mise à jour de carte sélectionnée
+              this.dispatchEvent(new Event("change"));//surbrillance carte sélectionnée
+              return;
           }
       }
 
-      // Si cible est un autre joueur
+      // Action sur adversaire (casser outil)
       if (numJoueurCible !== this.joueurActuel) {
         this.action2 = cible; 
         this.appliquerActions();
-
         return;
       }
 
-      // Si cible est soi-même: uniquement si la carte est réparation
+      // Action sur soi-même: (réparer outil)
       if (numJoueurCible === this.joueurActuel) {
-
         // identifier carte jouée 
         const joueur = this.joueurActuel === 1 ? this.joueur1 : this.joueur2;
-        const [numJoueur, numCarte] = this.action1.reference;
+        const [, numCarte] = this.action1.reference;
         const carte = joueur.cartes[numCarte];
       
         if (carte instanceof CarteAction && carte.estCarteReparation()) {
           this.action2 = cible;
           this.appliquerActions();
-
           return;
         }
-
       }
     }
+  } 
 
-    console.log('clic incorrect');
-  }
 
-  // action1 contient la cible de la carte sélectionnée
-  getCarteSelectionnee() {
-    return this.action1; 
+  /**
+   * Gère le clic du joueur en fonction de l'état actuel des actions (action1: 1er clic et action2: 2e clic)
+   * @param {Object} cible - cible (clic dans zone joueur/adversaire/corbeille/matrice)
+   */
+  notifierCible(cible) {
+    if (cible.type === TypesCibles.EXTERIEUR) {
+      this.afficherMessage(`Veuillez cliquer dans une zone valide du jeu.`, `red`);
+      return;
+    }
+
+    if (this.action1 === null) {
+      this.gererPremierClic(cible);
+    } else {
+      this.gererDeuxiemeClic(cible);
+    }
   }
 
  
   appliquerActions() {
     const joueur = this.joueurActuel === 1 ? this.joueur1 : this.joueur2; 
-    console.log("joueur courant : ", joueur.id);
+    //Récupère la carte à jouer
+    const [, numCarte] = this.action1.reference;
+    const carte = joueur.cartes[numCarte]; 
     let success = false; 
 
-    //carte
-    const [numJoueur, numCarte] = this.action1.reference;
-    const carte = joueur.cartes[numCarte]; 
-  
     switch(this.action2.type) {
       case TypesCibles.MATRICE: 
         const [x, y] = this.action2.reference;
 
-        if (joueur.cartesBloquantes.length !== 0) {
-          break; 
-        }
+        if (joueur.cartesBloquantes.length !== 0) break; // joueur bloqué ne peut pas placer de carte chemin ou action
 
-        // détruit carte chemin 
+        // DETRUIRE carte chemin
         if (carte instanceof CarteAction) {
           if (carte.titreAction === Actions.DETRUIT_CARTE_CHEMIN) {
-            const positionsCartesBloquees = [[3,0], [1, 10], [3, 10], [5,10]];
+            const positionsCartesBloquees = [[3,0], [1, 10], [3, 10], [5,10]]; // d'office: carte départ + 3 cartes buts
             let incorrect = false
 
             // pas destruction des cartes obligatoires deja en place 
             for (let position of positionsCartesBloquees) {
               if(position[0] === y && position[1] === x) {
                 incorrect = true;
-                console.log("Impossible de détruire cette carte obligatoire déjà en place ")
+                console.log("Impossible de détruire cette carte obligatoire déjà en place.")
                 break;
               }
             }
@@ -548,7 +548,6 @@ class Game extends EventTarget {
               success = true; 
               break;
             }
-            
           }
         }
 
