@@ -14,15 +14,16 @@ class Game extends EventTarget {
     this.height = 7;
     this.matrix = this.initGame();
     this.pioche = CardFactory.generatePioche();
+    this.partieTerminee = false;
   
     const carteDepart = CardFactory.createCarteChemin("2222", "./images/cartes_chemin/2222.svg");
     this.matrix[3][0] = carteDepart;
-    this.cartesBut = this.selectionnerTroisCartesBut()
-    this.matrix[1][10] = this.cartesBut[0]
+    this.cartesBut = this.selectionnerTroisCartesBut();
+    this.matrix[1][10] = this.cartesBut[0];
     this.cartesBut[0].estDevoilee = false;
-    this.matrix[3][10] = this.cartesBut[1]
+    this.matrix[3][10] = this.cartesBut[1];
     this.cartesBut[1].estDevoilee = false;
-    this.matrix[5][10] = this.cartesBut[2]
+    this.matrix[5][10] = this.cartesBut[2];
     this.cartesBut[2].estDevoilee = false;
 
     this.joueurActuel = 1; 
@@ -36,6 +37,11 @@ class Game extends EventTarget {
   }
 
 
+  /**
+   * Initialise une matrice vide pour le plateau de jeu
+   * tableau à 2D rempli de cases à null 
+   * @returns {null[][]} Matrice vide
+   */
   initGame() {
     let newMatrix = [];
 
@@ -72,7 +78,8 @@ class Game extends EventTarget {
   
 
   /**
-   *  Récupère 3 cartes buts: 2 normales + 1 croix trésor
+   * Récupère 3 cartes buts: 2 normales + 1 croix trésor
+   * @returns {CarteChemin[]} tableau de 3 cartes but
    */
   preparerTroisCartesBut() {
     let cartesBut = []; 
@@ -97,7 +104,7 @@ class Game extends EventTarget {
 
   /**
    * Sélectionne et retourne 3 cartes but mélangées
-   * @returns {CarteChemin[]} Un tableau de 3 cartes but mélangées
+   * @returns {CarteChemin[]} tableau de 3 cartes but mélangées
    */
   selectionnerTroisCartesBut() {
     let cartesBut = this.preparerTroisCartesBut();
@@ -131,23 +138,37 @@ class Game extends EventTarget {
     return roles;
   }
 
-  
+
+  /**
+   * Distribue 5 cartes à chaque joueur au début de la partie
+   */
   distribuerCartesJoueurs() {
     for (let i = 0; i < 5; i++) {
-      // retire et retourne la derniere 
+      // retire et retourne la derniere (!= shift() )
       this.joueur1.addCarte(this.pioche.pop())
       this.joueur2.addCarte(this.pioche.pop())
     }
   }
 
 
+  /**
+   * Change de joueur 
+   */
+  changerTour() {
+    const newJoueur = this.joueurActuel === 1 ? this.joueur2 : this.joueur1;
+    this.joueurActuel = newJoueur.id;
 
-  passerAuJoueurSuivant() {
-    // J1=0-> 0+1=1 : Divise 1 par 2 : 1/2=0 reste 1 (next joueur)->revient au 1er joueur après le dernier
-    this.joueurActuelIndex = (this.joueurActuelIndex + 1) % this.roles.length;
+    this.dispatchEvent(new CustomEvent("showPlayerTurn", {
+      detail: `C'est au tour du joueur ${newJoueur.id} de jouer.`
+    }));
   }
 
 
+  /**
+   * Affiche un message dans la vue
+   * @param {string} text - Le texte du message
+   * @param {string} color - La couleur du message
+   */
   afficherMessage(text, color = 'black') {
     this.dispatchEvent(new CustomEvent("message", {
       detail: { text, color }
@@ -156,75 +177,83 @@ class Game extends EventTarget {
 
 
   /**
-   * Vérifie la validité de la connexion physique entre deux cartes adjacentes
-   * Une connexion est valide si les deux faces en contact possèdent un tunnel (valeur !== 0): impossible de placer mur contre mur
-   * @returns {boolean} True si les deux tunnels se rejoignent, false s'il y a un mur (0)
+   * Vérifie les cartes voisines connectées à la carte aux coordonnées (x, y)
+   * @returns {Array} Tableau des coordonnées [y, x] des cartes voisines connectées
    */
-  verifierConnexion(carteGrille, coteCarteGrille, carteAPlacer, coteCarteAPlacer) {
-    return carteGrille[coteCarteGrille] !== 0 && carteAPlacer[coteCarteAPlacer] !== 0;
+  verifierCartesVoisines(x, y) {
+    let cartesAParcourir = [];
+    let carte = this.matrix[y][x];
+
+    // gauche 
+    if (x > 0 && this.matrix[y][x -1] !== null) {
+      let carteVoisine = this.matrix[y][x -1];
+      if (carteVoisine.estVisitee == false && carte.seConnecter(carteVoisine, Directions.GAUCHE)) {
+        cartesAParcourir.push([y, x-1])
+      }
+    }
+    // droite
+    if (x < this.width-1 && this.matrix[y][x +1] !== null) {
+      let carteVoisine = this.matrix[y][x + 1];
+      if (carteVoisine.estVisitee == false && carte.seConnecter(carteVoisine, Directions.DROITE)) {
+        cartesAParcourir.push([y, x + 1])
+      }
+    }
+    // haut
+    if (y > 0 && this.matrix[y-1][x] !== null) {
+      let carteVoisine = this.matrix[y-1][x];
+      if (carteVoisine.estVisitee == false && carte.seConnecter(carteVoisine, Directions.HAUT)) {
+        cartesAParcourir.push([y -1, x])
+      }
+    }
+    // bas
+    if (y < this.height - 1 && this.matrix[y + 1][x] !== null) {
+      let carteVoisine = this.matrix[y + 1][x];
+      if (carteVoisine.estVisitee == false && carte.seConnecter(carteVoisine, Directions.BAS)) {
+        cartesAParcourir.push([y+1, x])
+      }
+    }
+
+    // console.log("Cartes a parcourir : ", cartesAParcourir)
+    return cartesAParcourir;
   }
 
+
   /**
-   * Vérifie la disponibilité de la case, la validité des connexions avec les cartes voisines:au moins une liaison entre les tunnels existe (pas de zone isolée sur plateau jeu)
-   * et déclenche la vérification de victoire si le placement réussi
-   * @returns {boolean} True si la carte a été placée avec succès, false sinon
+   * Recherche récursive d'un chemin entre la carte départ matrix[3][0] et la carte trésor 
+   * recherche d'un tunnel continu pour déterminer si le joueur a gagné 
+   * carte.estVisitee = true -> eviter boucles infinies
    */
-  placerCarte(x, y, carteAPlacer) {
-    if (this.matrix[y][x] != null) {
-      this.afficherMessage('Cette case est déjà occupée', 'red');
-      return false;
+  parcourir(y, x) {
+    const carte = this.matrix[y][x]; 
+    carte.estVisitee = true; 
+
+    if (carte.tresor !== null) {
+      carte.cheminVictoire = true;
+      return true; 
     }
 
-    // au moins une voisine existe + connexion entre les 2 cartes pour toutes les cartes dévoilées
-    let existeVoisinage = false; 
-    let connexionCartes = false;
-    
-    // Pour voisine (carteGrille) de droite 
-    if ((x + 1) < this.width && this.matrix[y][x + 1] != null && this.matrix[y][x + 1].estDevoilee === true) {
-      let carteGrille = this.matrix[y][x + 1];
-      if (!carteGrille.accepterVoisine(carteAPlacer, Directions.GAUCHE)) return false;
-      if (this.verifierConnexion(carteGrille, 'gauche', carteAPlacer, 'droite')) connexionCartes = true;
-      existeVoisinage = true
-    } 
-    // Pour voisine (carteGrille) de gauche
-    if ((x >= 1) && this.matrix[y][x - 1] != null && this.matrix[y][x - 1].estDevoilee === true) {
-      let carteGrille = this.matrix[y][x - 1];
-      if (!carteGrille.accepterVoisine(carteAPlacer, Directions.DROITE)) {console.log("false");return false}; 
-      if (this.verifierConnexion(carteGrille, 'droite', carteAPlacer, 'gauche')) connexionCartes = true;
-      existeVoisinage = true;
-    }
-    // Pour voisine (carteGrille) du haut
-    if ((y >= 1) && this.matrix[y - 1][x] != null && this.matrix[y - 1][x].estDevoilee === true) {
-      let carteGrille = this.matrix[y - 1][x];
-      if (!carteGrille.accepterVoisine(carteAPlacer, Directions.BAS)) return false;
-      if (this.verifierConnexion(carteGrille, 'bas', carteAPlacer, 'haut')) connexionCartes = true;
-      existeVoisinage = true
-    }
-    // Pour voisine (carteGrille) du bas
-    if ((y + 1) < this.height && this.matrix[y + 1][x] != null && this.matrix[y + 1][x].estDevoilee === true) {
-      let carteGrille = this.matrix[y + 1][x];
-      if (!carteGrille.accepterVoisine(carteAPlacer, Directions.HAUT)) return false;
-      if (this.verifierConnexion(carteGrille, 'haut', carteAPlacer, 'bas')) connexionCartes = true;
-      existeVoisinage = true
-    }
+    // recuperer les coordonnées des cartes voisines si elles snt connectées: verifierCartesVoisines()
+    const cartesAParcourir = this.verifierCartesVoisines(x, y); 
 
-    if (existeVoisinage && connexionCartes) {
-      this.matrix[y][x] = carteAPlacer;
-      this.testRevelerCarteBut(); 
-
-      // carte depart matrix[3][0]
-      if (this.parcourir(3, 0) === true) {
-        this.afficherMessage("C'est gagné :) ", 'green');
-        return;
-      } else {
-        this.reinitialiserMarqueurs(); 
+    // pour chaque voisine connectée, appel récursif de parcourir()
+    for (let i = 0; i < cartesAParcourir.length; i++) {
+      const voisinCoordonnees = cartesAParcourir[i];
+      const voisinY = voisinCoordonnees[0];
+      const voisinX = voisinCoordonnees[1];
+      
+      if (this.parcourir(voisinY, voisinX)) {
+        carte.cheminVictoire = true;
+        return true;
       }
-      return true;
     }
-    
+
     return false;
   }
 
+
+  /**
+   * Réinitialise les marqueurs estVisitee et cheminVictoire pour toutes les cartes du plateau jeu
+   */
   reinitialiserMarqueurs() {
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
@@ -235,7 +264,33 @@ class Game extends EventTarget {
       }
     }
   }
+ 
 
+  /**
+   * Vérifie si le joueur a atteint le trésor depuis la case de départ
+   */
+  verifierVictoire() {
+    if (this.parcourir(3, 0) === true) {
+      this.afficherMessage("Gagné ! ✌️🏆", 'green');
+      this.partieTerminee = true;
+      return true;
+    } else {
+      this.reinitialiserMarqueurs(); 
+      return false;
+    }
+  }
+
+
+  /**
+   * Vérifie la validité de la connexion physique entre deux cartes adjacentes
+   * connexion valide si 2 faces en contact possèdent un tunnel (valeur !== 0 - impossible de placer mur contre mur)
+   * @returns {boolean} True si les deux tunnels se rejoignent, false s'il y a un mur (0)
+   */
+  verifierConnexion(carteGrille, coteCarteGrille, carteAPlacer, coteCarteAPlacer) {
+    return carteGrille[coteCarteGrille] !== 0 && carteAPlacer[coteCarteAPlacer] !== 0;
+  }
+
+  
   /**
    * 
    * Rappel: this.cartesBut[[1,10], [3,10], [5,10]]
@@ -246,11 +301,11 @@ class Game extends EventTarget {
       let carteBut = this.matrix[y][10];
       if (carteBut.estDevoilee === true) continue; 
 
-      //carte à gauche
+      // carte à gauche
       if (this.matrix[y][9] !== null) {
         if (this.matrix[y][9].droite !== 0) {
           this.matrix[y][10].estDevoilee = true;
-          this.dispatchEvent(new Event("change"))
+          this.dispatchEvent(new Event("change"));
           continue;
         }
       }
@@ -258,7 +313,7 @@ class Game extends EventTarget {
       if (this.matrix[y - 1][10] !== null) {
         if (this.matrix[y - 1][10].bas !== 0) {
           this.matrix[y][10].estDevoilee = true;
-          this.dispatchEvent(new Event("change"))
+          this.dispatchEvent(new Event("change"));
           continue;
         }
       }
@@ -266,13 +321,76 @@ class Game extends EventTarget {
       if (this.matrix[y + 1][10] !== null) {
         if (this.matrix[y + 1][10].haut !== 0) {
           this.matrix[y][10].estDevoilee = true;
-          this.dispatchEvent(new Event("change"))
+          this.dispatchEvent(new Event("change"));
           continue;
         }
       }
     }
   }
 
+
+  /**
+   * Vérifie la disponibilité de la case, la validité des connexions avec les cartes voisines - au moins une liaison entre les tunnels existe (pas de zone isolée sur plateau jeu)
+   * et déclenche la vérification de victoire si le placement réussi
+   * @returns {boolean} True si la carte a été placée avec succès, false sinon
+   */
+  placerCarte(x, y, carteAPlacer) {
+    if (this.partieTerminee) {
+      this.afficherMessage('La partie est terminée ! 😢', 'red');
+      return false;
+    }  
+
+    if (this.matrix[y][x] != null) {
+      this.afficherMessage('Cette case est déjà occupée', 'red');
+      return false;
+    }
+
+    // au moins une voisine existe + connexion entre les 2 cartes pour toutes les cartes dévoilées
+    let existeVoisinage = false; 
+    let connexionCartes = false;
+    
+    // Pour voisine (carteGrille CarteChemin) de droite 
+    if ((x + 1) < this.width && this.matrix[y][x + 1] !== null && this.matrix[y][x + 1].estDevoilee === true) {
+      let carteGrille = this.matrix[y][x + 1];
+      if (!carteGrille.accepterVoisine(carteAPlacer, Directions.GAUCHE)) return false;
+      if (this.verifierConnexion(carteGrille, 'gauche', carteAPlacer, 'droite')) connexionCartes = true;
+      existeVoisinage = true
+    } 
+    // Pour voisine (carteGrille) de gauche
+    if ((x >= 1) && this.matrix[y][x - 1] !== null && this.matrix[y][x - 1].estDevoilee === true) {
+      let carteGrille = this.matrix[y][x - 1];
+      if (!carteGrille.accepterVoisine(carteAPlacer, Directions.DROITE)) {console.log("false");return false}; 
+      if (this.verifierConnexion(carteGrille, 'droite', carteAPlacer, 'gauche')) connexionCartes = true;
+      existeVoisinage = true;
+    }
+    // Pour voisine (carteGrille) du haut
+    if ((y >= 1) && this.matrix[y - 1][x] !== null && this.matrix[y - 1][x].estDevoilee === true) {
+      let carteGrille = this.matrix[y - 1][x];
+      if (!carteGrille.accepterVoisine(carteAPlacer, Directions.BAS)) return false;
+      if (this.verifierConnexion(carteGrille, 'bas', carteAPlacer, 'haut')) connexionCartes = true;
+      existeVoisinage = true
+    }
+    // Pour voisine (carteGrille) du bas
+    if ((y + 1) < this.height && this.matrix[y + 1][x] !== null && this.matrix[y + 1][x].estDevoilee === true) {
+      let carteGrille = this.matrix[y + 1][x];
+      if (!carteGrille.accepterVoisine(carteAPlacer, Directions.HAUT)) return false;
+      if (this.verifierConnexion(carteGrille, 'haut', carteAPlacer, 'bas')) connexionCartes = true;
+      existeVoisinage = true
+    }
+
+    if (existeVoisinage && connexionCartes) {
+      this.matrix[y][x] = carteAPlacer;
+      this.testRevelerCarteBut();
+      this.verifierVictoire();
+      return true;
+    }
+    
+    return false; // échec placement
+  }
+
+
+
+ 
  
 
   notifierCible(cible) {
@@ -382,15 +500,7 @@ class Game extends EventTarget {
     return this.action1; 
   }
 
-  changerTour() {
-    const newJoueur = this.joueurActuel === 1 ? this.joueur2 : this.joueur1;
-    this.joueurActuel = newJoueur.id;
-
-    this.dispatchEvent(new CustomEvent("showPlayerTurn", {
-      detail: `C'est au tour du joueur ${newJoueur.id} de jouer.`
-    }));
-  }
-
+ 
   appliquerActions() {
     const joueur = this.joueurActuel === 1 ? this.joueur1 : this.joueur2; 
     console.log("joueur courant : ", joueur.id);
@@ -551,78 +661,7 @@ class Game extends EventTarget {
     this.action2 = null;
   }
 
-  // array cartes pas vides seConnectent 
-  verifierCartesVoisines(x, y) {
-    let cartesAParcourir = [];
-    let carte = this.matrix[y][x];
-
-    // gauche 
-    if (x > 0 && this.matrix[y][x -1] !== null) {
-      let carteVoisine = this.matrix[y][x -1];
-      if (carteVoisine.estVisitee == false && carte.seConnecter(carteVoisine, Directions.GAUCHE)) {
-        cartesAParcourir.push([y, x-1])
-      }
-    }
-    // droite
-    if (x < this.width-1 && this.matrix[y][x +1] !== null) {
-      let carteVoisine = this.matrix[y][x + 1];
-      if (carteVoisine.estVisitee == false && carte.seConnecter(carteVoisine, Directions.DROITE)) {
-        cartesAParcourir.push([y, x + 1])
-      }
-    }
-    // haut
-    if (y > 0 && this.matrix[y-1][x] !== null) {
-      let carteVoisine = this.matrix[y-1][x];
-      if (carteVoisine.estVisitee == false && carte.seConnecter(carteVoisine, Directions.HAUT)) {
-        cartesAParcourir.push([y -1, x])
-      }
-    }
-    // bas
-    if (y < this.height - 1 && this.matrix[y + 1][x] !== null) {
-      let carteVoisine = this.matrix[y + 1][x];
-      if (carteVoisine.estVisitee == false && carte.seConnecter(carteVoisine, Directions.BAS)) {
-        cartesAParcourir.push([y+1, x])
-      }
-    }
-
-    console.log("Cartes a parcourir : ", cartesAParcourir)
-    return cartesAParcourir;
-  }
-
-  /**
-   * Recherche récursive d'un chemin entre la carte départ matrix[3][0] et la carte trésor (recherche d'un tunnel continu)
-   * pour déterminer si le joueur a gagné 
-   * carte.estVisitee = true; -> eviter boucles infinies
-   */
-  parcourir(y, x) {
-    const carte = this.matrix[y][x]; 
-    carte.estVisitee = true; 
-
-    if (carte.tresor !== null) {
-      carte.cheminVictoire = true;
-      return true; 
-    }
-
-    // recuperer les coordonnées des cartes voisines si elles snt connectées: verifierCartesVoisines()
-    const cartesAParcourir = this.verifierCartesVoisines(x, y); 
-
-    //let cheminTrouve = false;
-    // pour chaque voisine connectée, appel récursif de parcourir()
-    for (let i = 0; i < cartesAParcourir.length; i++) {
-      const voisinCoordonnees = cartesAParcourir[i];
-      const voisinY = voisinCoordonnees[0];
-      const voisinX = voisinCoordonnees[1];
-      
-      //cheminTrouve = cheminTrouve || this.parcourir(voisinY, voisinX); // true/false
-      if (this.parcourir(voisinY, voisinX)) {
-        carte.cheminVictoire = true;
-        return true;
-      }
-    }
-
-    //return cheminTrouve;
-    return false;
-  }
+  
 }
 
 export default Game;

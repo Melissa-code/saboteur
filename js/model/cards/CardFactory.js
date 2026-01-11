@@ -38,7 +38,7 @@ class CardFactory {
             "2020" : 4, // nb occurences (soit value)
             "2220" : 5,
             //"2222" : 4, // -1 soit la carte depart 
-            "2222" : 4, 
+            "2222" : 40, 
             "2202": 5,
             "0202" : 3,
             "0220" : 4,
