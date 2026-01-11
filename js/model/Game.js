@@ -13,12 +13,10 @@ class Game extends EventTarget {
     this.width = 11;
     this.height = 7;
     this.matrix = this.initGame();
+    this.pioche = CardFactory.generatePioche();
   
     const carteDepart = CardFactory.createCarteChemin("2222", "./images/cartes_chemin/2222.svg");
     this.matrix[3][0] = carteDepart;
-
-    this.pioche = CardFactory.generatePioche()
-   
     this.cartesBut = this.selectionnerTroisCartesBut()
     this.matrix[1][10] = this.cartesBut[0]
     this.cartesBut[0].estDevoilee = false;
@@ -28,14 +26,15 @@ class Game extends EventTarget {
     this.cartesBut[2].estDevoilee = false;
 
     this.joueurActuel = 1; 
-    let roles = this.getRandomRole(2);//2joueurs 
+    let roles = this.getRandomRole(2); //2 joueurs 
     this.joueur1 = new Player(1, roles[0]);
     this.joueur2 = new Player(2, roles[1]); 
+    this.distribuerCartesJoueurs(); 
    
-    this.action1 = null; // 1er clic (sélection carte/rotation)
+    this.action1 = null; // 1er clic (sélection carte/rotation carte)
     this.action2 = null; // 2e clic (sur cible)
-    this.distribuerCartesJoueurs()
   }
+
 
   initGame() {
     let newMatrix = [];
@@ -43,17 +42,79 @@ class Game extends EventTarget {
     for (let y = 0; y < this.height; y++) {
       let row = [];
       for (let x = 0; x < this.width; x++) {
-        row.push(null); //case vide: null
+        row.push(null); //case vide === null
       }
       newMatrix.push(row);
     }
     return newMatrix; //matrix[y][x] 
   }
 
+
+  /**
+   * Recherche et extrait la carte "Croix" (carte de départ) de la pioche
+   * Utilise le calcul de la somme des sorties tunnel(2+2+2+2 = 8)
+   * @returns {CarteChemin|null} La carte croix trouvée, ou undefined si aucune n'existe.
+   */
+  tirerCarteCroix() {
+    for (let i = 0; i < this.pioche.length; i++) {
+      if (this.pioche[i] instanceof CarteChemin) {
+        let somme = this.pioche[i].haut + this.pioche[i].bas + this.pioche[i].gauche + this.pioche[i].droite
+        if (somme === 8) {
+          let carteCroix = this.pioche[i]; 
+          this.pioche.splice(i, 1); 
+          return carteCroix;
+        }
+      }
+    }
+    console.error("Erreur : Il manque une carte en croix dans la pioche !");
+    return null;
+  }
+  
+
+  /**
+   *  Récupère 3 cartes buts: 2 normales + 1 croix trésor
+   */
+  preparerTroisCartesBut() {
+    let cartesBut = []; 
+
+    while (cartesBut.length < 2 && this.pioche.length > 0) {
+      const carte = this.pioche.shift();
+      if (carte instanceof CarteChemin) {
+        cartesBut.push(carte);
+      } else {
+        this.pioche.push(carte);
+      }
+    }
+
+    let carteTresorEnCroix = this.tirerCarteCroix();
+    if (carteTresorEnCroix) {
+      carteTresorEnCroix.ajouterTresor();
+      cartesBut.push(carteTresorEnCroix);
+    } 
+
+    return cartesBut;
+  }
+
+  /**
+   * Sélectionne et retourne 3 cartes but mélangées
+   * @returns {CarteChemin[]} Un tableau de 3 cartes but mélangées
+   */
+  selectionnerTroisCartesBut() {
+    let cartesBut = this.preparerTroisCartesBut();
+
+    // Mélange des cartes buts (Fisher-Yates)
+    for (let i = cartesBut.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [cartesBut[i], cartesBut[j]] = [cartesBut[j], cartesBut[i]];
+    }
+    return cartesBut;                   
+  } 
+
+
   /**
    * Génère une liste de rôles équilibrée et les distribue aléatoirement (algorithme de Fisher-Yates)
-   * @param {number} [nbJoueurs=2] - Le nombre de joueurs par défaut 2
-   * @returns {string[]} Un tableau contenant les rôles mélangés
+   * @param {number} [nbJoueurs=2] par défaut 2
+   * @returns {string[]} Un tableau de rôles mélangés
    */
   getRandomRole(nbJoueurs = 2) {
     // Initialisation des rôles (1 Saboteur, le reste en Chercheurs d'or)
@@ -62,7 +123,7 @@ class Game extends EventTarget {
       roles.push('Chercheur d\'or');
     }
 
-    // Mélanger les rôles- tableau parcouru: échange chaque élément avec un autre au hasard
+    // Mélange des rôles (tableau parcouru: échange chaque élément avec un autre au hasard)
     for (let i = roles.length - 1; i > 0; i--) { 
       const j = Math.floor(Math.random() * (i + 1));
       [roles[i], roles[j]] = [roles[j], roles[i]];
@@ -70,16 +131,29 @@ class Game extends EventTarget {
     return roles;
   }
 
+  
+  distribuerCartesJoueurs() {
+    for (let i = 0; i < 5; i++) {
+      // retire et retourne la derniere 
+      this.joueur1.addCarte(this.pioche.pop())
+      this.joueur2.addCarte(this.pioche.pop())
+    }
+  }
+
+
+
   passerAuJoueurSuivant() {
     // J1=0-> 0+1=1 : Divise 1 par 2 : 1/2=0 reste 1 (next joueur)->revient au 1er joueur après le dernier
     this.joueurActuelIndex = (this.joueurActuelIndex + 1) % this.roles.length;
   }
+
 
   afficherMessage(text, color = 'black') {
     this.dispatchEvent(new CustomEvent("message", {
       detail: { text, color }
     }));
   }
+
 
   /**
    * Vérifie la validité de la connexion physique entre deux cartes adjacentes
@@ -141,6 +215,7 @@ class Game extends EventTarget {
       // carte depart matrix[3][0]
       if (this.parcourir(3, 0) === true) {
         this.afficherMessage("C'est gagné :) ", 'green');
+        return;
       } else {
         this.reinitialiserMarqueurs(); 
       }
@@ -198,56 +273,7 @@ class Game extends EventTarget {
     }
   }
 
-  tirerCarteCroix() {
-    for (let i = 0; i < this.pioche.length; i++) {
-      if (this.pioche[i] instanceof CarteChemin) {
-        let somme = this.pioche[i].haut + this.pioche[i].bas + this.pioche[i].gauche + this.pioche[i].droite
-        if (somme === 8) {
-          let carteCroix = this.pioche[i]; 
-          this.pioche.splice(i,1)
-          return carteCroix;
-        }
-      }
-    }
-  }
-
-  /** 
-   * @returns array[] d'objets CarteChemin
-   */
-  selectionnerTroisCartesBut() {
-    let cartesBut = []; 
-  
-    while (cartesBut.length < 2 && this.pioche.length > 0) {
-      const carte = this.pioche.shift(); 
-      if (carte instanceof CarteChemin) {
-        cartesBut.push(carte);
-      } else {
-        this.pioche.push(carte);
-      }
-    }
-
-    let carteTresor = this.tirerCarteCroix(); 
-    carteTresor.ajouterTresor();
-    cartesBut.push(carteTresor)
-
-    if (cartesBut.length < 3) {
-      console.log("Pas assez de cartes chemin dans la pioche !");
-    }
-    const indexCarteTresor = Math.floor(Math.random() * cartesBut.length);
-    let carte = cartesBut[indexCarteTresor]
-    cartesBut[indexCarteTresor] = carteTresor
-    cartesBut[2] = carte;
-    return cartesBut; 
-  }
-
-
-  distribuerCartesJoueurs() {
-    for (let i = 0; i < 5; i++) {
-      // retire et retourne la derniere 
-      this.joueur1.addCarte(this.pioche.pop())
-      this.joueur2.addCarte(this.pioche.pop())
-    }
-  }
+ 
 
   notifierCible(cible) {
     if (cible.type === TypesCibles.EXTERIEUR) {
