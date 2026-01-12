@@ -296,33 +296,27 @@ class Game extends EventTarget {
    * tunnel 1 et 2 (0: mur)
   **/
   testRevelerCarteBut() {
-    for(let y = 1; y <= 5; y = y + 2) {
+    for(let y = 1; y <= 5; y += 2) {
       let carteBut = this.matrix[y][10];
       if (carteBut.estDevoilee === true) continue; //passe à la suivante si dévoilée
 
-      // carte à gauche
-      if (this.matrix[y][9] !== null) {
-        if (this.matrix[y][9].droite !== 0) {
-          this.matrix[y][10].estDevoilee = true;
-          this.dispatchEvent(new Event("change"));//afficher la carte
-          continue;
-        }
+      // carte à gauche (tunnel droite)
+      if (this.matrix[y][9] !== null && this.matrix[y][9].droite !== 0) {
+            this.matrix[y][10].estDevoilee = true;
+            this.dispatchEvent(new Event("change"));//afficher la carte (la retourner dans la vue)
+            continue;
       }
-      // carte en haut
-      if (this.matrix[y - 1][10] !== null) {
-        if (this.matrix[y - 1][10].bas !== 0) {
-          this.matrix[y][10].estDevoilee = true;
-          this.dispatchEvent(new Event("change"));
-          continue;
-        }
+      // carte en haut (tunnel bas)
+      if (this.matrix[y - 1][10] !== null && this.matrix[y - 1][10].bas !== 0) {
+            this.matrix[y][10].estDevoilee = true;
+            this.dispatchEvent(new Event("change"));
+            continue;
       }
-      // carte en bas
-      if (this.matrix[y + 1][10] !== null) {
-        if (this.matrix[y + 1][10].haut !== 0) {
-          this.matrix[y][10].estDevoilee = true;
-          this.dispatchEvent(new Event("change"));
-          continue;
-        }
+      // carte en bas (tunnel haut)
+      if (this.matrix[y + 1][10] !== null && this.matrix[y + 1][10].haut !== 0) {
+            this.matrix[y][10].estDevoilee = true;
+            this.dispatchEvent(new Event("change"));
+            continue;
       }
     }
   }
@@ -335,7 +329,7 @@ class Game extends EventTarget {
    */
   placerCarte(x, y, carteAPlacer) {
     if (this.partieTerminee) {
-      this.afficherMessage('La partie est terminée ! 😢', 'red');
+      this.afficherMessage('La partie est terminée ! 😖😭', 'red');
       return false;
     }  
 
@@ -504,95 +498,98 @@ class Game extends EventTarget {
     }
   }
 
+  /**
+   * Détruit une carte chemin à la position (x, y) 
+   */
+  detruireCarteChemin(x, y) {
+    const positionsCartesBloquees = [[3,0], [1, 10], [3, 10], [5,10]]; // d'office: carte départ + 3 cartes buts
+
+    // Vérification destruire cartes obligatoires
+    for (let position of positionsCartesBloquees) {
+      if(position[0] === y && position[1] === x) {
+        this.afficherMessage("Impossible de détruire cette carte obligatoire déjà en place.", "red");
+        return false; 
+      }
+    }
+          
+    // Vérification détruire une case est vide
+    if (this.matrix[y][x] === null) {
+      this.afficherMessage("Il n'y a pas de carte à détruire ici.", "red");
+      return false;
+    }
+
+    // Destruction réussie 
+    this.matrix[y][x] = null; 
+      this.afficherMessage("Carte chemin détruite avec succès !", "green");
+      return true;
+  }
+
+  /**
+   * Dévoile temporairement une carte but à la position (x, y)
+   */
+  regarderCarteBut(x, y) {
+    // positions des cartes but
+    const positionsCartesBut = [[1,10], [3,10], [5,10]];
+
+    for (let position of positionsCartesBut) {
+      if (position[0] === y && position[1] === x) {
+        this.matrix[y][x].estDevoilee = true;
+
+        setTimeout(()=> {
+          this.matrix[y][x].estDevoilee = false; 
+          this.dispatchEvent(new Event("change")); // afficher la carte (la retourner dans la vue)
+        }, 3000);
+
+        return true;
+      }
+    }
+
+    this.afficherMessage("Cette carte n'est pas une carte but.", "red");
+    return false;
+  }
  
+
+  appliquerSurMatrice(joueur, carte) {
+    const [x, y] = this.action2.reference;
+
+    // joueur bloqué: ne peut placer ni carte chemin ni carte action
+    if (joueur.cartesBloquantes.length > 0) {
+      this.afficherMessage("Vous êtes bloqué !", "red");
+      return false;
+    }
+
+    if (carte instanceof CarteAction) {
+      // Carte action: DETRUIRE chemins (bool)
+      if (carte.titreAction === Actions.DETRUIT_CARTE_CHEMIN) {
+        return this.detruireCarteChemin(x, y); 
+      }
+      // Carte action: REGARDER carte but (bool)
+      if (carte.titreAction === Actions.REGARDER_CARTE_BUT) {
+        return this.regarderCarteBut(x, y);
+      }
+    }
+
+    // Si ce n'est pas une action, placer carte chemin
+    return this.placerCarte(x, y, carte);
+  }
+
+
+ /**
+  * Applique les actions basées sur les sélections du joueur (action1 et action2)
+  */
   appliquerActions() {
     const joueur = this.joueurActuel === 1 ? this.joueur1 : this.joueur2; 
-    //Récupère la carte à jouer
-    const [, numCarte] = this.action1.reference;
+    const [, numCarte] = this.action1.reference; //Récupère la carte à jouer
     const carte = joueur.cartes[numCarte]; 
     let success = false; 
 
     switch(this.action2.type) {
       case TypesCibles.MATRICE: 
-        const [x, y] = this.action2.reference;
-
-        if (joueur.cartesBloquantes.length !== 0) break; // joueur bloqué ne peut pas placer de carte chemin ou action
-
-        // DETRUIRE carte chemin
-        if (carte instanceof CarteAction) {
-          if (carte.titreAction === Actions.DETRUIT_CARTE_CHEMIN) {
-            const positionsCartesBloquees = [[3,0], [1, 10], [3, 10], [5,10]]; // d'office: carte départ + 3 cartes buts
-            let incorrect = false
-
-            // pas destruction des cartes obligatoires deja en place 
-            for (let position of positionsCartesBloquees) {
-              if(position[0] === y && position[1] === x) {
-                incorrect = true;
-                console.log("Impossible de détruire cette carte obligatoire déjà en place.")
-                break;
-              }
-            }
-           
-            // si case vide
-            if (this.matrix[y][x] === null) {
-              console.log("carte détruit chemin sur aucune carte")
-              incorrect = true;
-            }
-
-            // si possible qu’il y avait bien une carte
-            if (incorrect)
-              break;
-            else {
-              this.matrix[y][x] = null; 
-              console.log("carte détruit carte chemin :SUCCESS", this.matrix[y][x])
-              success = true; 
-              break;
-            }
-          }
-        }
-
-        // Regarde Carte but 
-        if (carte instanceof CarteAction) {
-          if (carte.titreAction === Actions.REGARDER_CARTE_BUT) {
-            console.log(Actions.REGARDER_CARTE_BUT + 'ici :' + ' ' + x +' '+ y)
-            // cartes qui peuvent etre vues 
-            const positionsCartesBut = [[10, 1], [10,3], [10,5]];
-            //let correct = false;
-
-            // voir 3 cartes but deja en place 
-            for (let position of positionsCartesBut) {
-              if (position[0] === x && position[1] === y) {
-                success = true;
-                // appliquer l'action oeil 
-                this.matrix[y][x].estDevoilee = true;
-
-                setTimeout(()=> {
-                  this.matrix[y][x].estDevoilee = false; 
-                  this.dispatchEvent(new Event("change"))
-                }, 3000);
-
-                // console.log("voir la carte but ", "x: "+x, " y: "+y);
-                // console.log("carte but image :", this.matrix[y][x].image)
-                break;
-              }
-            }
-            break;
-          }
-        } 
-
-        success = this.placerCarte(x, y, carte); 
-        
-        if (success) {
-          console.log("carte placée: ", "x :" + x, "y :" + y)
-        }
-        else {
-            console.log("impossible de placer la carte : ", "x :" + x, "y :" + y)
-          }
-        
+        success = this.appliquerSurMatrice(joueur, carte);
         break;
-
+    
       case TypesCibles.JOUEUR: 
-        const [numJoueurCible, numCarteCible] = this.action2.reference;
+        const [numJoueurCible, ] = this.action2.reference; //[numJoueurCible, numCarteCible]
         const joueurCible = numJoueurCible === 1 ? this.joueur1 : this.joueur2; 
 
         if (carte instanceof CarteAction) {
