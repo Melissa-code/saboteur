@@ -3,7 +3,6 @@ import CarteChemin  from './CarteChemin.js';
 import Actions from '../enums/Actions.js'; 
 
 class CardFactory {
-
     static PATH_CHEMINS = "./images/cartes_chemin/";
     static PATH_ACTIONS = "./images/cartes_action/";
 

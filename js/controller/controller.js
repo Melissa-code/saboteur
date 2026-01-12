@@ -12,7 +12,7 @@ game.dispatchEvent(new CustomEvent("showPlayerTurn", {
   detail: `C'est au tour du joueur ${game.joueurActuel} de jouer.` // detail: propriete obligatoire 
 }));
 
-game.addEventListener("message", (e) => view.showMessage(e.detail));
+game.addEventListener("game-notification", (e) => view.showMessage(e.detail));
   
 window.addEventListener('resize', () => view.handleResize());
 

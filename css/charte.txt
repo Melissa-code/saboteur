@@ -7,6 +7,10 @@ colors:
   #FFFFFF
   #000000
 
+  #ff0000
+  #008a05
+
+
 font: 
   Tagesschrift Static 400
 

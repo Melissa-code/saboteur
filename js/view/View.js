@@ -42,14 +42,16 @@ class View {
     this.playerTurnDiv.textContent = text;
   }
 
-  showMessage({text, color = "white"}) {
-    this.messageDiv.textContent = text;
-    this.messageDiv.style.color = color; 
+  showMessage({message, type = "info"}) {
+    const colors = { error: "#ff0000", success: "#008a05", info: "#ffffff" };
+
+    this.messageDiv.textContent = message;
+    this.messageDiv.style.color = colors[type] || colors.info;
     this.messageDiv.classList.add("show");
 
     setTimeout(() => {
       this.messageDiv.classList.remove("show");
-    }, 4000);
+    }, 5000);
   }
 
   /**

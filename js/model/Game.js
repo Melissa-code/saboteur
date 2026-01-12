@@ -8,6 +8,10 @@ import CardFactory from './cards/CardFactory.js';
 
 
 class Game extends EventTarget {
+  /**
+   * Gère l'état des joueurs, le plateau de jeu (matrice) et les règles métier 
+   * @extends EventTarget (.dispatchEvent(), .addEventListener() et .removeEventListener())
+   */
   constructor() {
     super(); 
     this.width = 11;
@@ -165,13 +169,13 @@ class Game extends EventTarget {
 
 
   /**
-   * Affiche un message dans la vue
-   * @param {string} text - Le texte du message
-   * @param {string} color - La couleur du message
-   */
-  afficherMessage(text, color = 'black') {
-    this.dispatchEvent(new CustomEvent("message", {
-      detail: { text, color }
+  * Notifie la vue d'un événement message text à afficher
+  * @param {string} code - Le code du message ou le texte brut
+  * @param {string} type - Le type (error, success, info)
+  */
+  notifierEventMessage(message, type = 'info') {
+    this.dispatchEvent(new CustomEvent("game-notification", {
+      detail: { message, type }
     }));
   }
 
@@ -270,7 +274,7 @@ class Game extends EventTarget {
    */
   verifierVictoire() {
     if (this.parcourir(3, 0) === true) {
-      this.afficherMessage("Gagné ! ✌️🏆", 'green');
+      this.notifierEventMessage("Gagné ! ✌️🏆", 'success');
       this.partieTerminee = true;
       return true;
     } else {
@@ -329,12 +333,12 @@ class Game extends EventTarget {
    */
   placerCarte(x, y, carteAPlacer) {
     if (this.partieTerminee) {
-      this.afficherMessage('La partie est terminée ! 😖😭', 'red');
+      this.notifierEventMessage('La partie est terminée ! 😖😭', 'error');
       return false;
     }  
 
     if (this.matrix[y][x] != null) {
-      this.afficherMessage('Cette case est déjà occupée', 'red');
+      this.notifierEventMessage('Cette case est déjà occupée', 'error');
       return false;
     }
 
@@ -409,7 +413,7 @@ class Game extends EventTarget {
    */
   gererPremierClic(cible) {
     if (cible.type !== TypesCibles.JOUEUR) {
-      this.afficherMessage(`Clic incorrect: en dehors de la zone des joueurs.`, `red`);
+      this.notifierEventMessage(`Clic incorrect: en dehors de la zone des joueurs.`, `error`);
       return;
     }
 
@@ -418,7 +422,7 @@ class Game extends EventTarget {
       this.action1 = cible; // Sélection réussie
       this.dispatchEvent(new Event("change")); // montrer quelle carte est choisie
     } else {
-      this.afficherMessage(`C'est au joueur ${this.joueurActuel} de jouer.`, `red`);
+      this.notifierEventMessage(`C'est au joueur ${this.joueurActuel} de jouer.`, `error`);
     }
   }
 
@@ -487,7 +491,7 @@ class Game extends EventTarget {
    */
   notifierCible(cible) {
     if (cible.type === TypesCibles.EXTERIEUR) {
-      this.afficherMessage(`Veuillez cliquer dans une zone valide du jeu.`, `red`);
+      this.notifierEventMessage(`Veuillez cliquer dans une zone valide du jeu.`, `error`);
       return;
     }
 
@@ -507,20 +511,20 @@ class Game extends EventTarget {
     // Vérification destruire cartes obligatoires
     for (let position of positionsCartesBloquees) {
       if(position[0] === y && position[1] === x) {
-        this.afficherMessage("Impossible de détruire cette carte obligatoire déjà en place.", "red");
+        this.notifierEventMessage("Impossible de détruire cette carte obligatoire déjà en place.", "error");
         return false; 
       }
     }
           
     // Vérification détruire une case est vide
     if (this.matrix[y][x] === null) {
-      this.afficherMessage("Il n'y a pas de carte à détruire ici.", "red");
+      this.notifierEventMessage("Il n'y a pas de carte à détruire ici.", "error");
       return false;
     }
 
     // Destruction réussie 
     this.matrix[y][x] = null; 
-      this.afficherMessage("Carte chemin détruite avec succès !", "green");
+      this.notifierEventMessage("Carte chemin détruite avec succès !", "success");
       return true;
   }
 
@@ -544,7 +548,7 @@ class Game extends EventTarget {
       }
     }
 
-    this.afficherMessage("Cette carte n'est pas une carte but.", "red");
+    this.notifierEventMessage("Cette carte n'est pas une carte but.", "error");
     return false;
   }
  
@@ -557,7 +561,7 @@ class Game extends EventTarget {
 
     // joueur bloqué: ne peut placer ni carte chemin ni carte action
     if (joueur.cartesBloquantes.length > 0) {
-      this.afficherMessage("Vous êtes bloqué. Veuillez jeter une carte ou réparer un outil.", "red");
+      this.notifierEventMessage("Vous êtes bloqué. Veuillez jeter une carte ou réparer un outil.", "error");
       return false;
     }
 
@@ -583,14 +587,14 @@ class Game extends EventTarget {
   bloquerJoueur(joueur, joueurCible, carte) {
     // Bloquer uniquement l'adversaire
     if (joueur.id === joueurCible.id) {
-      this.afficherMessage("Impossible de se bloquer soi-même !", "red");
+      this.notifierEventMessage("Impossible de se bloquer soi-même !", "error");
     } else {
       let bloquer = joueurCible.addCarteBloquante(carte);
       if (bloquer) {
-        this.afficherMessage(`Le joueur ${joueurCible.id} est bloqué !`, "green");
+        this.notifierEventMessage(`Le joueur ${joueurCible.id} est bloqué !`, "success");
         return true;
       } else {
-        this.afficherMessage(`Impossible de bloquer ${joueurCible.id} avec le même outil.` , "red");
+        this.notifierEventMessage(`Impossible de bloquer ${joueurCible.id} avec le même outil.` , "error");
       }
     }
     return false;
@@ -603,10 +607,10 @@ class Game extends EventTarget {
     if (carte.estCarteReparation()) { 
       let debloquer = joueurCible.removeCarteBloquante(carte); 
       if (debloquer) {
-        this.afficherMessage("Vous êtes débloqué !", "green");
+        this.notifierEventMessage("Vous êtes débloqué !", "success");
         return true;
       } else {
-        this.afficherMessage("Aucune carte bloquante correspondante pour le joueur " + joueurCible.id, "red");
+        this.notifierEventMessage("Aucune carte bloquante correspondante pour le joueur " + joueurCible.id, "error");
         return false;
       }
     }
@@ -652,13 +656,13 @@ class Game extends EventTarget {
         break;
       case TypesCibles.CORBEILLE:
         success = true; 
-        this.afficherMessage("Carte jetée dans la corbeille.", "green");
+        this.notifierEventMessage("Carte jetée dans la corbeille.", "success");
         break;
       case TypesCibles.EXTERIEUR:
-        this.afficherMessage("Clic en dehors des zones de jeu valides.", "red");  
+        this.notifierEventMessage("Clic en dehors des zones de jeu valides.", "error");  
         break;
       default:
-        this.afficherMessage("Erreur pour appliquer une action.", "red");
+        this.notifierEventMessage("Erreur pour appliquer une action.", "error");
         break;
     }
 
