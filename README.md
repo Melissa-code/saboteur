@@ -74,8 +74,8 @@ La partie se termine quand :
 #### Aperçu 
 
 <div style="display: flex; gap: 3rem;">
-  <img src="./images/saboteur/saboteur_desktop.svg" alt="Aperçu du jeu sur desktop" style="max-width: 100%;  height: auto; border: 2px solid #FFFFFF;" />
-  <img src="./images/saboteur/saboteur_mobile.svg" alt="Aperçu du jeu sur mobile" style="max-width: 100%; height: auto; border: 2px solid #FFFFFF;" />
+  <img src="./images/saboteur/saboteur_desktop.svg" alt="Aperçu du jeu sur desktop" style="max-width: 100%;  height: auto; border: 2px solid #FFFFFF; margin: 5px;" />
+  <img src="./images/saboteur/saboteur_mobile.svg" alt="Aperçu du jeu sur mobile" style="max-width: 100%; height: auto; border: 2px solid #FFFFFF; margin: 5px;" />
 </div>
 
 ---
