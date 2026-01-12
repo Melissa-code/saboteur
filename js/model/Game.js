@@ -352,7 +352,7 @@ class Game extends EventTarget {
     // Pour voisine (carteGrille) de gauche
     if ((x >= 1) && this.matrix[y][x - 1] !== null && this.matrix[y][x - 1].estDevoilee === true) {
       let carteGrille = this.matrix[y][x - 1];
-      if (!carteGrille.accepterVoisine(carteAPlacer, Directions.DROITE)) {console.log("false");return false}; 
+      if (!carteGrille.accepterVoisine(carteAPlacer, Directions.DROITE)) return false; 
       if (this.verifierConnexion(carteGrille, 'droite', carteAPlacer, 'gauche')) connexionCartes = true;
       existeVoisinage = true;
     }
@@ -549,12 +549,15 @@ class Game extends EventTarget {
   }
  
 
+  /**
+   * Applique une carte chemin ou carte action détruire/regarder sur la matrice 
+   */
   appliquerSurMatrice(joueur, carte) {
     const [x, y] = this.action2.reference;
 
     // joueur bloqué: ne peut placer ni carte chemin ni carte action
     if (joueur.cartesBloquantes.length > 0) {
-      this.afficherMessage("Vous êtes bloqué !", "red");
+      this.afficherMessage("Vous êtes bloqué. Veuillez jeter une carte ou réparer un outil.", "red");
       return false;
     }
 
@@ -574,8 +577,65 @@ class Game extends EventTarget {
   }
 
 
+  /**
+   * Bloque l'adversaire 
+   */
+  bloquerJoueur(joueur, joueurCible, carte) {
+    // Bloquer uniquement l'adversaire
+    if (joueur.id === joueurCible.id) {
+      this.afficherMessage("Impossible de se bloquer soi-même !", "red");
+    } else {
+      let bloquer = joueurCible.addCarteBloquante(carte);
+      if (bloquer) {
+        this.afficherMessage(`Le joueur ${joueurCible.id} est bloqué !`, "green");
+        return true;
+      } else {
+        this.afficherMessage(`Impossible de bloquer ${joueurCible.id} avec le même outil.` , "red");
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Débloque le joueur cible (soi-même ou adversaire)
+   */
+  debloquerJoueur(joueurCible, carte) {
+    if (carte.estCarteReparation()) { 
+      let debloquer = joueurCible.removeCarteBloquante(carte); 
+      if (debloquer) {
+        this.afficherMessage("Vous êtes débloqué !", "green");
+        return true;
+      } else {
+        this.afficherMessage("Aucune carte bloquante correspondante pour le joueur " + joueurCible.id, "red");
+        return false;
+      }
+    }
+    return false;
+  }
+
+
+  /**
+   * Applique une carte action de blocage/réparation sur un joueur (adversaire ou soi-même)
+   */
+  appliquerSurJoueur(joueur, carte) {
+    const [numJoueurCible, ] = this.action2.reference; //[numJoueurCible, numCarteCible]
+    const joueurCible = numJoueurCible === 1 ? this.joueur1 : this.joueur2; 
+
+    if (carte instanceof CarteAction) {
+      if (carte.estCarteBloquante()) {
+        return this.bloquerJoueur(joueur, joueurCible, carte);
+      }
+      // débloquer joueur (le joueur doit pouvoir jouer sur lui-meme)
+      if (carte.estCarteReparation()) {
+        return this.debloquerJoueur(joueurCible, carte);
+      }
+    }
+    return false
+  }
+
+
  /**
-  * Applique les actions basées sur les sélections du joueur (action1 et action2)
+  * Applique les actions en fonction des cibles sélectionnées (action1 et action2)
   */
   appliquerActions() {
     const joueur = this.joueurActuel === 1 ? this.joueur1 : this.joueur2; 
@@ -587,77 +647,33 @@ class Game extends EventTarget {
       case TypesCibles.MATRICE: 
         success = this.appliquerSurMatrice(joueur, carte);
         break;
-    
       case TypesCibles.JOUEUR: 
-        const [numJoueurCible, ] = this.action2.reference; //[numJoueurCible, numCarteCible]
-        const joueurCible = numJoueurCible === 1 ? this.joueur1 : this.joueur2; 
-
-        if (carte instanceof CarteAction) {
- 
-          // bloquer joueur adv
-          if (carte.estCarteBloquante()) {
-            // Bloquer uniquement l'autre joueur
-            if (carte.estCarteBloquante()) {
-              if (joueur.id === numJoueurCible) {
-                console.log("Impossible de se bloquer soi-même !");
-              } else {
-                let bloque = joueurCible.addCarteBloquante(carte);
-                if (bloque) {
-                  success = true;
-                } else {
-                  console.log("Cette carte bloquante ne peut pas être jouée sur le joueur ", joueurCible.id);
-                }
-              }
-            }
-          }
-          if (success) {
-            console.log("Carte bloquante jouée sur l'autre joueur a fonctionné", joueurCible.id); 
-          } else {
-            console.log("Cette carte bloquante ne peut pas etre jouée sur le joueur ", joueurCible.id)
-          }
-
-          // débloquer joueur (joueur 1 doit pouvoir jouer sur lui-meme)
-          if (carte.estCarteReparation()) {
-            console.log("Tentative de réparation:", carte.titreAction, "sur joueur", joueur.id);
-           
-            let debloque = joueurCible.removeCarteBloquante(carte); 
-            if (debloque) {
-              console.log("Carte débloquante a fonctionné sur le joueur ", joueur.id);
-              success = true;
-            } else {
-              console.log("Aucune carte bloquante à retirer pour le joueur ", joueur.id);
-            }
-          
-          }
-        }
+        success = this.appliquerSurJoueur(joueur, carte); 
         break;
-
       case TypesCibles.CORBEILLE:
         success = true; 
-        console.log("Carte dans la corbeille ", carte);
+        this.afficherMessage("Carte jetée dans la corbeille.", "green");
         break;
-
       case TypesCibles.EXTERIEUR:
-        console.log("Carte en dehors des zones", carte);
+        this.afficherMessage("Clic en dehors des zones de jeu valides.", "red");  
         break;
-
       default:
-        console.log("erreur pour appliquer une action", carte);
+        this.afficherMessage("Erreur pour appliquer une action.", "red");
         break;
     }
 
+    // fin du tour du joueur si action réussie
     if (success) {
       joueur.removeCarte(numCarte);
       this.changerTour();
-      joueur.addCarte(this.pioche.pop());
-
+      if (this.pioche.length > 0) {
+        joueur.addCarte(this.pioche.pop());
+      }
     }
 
     this.action1 = null;
-    this.action2 = null;
+    this.action2 = null; 
   }
-
-  
 }
 
 export default Game;
