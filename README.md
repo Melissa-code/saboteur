@@ -1,10 +1,21 @@
-# Jeu du Saboteur 
+# <img src="./images/gnome-digger-malicious.png" alt="logo" width="40" /> Saboteur
 
 ## 1. Description 
 
-Implémentation JavaScript du jeu de société Saboteur, un jeu de stratégie dans lequel des nains chercheurs d'or construisent un tunnel de cartes pour atteindre le trésor, tandis que des saboteurs infiltrés tentent de les en empêcher.
+Implémentation JavaScript natif du jeu de société Saboteur, un jeu de stratégie dans lequel des nains chercheurs d'or construisent un tunnel de cartes pour atteindre le trésor, tandis que des saboteurs infiltrés tentent de les en empêcher.
 
-Cette version numérique permet de jouer à 2 joueurs (1 nain Chercheur d'or et 1 nain Saboteur) directement dans le navigateur avec gestion automatique des règles et détection de la victoire.
+Cette version numérique permet de jouer à 2 joueurs (1 nain Chercheur d'or et 1 nain Saboteur) directement dans le navigateur avec gestion automatique des règles et détection de la victoire. 
+
+
+[![Jouer en ligne](https://img.shields.io/badge/LIVE_DEMO-Jouer%20au%20jeu-F8F32B?style=for-the-badge&labelColor=2B2D42&logo=javascript)](https://melissa-code.github.io/saboteur/)
+
+
+#### Aperçu 
+
+<div style="display: flex; gap: 3rem;">
+  <img src="./images/saboteur/saboteur_desktop.svg" alt="Aperçu du jeu sur desktop" style="max-width: 100%;  height: auto; border: 2px solid #FFFFFF; margin: 5px;" />
+  <img src="./images/saboteur/saboteur_mobile.svg" alt="Aperçu du jeu sur mobile" style="max-width: 100%; height: auto; border: 2px solid #FFFFFF; margin: 5px;" />
+</div>
 
 ---
 
@@ -71,21 +82,19 @@ La partie se termine quand :
    - sur un joueur → jouer une carte action
    - sur la corbeille → défausser la carte
 
-#### Aperçu 
-
-<div style="display: flex; gap: 3rem;">
-  <img src="./images/saboteur/saboteur_desktop.svg" alt="Aperçu du jeu sur desktop" style="max-width: 100%;  height: auto; border: 2px solid #FFFFFF; margin: 5px;" />
-  <img src="./images/saboteur/saboteur_mobile.svg" alt="Aperçu du jeu sur mobile" style="max-width: 100%; height: auto; border: 2px solid #FFFFFF; margin: 5px;" />
-</div>
-
 ---
 
 ## 5. Technologies utilisées
 
-- HTML5
-- CSS3
-- Canvas
-- JavaScript Vanilla
+### Stack 
+- HTML5 / CSS3 pour la structure et le design
+- Canvas API pour le rendu graphique 
+- JavaScript Vanilla pour la logique métier en programmation orientée objet 
+
+### Outils et déploiement 
+
+- Git / GitHub pour la gestion de versions et le suivi du code
+- GitHub Pages pour le déploiement automatisé via la branche main
 
 ---
 
