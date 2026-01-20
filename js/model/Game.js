@@ -511,7 +511,7 @@ class Game extends EventTarget {
     // Vérification destruire cartes obligatoires
     for (let position of positionsCartesBloquees) {
       if(position[0] === y && position[1] === x) {
-        this.notifierEventMessage("Impossible de détruire cette carte obligatoire déjà en place.", "error");
+        this.notifierEventMessage("Impossible de détruire cette carte.", "error");
         return false; 
       }
     }
@@ -561,7 +561,7 @@ class Game extends EventTarget {
 
     // joueur bloqué: ne peut placer ni carte chemin ni carte action
     if (joueur.cartesBloquantes.length > 0) {
-      this.notifierEventMessage("Vous êtes bloqué. Veuillez jeter une carte ou réparer un outil.", "error");
+      this.notifierEventMessage("Bloqué ! Jetez une carte ou réparer un outil.", "error");
       return false;
     }
 
@@ -607,7 +607,7 @@ class Game extends EventTarget {
     if (carte.estCarteReparation()) { 
       let debloquer = joueurCible.removeCarteBloquante(carte); 
       if (debloquer) {
-        this.notifierEventMessage("Vous êtes débloqué !", "success");
+        this.notifierEventMessage(`Le joueur ${joueurCible.id} est débloqué !`, "success");
         return true;
       } else {
         this.notifierEventMessage("Aucune carte bloquante correspondante pour le joueur " + joueurCible.id, "error");

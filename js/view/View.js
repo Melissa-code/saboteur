@@ -11,7 +11,6 @@ class View {
     this.game = game;
     this.game.addEventListener("change", () => this.refresh()); // liaison model-view
 
-    // paramètres d'affichage
     this.tileWidth = tileWidth; // 50px
     this.tileHeight = tileHeight; // 70px
     this.myCanva = document.querySelector("#myCanvas");
@@ -20,12 +19,14 @@ class View {
     // calcul de la mise en page (Layout)
     this.gameboardWidth = this.game.width * this.tileWidth; // plateau de jeu
     this.gameboardHeight = this.game.height * this.tileHeight; 
-    this.espacementWidth = 2 * this.tileWidth; // espace entre le plateau et la zone des joueurs
-    this.playerHandWidth = 7 * this.tileWidth; // zone des joueurs: largeur pour 5 cartes + marges
-    this.playerHandHeight = 4 * this.tileHeight; // zone des joueurs: hauteur pour 2 rangées de cartes + marges
-    this.playerHandMarginX = this.tileWidth / 2; // zone des joueurs: marge extremité gauche et droite
-    this.playerHandMarginY = this.tileHeight / 2 + this.playerCardsSpacingX; // zone des joueurs: marge extremité haut bas
+    this.espacementWidth = 2 * this.tileWidth; // espace entre plateau et zone joueurs
+    this.playerHandWidth = 7 * this.tileWidth; // zone joueurs: largeur pour 5 cartes + marges
+    this.playerHandHeight = 4 * this.tileHeight; // zone joueurs: hauteur pour 2 rangées de cartes + marges
+    
+    this.playerHandMarginX = this.tileWidth / 2; // zone joueurs: marge extremité gauche et droite
     this.playerCardsSpacingX = ((this.playerHandWidth - 2 * this.playerHandMarginX) - 5 * this.tileWidth) / 4; // espace entre 5 cartes des joueurs
+    this.playerHandMarginY = this.tileHeight / 2 + this.playerCardsSpacingX; // zone joueurs: marge extremité haut bas
+  
     this.cardsRowsSpacingY = this.tileHeight * 2; // espace entre player1Cards et player2Cards
 
     // layout vertical si mobile
@@ -34,8 +35,8 @@ class View {
     this.selectedCard = null; //joueurId: 1|2, index: 0..4 
 
     this.initializeZones(); // zones d'affichage
-    this.setCanvasSize();// taille du canvas
-    this.refresh();  // affichage initial
+    this.setCanvasSize(); // taille du canvas
+    this.refresh();  
 
     // éléments DOM pour messages
     this.playerTurnDiv = document.querySelector(".player-turn");

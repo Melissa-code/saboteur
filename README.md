@@ -96,11 +96,11 @@ La partie se termine quand :
 ```
 saboteur/
 ├── index.html
-├── styles/
+├── css/
 │   └── style.css
 ├── js/
 │   ├── controller/
-│   │   └── Controller.js
+│   │   └── controller.js
 │   ├── enum/
 │   │   ├── Directions.js
 │   │   ├── Actions.js
@@ -109,6 +109,8 @@ saboteur/
 │   │   ├── Game.js
 │   │   ├── Card.js
 │   │   ├── CardFactory.js
+│   │   ├── CartesAction.js
+│   │   ├── CarteChemin.js
 │   │   ├── Cible.js
 │   │   └── Player.js
 │   └── view/
@@ -121,7 +123,7 @@ saboteur/
 
 #### Patterns POO
 
-[Voir la documentation technique](./docs/TECHNICAL.md)
+[Voir la documentation technique](./TECHNICAL.md)
 
 - Pattern MVC pour séparation des responsabilités
 - DFS pour la détection de victoire
