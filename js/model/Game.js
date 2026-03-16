@@ -273,9 +273,12 @@ class Game extends EventTarget {
    * Vérifie si le joueur a atteint le trésor depuis la case de départ
    */
   verifierVictoire() {
+    const joueurCourant = (this.joueurActuel === 1) ? this.joueur1 : this.joueur2;
+
     if (this.parcourir(3, 0) === true) {
-      this.notifierEventMessage("Gagné ! ✌️🏆", 'success');
       this.partieTerminee = true;
+      // check le joueur gagnant: si le joueur est Saboteur message de défaite !=  message de victoire
+      joueurCourant.role === 'Saboteur' ? this.notifierEventMessage("Perdu, vous êtes le Saboteur ! 😖😭", 'error') : this.notifierEventMessage("Gagné ! ✌️🏆", 'success');
       return true;
     } else {
       this.reinitialiserMarqueurs(); 
