@@ -1,7 +1,6 @@
 import View from '../view/View.js';
 import Game from '../model/Game.js'; 
 
-
 const game = new Game(); 
 export {game};
 const view = new View(game, document, 50, 70); 
@@ -24,8 +23,6 @@ canvas.addEventListener("click", (event) => {
   const y = event.clientY - rect.top; //y haut du canvas
 
   const cible = view.identifierCible(x, y); //return new Cible(typeCible,reference);
-  // console.log("Clic sur la cible : ", cible.type, cible.reference);
   game.notifierCible(cible);
-
   view.refresh();
 });

@@ -48,7 +48,6 @@ h1 {
 }
 
 .message {     
-  background:rgba(141, 153, 174, 0.2); 
   text-align: center;
   display: flex;
   justify-content: center;
@@ -59,7 +58,7 @@ h1 {
   font-size: 16px;
   opacity: 0; /* invisible */
   position: absolute; /* pour ne pas décaler tout le jeu verticalement */
-  top: 24vh;       
+  top: 18vh;       
   left: 50%;
   transform: translateX(-50%);
   z-index: 100; 
@@ -108,8 +107,10 @@ h1 {
   }
   
   .message {
+    background:rgba(141, 153, 174, 0.2); 
     width: 60vh;
     font-size: 18px;
+    top: 24vh;  
     position: absolute;
   }
 

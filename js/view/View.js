@@ -41,8 +41,21 @@ class View {
     // éléments DOM pour messages
     this.playerTurnDiv = document.querySelector(".player-turn");
     this.messageDiv = document.querySelector(".message");
+    this.messageInfoMobile = document.querySelector(".message-info-mobile");
+
+    // désactive jeu en mobile 
+    if (this.isMobile) this.disableGame();
   }
 
+  /**
+   * Désactive les interactions avec le canvas et affiche un message d'avertissement en mobile
+   */
+  disableGame() {
+    this.myCanva.style.pointerEvents = 'none';
+    this.myCanva.style.opacity = '0.7';
+    this.messageInfoMobile.innerHTML = `🖥️ <small> Ne se joue que sur ordinateur !</small>`;
+    this.messageInfoMobile.classList.add("show");
+  }
 
   /**  
   * Affiche le texte indiquant le tour du joueur
@@ -94,6 +107,15 @@ class View {
     this.initializeZones();
     this.setCanvasSize();
     this.refresh();
+
+    if (this.isMobile) {
+      this.disableGame();
+    } else {
+      this.myCanva.style.pointerEvents = 'auto';
+      this.myCanva.style.opacity = '1';
+      this.messageInfoMobile.classList.remove("show");
+      this.messageInfoMobile.innerHTML = "";
+    }
   }
 
   /**
@@ -257,8 +279,8 @@ class View {
     this.ctx.font = "18px Tagesschrift, arial";
     const textDecalageY = this.isMobile ? zone.y + this.playerHandMarginY : this.playerHandMarginY - this.playerCardsSpacingX;
     const textStartX = zone.x + this.playerHandMarginX;
-    this.ctx.fillText("Cartes du Joueur 1 - " + this.game.joueur1.role, textStartX, textDecalageY);
-    this.ctx.fillText("Cartes du Joueur 2 - " + this.game.joueur2.role, textStartX, textDecalageY + this.playerHandHeight/2);
+    this.ctx.fillText("Cartes du Joueur 1 - " + this.game.joueur1.role, textStartX, textDecalageY - 6);
+    this.ctx.fillText("Cartes du Joueur 2 - " + this.game.joueur2.role, textStartX, textDecalageY + this.playerHandHeight/2 - 6);
 
     this.drawPlayerCards(this.game.joueur1, this.zones.player1Cards);
     this.drawPlayerCards(this.game.joueur2, this.zones.player2Cards);
