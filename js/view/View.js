@@ -57,6 +57,13 @@ class View {
     this.messageInfoMobile.classList.add("show");
   }
 
+  enableGame() {
+    this.myCanva.style.pointerEvents = 'auto';
+    this.myCanva.style.opacity = '1';
+    this.messageInfoMobile.classList.remove("show");
+    this.messageInfoMobile.innerHTML = "";
+  }
+
   /**  
   * Affiche le texte indiquant le tour du joueur
   * @param {string} text - Le texte à afficher
@@ -108,14 +115,7 @@ class View {
     this.setCanvasSize();
     this.refresh();
 
-    if (this.isMobile) {
-      this.disableGame();
-    } else {
-      this.myCanva.style.pointerEvents = 'auto';
-      this.myCanva.style.opacity = '1';
-      this.messageInfoMobile.classList.remove("show");
-      this.messageInfoMobile.innerHTML = "";
-    }
+    (this.isMobile) ? this.disableGame() : this.enableGame();
   }
 
   /**
